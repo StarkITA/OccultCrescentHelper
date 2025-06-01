@@ -63,13 +63,17 @@ public class MainWindow : Window, IDisposable
 
     private void Treasure()
     {
-        if (ImGui.BeginTable("Treasure", 3, ImGuiTableFlags.SizingStretchSame))
+        if (ImGui.BeginTable("Treasure", 3, ImGuiTableFlags.SizingFixedFit))
         {
             foreach (var item in TreasureManager.treasure)
             {
+                var pos = item.Position;
+
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(item.Position.ToString());
+                ImGui.TextUnformatted(
+                    $"Bronze Treasure Coffer ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")})"
+                );
                 ImGui.TableNextColumn();
                 if (ImGui.Button($"Target###{item.DataId}"))
                 {
@@ -102,7 +106,17 @@ public class MainWindow : Window, IDisposable
 
             if (FatesManager.FateData.TryGetValue(id, out var data))
             {
-                ImGui.TextUnformatted($"Active Fate: {data.Name}");
+                ImGui.TextUnformatted($"Active Fate: {data.Name} ({item.Value->Progress}%)");
+
+                if (FatesManager.FateProgress.TryGetValue(id, out var progress) && progress != null)
+                {
+                    var estimate = progress.EstimateTimeToCompletion();
+                    if (estimate != null)
+                    {
+                        ImGui.SameLine();
+                        ImGui.TextUnformatted($"(Est. {estimate.Value:mm\\:ss})");
+                    }
+                }
 
                 if (data.demiatma != null)
                 {

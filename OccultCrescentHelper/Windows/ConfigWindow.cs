@@ -18,5 +18,8 @@ public class ConfigWindow : Window, IDisposable
 
     public void Dispose() { }
 
-    public override void Draw() { }
+    public override void Draw()
+    {
+        ImGui.TextUnformatted(":D");
+    }
 }
