@@ -74,6 +74,17 @@ public unsafe class JobManager
             return;
         }
 
+        if (!Svc.Condition[ConditionFlag.InCombat] && state == JobManagerState.InFate)
+        {
+            state = JobManagerState.PostContent;
+            PostContentTime = 0.0f;
+
+            var ExpJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.ExpJob);
+            ChangeJob(ExpJob);
+
+            return;
+        }
+
         if (state == JobManagerState.PostContent)
         {
             PostContentTime += framework.UpdateDelta.Milliseconds / 1000f;
