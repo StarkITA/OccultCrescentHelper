@@ -17,7 +17,24 @@ public class TreasureOverlay : IOverlayChild
                 .ToList()
                 .FirstOrDefault(t => t.RowId == item.DataId);
 
-            var color = data.SGB.RowId == 1597 ? TreasureManager.silver : TreasureManager.bronze;
+            var isSilver = data.SGB.RowId == 1597;
+
+            var render = false;
+            if (isSilver)
+            {
+                render = overlay.plugin.config.DrawLineToSilverChests;
+            }
+            else
+            {
+                render = overlay.plugin.config.DrawLineToBronzeChests;
+            }
+
+            if (!render)
+            {
+                continue;
+            }
+
+            var color = isSilver ? TreasureManager.silver : TreasureManager.bronze;
 
             overlay.DrawLine(playerPosition, item.Position, 5.0f, color);
         }

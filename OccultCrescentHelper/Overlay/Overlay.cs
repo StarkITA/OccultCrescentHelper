@@ -11,9 +11,13 @@ public class Overlay : Window, IDisposable
 {
     private List<IOverlayChild> children = [];
 
-    public Overlay()
+    public readonly Plugin plugin;
+
+    public Overlay(Plugin plugin)
         : base("Overlay##OVH", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
+        this.plugin = plugin;
+
         children.Add(new TreasureOverlay());
         children.Add(new CarrotOverlay());
     }

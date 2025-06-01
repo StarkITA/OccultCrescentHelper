@@ -19,6 +19,12 @@ public class Config : IPluginConfiguration
 
     public bool ShowNoteDrops { get; set; } = true;
 
+    public bool DrawLineToBronzeChests { get; set; } = true;
+
+    public bool DrawLineToSilverChests { get; set; } = true;
+
+    public bool DrawLineToCarrots { get; set; } = true;
+
     public void Save()
     {
         Svc.PluginInterface.SavePluginConfig(this);

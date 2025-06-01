@@ -55,8 +55,9 @@ public sealed class Plugin : IDalamudPlugin
 
         jobs = new JobManager(this);
         Svc.Framework.Update += jobs.Tick;
+        Svc.Chat.ChatMessage += jobs.OnChatMessage;
 
-        overlay = new Overlay.Overlay();
+        overlay = new Overlay.Overlay(this);
         Svc.PluginInterface.UiBuilder.Draw += overlay.Draw;
     }
 
@@ -70,6 +71,7 @@ public sealed class Plugin : IDalamudPlugin
         Svc.Framework.Update -= trackers.Tick;
 
         Svc.Framework.Update -= jobs.Tick;
+        Svc.Chat.ChatMessage -= jobs.OnChatMessage;
 
         windows.Dispose();
 

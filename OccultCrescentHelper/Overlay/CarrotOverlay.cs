@@ -7,6 +7,11 @@ public class CarrotOverlay : IOverlayChild
 {
     public void Draw(Overlay overlay)
     {
+        if (!overlay.plugin.config.DrawLineToCarrots)
+        {
+            return;
+        }
+
         var playerPosition = Svc.ClientState.LocalPlayer!.Position;
         foreach (var item in CarrotManager.carrots)
         {

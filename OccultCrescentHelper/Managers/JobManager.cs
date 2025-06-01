@@ -1,5 +1,7 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
@@ -22,9 +24,12 @@ public unsafe class JobManager
 
     private JobManagerState state = JobManagerState.PostExp;
 
-    private float PostContentTime = 0.0f;
+    private bool ExpRecieved = true;
 
-    private float PostContentWait = 4.0f;
+    private float WaitedForExp = 0f;
+
+    private float MaxExpWait = 4f;
+
     private Plugin plugin;
 
     public JobManager(Plugin plugin)
@@ -46,6 +51,7 @@ public unsafe class JobManager
             var CombatJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.CombatJob);
             ChangeJob(CombatJob);
             state = JobManagerState.PreContent;
+            ExpRecieved = false;
             return;
         }
 
@@ -66,7 +72,6 @@ public unsafe class JobManager
         if (!Svc.Condition[ConditionFlag.InCombat] && state == JobManagerState.InCombat)
         {
             state = JobManagerState.PostContent;
-            PostContentTime = 0.0f;
 
             var ExpJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.ExpJob);
             ChangeJob(ExpJob);
@@ -77,7 +82,6 @@ public unsafe class JobManager
         if (!Svc.Condition[ConditionFlag.InCombat] && state == JobManagerState.InFate)
         {
             state = JobManagerState.PostContent;
-            PostContentTime = 0.0f;
 
             var ExpJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.ExpJob);
             ChangeJob(ExpJob);
@@ -87,13 +91,32 @@ public unsafe class JobManager
 
         if (state == JobManagerState.PostContent)
         {
-            PostContentTime += framework.UpdateDelta.Milliseconds / 1000f;
+            WaitedForExp += framework.UpdateDelta.Milliseconds / 1000f;
 
-            if (PostContentTime >= PostContentWait)
+            if (ExpRecieved || WaitedForExp >= MaxExpWait)
             {
+                ExpRecieved = false;
+                WaitedForExp = 0f;
                 state = JobManagerState.PostExp;
                 return;
             }
+        }
+    }
+
+    public void OnChatMessage(
+        XivChatType type,
+        int timestamp,
+        ref SeString sender,
+        ref SeString message,
+        ref bool isHandled
+    )
+    {
+        var text = message.ToString();
+        var pattern = @"You gain \d+ Phantom .+? experience points\.";
+
+        if (System.Text.RegularExpressions.Regex.IsMatch(text, pattern))
+        {
+            ExpRecieved = true;
         }
     }
 

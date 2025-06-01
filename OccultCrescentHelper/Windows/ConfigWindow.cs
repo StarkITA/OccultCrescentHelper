@@ -89,6 +89,34 @@ public class ConfigWindow : Window, IDisposable
                     }
                 }
             }
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted("Enable to reduce the time to switch back to combat job.");
+                ImGui.EndTooltip();
+            }
+        }
+
+        var DrawLineToBronzeChests = plugin.config.DrawLineToBronzeChests;
+        if (ImGui.Checkbox("Draw line to nearby bronze treasure", ref DrawLineToBronzeChests))
+        {
+            plugin.config.DrawLineToBronzeChests = DrawLineToBronzeChests;
+            plugin.config.Save();
+        }
+
+        var DrawLineToSilverChests = plugin.config.DrawLineToSilverChests;
+        if (ImGui.Checkbox("Draw line to nearby silver treasure", ref DrawLineToSilverChests))
+        {
+            plugin.config.DrawLineToSilverChests = DrawLineToSilverChests;
+            plugin.config.Save();
+        }
+
+        var DrawLineToCarrots = plugin.config.DrawLineToCarrots;
+        if (ImGui.Checkbox("Draw line to nearby carrots", ref DrawLineToCarrots))
+        {
+            plugin.config.DrawLineToCarrots = DrawLineToCarrots;
+            plugin.config.Save();
         }
     }
 }
