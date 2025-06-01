@@ -4,6 +4,7 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
+using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
@@ -94,6 +95,11 @@ public unsafe class JobManager
             return;
         }
 
+        if (!Svc.Condition[ConditionFlag.InCombat] && state == JobManagerState.InCriticalEncounter)
+        {
+            state = JobManagerState.PostExp;
+        }
+
         if (state == JobManagerState.PostContent)
         {
             WaitedForExp += framework.UpdateDelta.Milliseconds / 1000f;
@@ -122,11 +128,26 @@ public unsafe class JobManager
         }
 
         var text = message.ToString();
-        var pattern = @"You gain \d+ Phantom .+? experience points\.";
 
-        if (System.Text.RegularExpressions.Regex.IsMatch(text, pattern))
+        var exp_pattern = @"You gain \d+ Phantom .+? experience points\.";
+        if (System.Text.RegularExpressions.Regex.IsMatch(text, exp_pattern))
         {
             ExpRecieved = true;
+        }
+
+        var ce_pattern = @"You have joined the critical encounter .*?";
+        if (
+            System.Text.RegularExpressions.Regex.IsMatch(text, ce_pattern)
+            && plugin.config.SwitchToExpJobOnCE
+            && state == JobManagerState.PreContent
+        )
+        {
+            state = JobManagerState.InCriticalEncounter;
+
+            var Jobs = Svc.Data.GetExcelSheet<MKDSupportJob>().ToList();
+            var ExpJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.ExpJob);
+
+            ChangeJob(ExpJob);
         }
     }
 

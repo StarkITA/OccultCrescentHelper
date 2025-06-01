@@ -15,6 +15,8 @@ public class Config : IPluginConfiguration
 
     public uint ExpJob { get; set; } = 1;
 
+    public bool SwitchToExpJobOnCE { get; set; } = true;
+
     public bool ShowDemiatmaDrops { get; set; } = true;
 
     public bool ShowNoteDrops { get; set; } = true;

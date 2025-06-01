@@ -93,6 +93,13 @@ public class ConfigWindow : Window, IDisposable
 
                 ImGui.EndCombo();
             }
+
+            var SwitchToExpJobOnCE = plugin.config.SwitchToExpJobOnCE;
+            if (ImGui.Checkbox("Switch jobs before CE", ref SwitchToExpJobOnCE))
+            {
+                plugin.config.SwitchToExpJobOnCE = SwitchToExpJobOnCE;
+                plugin.config.Save();
+            }
         }
 
         var DrawLineToBronzeChests = plugin.config.DrawLineToBronzeChests;
