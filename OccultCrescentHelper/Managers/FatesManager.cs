@@ -361,14 +361,19 @@ public class FatesManager
 
     public static unsafe void UpdateFatesList(IFramework framework)
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
+        var pos = Svc.ClientState.LocalPlayer.Position;
+
         fates = FateManager
             .Instance()
             ->Fates.AsSpan()
             .ToArray()
             .Where(f => f.Value is not null)
-            .OrderBy(f =>
-                Vector3.Distance(Svc.ClientState.LocalPlayer!.Position, f.Value->Location)
-            )
+            .OrderBy(f => Vector3.Distance(f.Value->Location, pos))
             .ToList();
 
         foreach (var f in fates)

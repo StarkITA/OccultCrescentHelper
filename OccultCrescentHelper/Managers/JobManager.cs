@@ -39,6 +39,11 @@ public unsafe class JobManager
 
     public void Tick(IFramework framework)
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
         if (!plugin.config.SwitchJobOnCombatEnd)
         {
             return;
@@ -111,6 +116,11 @@ public unsafe class JobManager
         ref bool isHandled
     )
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
         var text = message.ToString();
         var pattern = @"You gain \d+ Phantom .+? experience points\.";
 

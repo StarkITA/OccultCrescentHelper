@@ -26,14 +26,24 @@ public class Overlay : Window, IDisposable
 
     public override void Draw()
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
         if (Start())
         {
-            foreach (var child in children)
+            try
             {
-                child.Draw(this);
+                foreach (var child in children)
+                {
+                    child.Draw(this);
+                }
             }
-
-            End();
+            finally
+            {
+                End();
+            }
         }
     }
 

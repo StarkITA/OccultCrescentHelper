@@ -29,12 +29,18 @@ public class TreasureManager
 
     public static void UpdateTreasureList(IFramework framework)
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
+        var pos = Svc.ClientState.LocalPlayer.Position;
+
         treasure = Svc
-            .Objects.OrderBy(o =>
-                Vector3.Distance(o.Position, Svc.ClientState.LocalPlayer!.Position)
-            )
+            .Objects.Where(o => o != null)
             .Where(o => o.IsTargetable)
             .Where(o => o.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Treasure)
+            .OrderBy(o => Vector3.Distance(o.Position, pos))
             .ToList();
     }
 }

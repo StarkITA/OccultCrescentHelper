@@ -43,6 +43,11 @@ public class TrackersManager
 
     public void Tick(IFramework framework)
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
         float SecondsSinceLastTick = framework.UpdateDelta.Milliseconds / 1000f;
         ElapsedTime += SecondsSinceLastTick;
         if (ElapsedTime < Interval)

@@ -36,12 +36,18 @@ public class CarrotManager
 
     public static void UpdateCarrotList(IFramework framework)
     {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
+        var pos = Svc.ClientState.LocalPlayer.Position;
+
         carrots = Svc
-            .Objects.OrderBy(o =>
-                Vector3.Distance(o.Position, Svc.ClientState.LocalPlayer!.Position)
-            )
+            .Objects.Where(o => o != null)
             .Where(o => o.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.EventObj)
             .Where(o => o.DataId == (uint)OccultObjectType.Carrot)
+            .OrderBy(o => Vector3.Distance(o.Position, pos))
             .ToList();
     }
 }

@@ -15,6 +15,11 @@ public class CarrotOverlay : IOverlayChild
         var playerPosition = Svc.ClientState.LocalPlayer!.Position;
         foreach (var item in CarrotManager.carrots)
         {
+            if (item == null || item.IsDead || !item.IsValid())
+            {
+                continue;
+            }
+
             overlay.DrawLine(
                 playerPosition,
                 item.Position,

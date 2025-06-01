@@ -59,6 +59,8 @@ public sealed class Plugin : IDalamudPlugin
 
         overlay = new Overlay.Overlay(this);
         Svc.PluginInterface.UiBuilder.Draw += overlay.Draw;
+
+        Svc.Log.Info(Svc.ClientState.TerritoryType.ToString());
     }
 
     public void Dispose()

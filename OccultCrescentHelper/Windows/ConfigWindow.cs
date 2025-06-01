@@ -67,6 +67,8 @@ public class ConfigWindow : Window, IDisposable
                         plugin.config.Save();
                     }
                 }
+
+                ImGui.EndCombo();
             }
 
             var ExpJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.ExpJob);
@@ -88,13 +90,8 @@ public class ConfigWindow : Window, IDisposable
                         plugin.config.Save();
                     }
                 }
-            }
 
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.BeginTooltip();
-                ImGui.TextUnformatted("Enable to reduce the time to switch back to combat job.");
-                ImGui.EndTooltip();
+                ImGui.EndCombo();
             }
         }
 

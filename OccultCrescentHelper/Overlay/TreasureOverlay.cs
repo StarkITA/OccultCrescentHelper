@@ -12,6 +12,11 @@ public class TreasureOverlay : IOverlayChild
         var playerPosition = Svc.ClientState.LocalPlayer!.Position;
         foreach (var item in TreasureManager.treasure)
         {
+            if (item == null || item.IsDead || !item.IsValid())
+            {
+                continue;
+            }
+
             var data = Svc
                 .Data.GetExcelSheet<Treasure>()
                 .ToList()
