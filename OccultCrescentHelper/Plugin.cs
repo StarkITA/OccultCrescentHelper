@@ -48,6 +48,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Svc.Framework.Update += TreasureManager.UpdateTreasureList;
         Svc.Framework.Update += FatesManager.UpdateFatesList;
+        Svc.Framework.Update += CarrotManager.UpdateCarrotList;
 
         trackers = TrackersManager.Instance;
         Svc.Framework.Update += trackers.Tick;
@@ -63,6 +64,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         Svc.Framework.Update -= TreasureManager.UpdateTreasureList;
         Svc.Framework.Update -= FatesManager.UpdateFatesList;
+        Svc.Framework.Update -= CarrotManager.UpdateCarrotList;
 
         Svc.Commands.RemoveHandler(Command);
         Svc.Framework.Update -= trackers.Tick;

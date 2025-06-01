@@ -15,6 +15,7 @@ public class Overlay : Window, IDisposable
         : base("Overlay##OVH", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         children.Add(new TreasureOverlay());
+        children.Add(new CarrotOverlay());
     }
 
     public void Dispose() { }

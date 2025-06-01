@@ -6,6 +6,7 @@ using Dalamud.Interface.Textures;
 using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using OccultCrescentHelper.Managers;
@@ -28,6 +29,9 @@ public class MainWindow : Window, IDisposable
     public override void Draw()
     {
         Treasure();
+        ImGui.Separator();
+
+        Carrots();
         ImGui.Separator();
 
         List<Tracked> tracked = plugin.trackers.GetData();
@@ -96,6 +100,23 @@ public class MainWindow : Window, IDisposable
         }
     }
 
+    private void Carrots()
+    {
+        foreach (var item in CarrotManager.carrots)
+        {
+            var pos = item.Position;
+
+            ImGui.TextUnformatted(
+                $"Carrot: ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")}"
+            );
+        }
+
+        if (CarrotManager.carrots.Count <= 0)
+        {
+            ImGui.TextUnformatted("No nearby carrots.");
+        }
+    }
+
     private unsafe void Fates()
     {
         if (FatesManager.fates.Count <= 0)
@@ -122,27 +143,62 @@ public class MainWindow : Window, IDisposable
                     }
                 }
 
-                if (data.demiatma != null)
+                var showDemiatma = data.demiatma != null && plugin.config.ShowDemiatmaDrops;
+                if (showDemiatma)
                 {
                     var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.demiatma);
+
+                    var count = InventoryManager.Instance()->GetInventoryItemCount(itemData.RowId);
+                    var needed = Math.Max(0, 3 - 6);
 
                     var demiatma = Svc
                         .Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon))
                         .GetWrapOrEmpty();
 
                     ImGui.Indent(20);
+
+                    ImGui.PushStyleColor(
+                        ImGuiCol.Border,
+                        needed > 0
+                            ? new Vector4(0.3f, 0.85f, 0.39f, 1f)
+                            : new Vector4(0.95f, 0.26f, 0.21f, 1f)
+                    );
+                    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+
+                    ImGui.BeginChild(
+                        "ImageBorder",
+                        new Vector2(50, 50),
+                        true,
+                        ImGuiWindowFlags.NoScrollbar
+                    );
+
                     ImGui.Image(demiatma.ImGuiHandle, new Vector2(48, 48));
+
+                    ImGui.EndChild();
+
+                    ImGui.PopStyleVar();
+                    ImGui.PopStyleColor();
+
                     ImGui.Unindent(20);
 
                     if (ImGui.IsItemHovered())
                     {
                         ImGui.BeginTooltip();
-                        ImGui.TextUnformatted(itemData.Name.ToString());
+
+                        var label = $"Needed ({needed})";
+                        ;
+                        if (needed <= 0)
+                        {
+                            label = $"Not Needed ({count})";
+                        }
+
+                        ImGui.TextUnformatted($"{itemData.Name}: {label}");
                         ImGui.EndTooltip();
                     }
                 }
 
-                if (data.notes != null)
+                var showNotes = data.notes != null && plugin.config.ShowNoteDrops;
+                if (showNotes)
                 {
                     var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.notes);
 
@@ -150,9 +206,10 @@ public class MainWindow : Window, IDisposable
                         .Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon))
                         .GetWrapOrEmpty();
 
-                    if (data.demiatma == null)
+                    if (!showDemiatma)
                     {
                         ImGui.Indent(20);
+                        ImGui.Image(demiatma.ImGuiHandle, new Vector2(48, 48));
                         ImGui.Unindent(20);
                     }
                     else

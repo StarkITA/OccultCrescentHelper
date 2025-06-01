@@ -21,6 +21,20 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
+        var ShowDemiatmaDrops = plugin.config.ShowDemiatmaDrops;
+        if (ImGui.Checkbox("Show Demiatma Drops", ref ShowDemiatmaDrops))
+        {
+            plugin.config.ShowDemiatmaDrops = ShowDemiatmaDrops;
+            plugin.config.Save();
+        }
+
+        var ShowNoteDrops = plugin.config.ShowNoteDrops;
+        if (ImGui.Checkbox("Show Note Drops", ref ShowNoteDrops))
+        {
+            plugin.config.ShowNoteDrops = ShowNoteDrops;
+            plugin.config.Save();
+        }
+
         var SwitchJobOnCombatEnd = plugin.config.SwitchJobOnCombatEnd;
         if (ImGui.Checkbox("Switch jobs after combat", ref SwitchJobOnCombatEnd))
         {

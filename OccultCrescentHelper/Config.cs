@@ -15,6 +15,10 @@ public class Config : IPluginConfiguration
 
     public uint ExpJob { get; set; } = 1;
 
+    public bool ShowDemiatmaDrops { get; set; } = true;
+
+    public bool ShowNoteDrops { get; set; } = true;
+
     public void Save()
     {
         Svc.PluginInterface.SavePluginConfig(this);
