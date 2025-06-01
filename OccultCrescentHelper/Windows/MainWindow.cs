@@ -126,20 +126,22 @@ public class MainWindow : Window, IDisposable
 
                 if (data.notes != null)
                 {
-                    if (data.demiatma != null)
-                    {
-                        ImGui.SameLine();
-                    }
-
                     var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.notes);
 
                     var demiatma = Svc
                         .Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon))
                         .GetWrapOrEmpty();
 
-                    ImGui.Indent(20);
-                    ImGui.Image(demiatma.ImGuiHandle, new Vector2(48, 48));
-                    ImGui.Unindent(20);
+                    if (data.demiatma == null)
+                    {
+                        ImGui.Indent(20);
+                        ImGui.Unindent(20);
+                    }
+                    else
+                    {
+                        ImGui.SameLine();
+                        ImGui.Image(demiatma.ImGuiHandle, new Vector2(48, 48));
+                    }
 
                     if (ImGui.IsItemHovered())
                     {

@@ -3,6 +3,7 @@
     "Name": "Occult Crescent Helper",
     "Punchline": "Some things to smooth out your Occult Crescent experience.",
     "Description": "Some things to smooth out your Occult Crescent experience.",
+    "IconUrl": "https://raw.githubusercontent.com/OhKannaDuh/OccultCrescentHelper/refs/heads/master/assets/icon.png",
     "ApplicableVersion": "any",
     "Tags": ["Occult Crescent", "Occult", "Crescent"]
 }

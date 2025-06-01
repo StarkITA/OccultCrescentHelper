@@ -6,9 +6,12 @@
         <PackageProjectUrl>https://github.com/OhKannaDuh/OccultCrescentHelper</PackageProjectUrl>
         <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
         <IsPackable>false</IsPackable>
-        <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
     </PropertyGroup>
     <ItemGroup>
+        <Content Include="..\assets\icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Visible>false</Visible>
+        </Content>
         <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
     </ItemGroup>
 </Project>

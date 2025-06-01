@@ -315,21 +315,6 @@ public class FatesManager
 
     public static unsafe void UpdateFatesList(IFramework framework)
     {
-        // var state = PublicContentOccultCrescent.GetInstance();
-
-        // var state = PublicContentOccultCrescent.GetState();
-        // if (state == null || state->CurrentKnowledge == null)
-        // {
-        //     Svc.Log.Warning("PublicContentOccultCrescent state or CurrentKnowledge is null.");
-        //     return;
-        // }
-
-        //     try
-        //     {
-        //         Svc.Log.Info(
-        //             PublicContentOccultCrescent.GetState()->CurrentKnowledge.ToString() ?? "NA"
-        //         );
-
         fates = FateManager
             .Instance()
             ->Fates.AsSpan()
@@ -339,10 +324,5 @@ public class FatesManager
                 Vector3.Distance(Svc.ClientState.LocalPlayer!.Position, f.Value->Location)
             )
             .ToList();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Svc.Log.Error($"Error logging CurrentKnowledge: {ex.Message}");
-        //     }
     }
 }
