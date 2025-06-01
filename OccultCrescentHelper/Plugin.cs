@@ -12,11 +12,15 @@ public sealed class Plugin : IDalamudPlugin
 
     private const string Command = "/och";
 
+    private const string ConfigCommand = "/ochc";
+
     public Config config { get; init; }
 
     private readonly WindowManager windows;
 
     public readonly TrackersManager trackers;
+
+    public readonly JobManager jobs;
 
     public readonly Overlay.Overlay overlay;
 
@@ -34,14 +38,24 @@ public sealed class Plugin : IDalamudPlugin
             }
         );
 
+        Svc.Commands.AddHandler(
+            ConfigCommand,
+            new CommandInfo((string command, string args) => windows.ToggleConfigUI())
+            {
+                HelpMessage = $"Opens the {Name} config window.",
+            }
+        );
+
         Svc.Framework.Update += TreasureManager.UpdateTreasureList;
         Svc.Framework.Update += FatesManager.UpdateFatesList;
 
         trackers = TrackersManager.Instance;
         Svc.Framework.Update += trackers.Tick;
 
-        overlay = new Overlay.Overlay();
+        jobs = new JobManager(this);
+        Svc.Framework.Update += jobs.Tick;
 
+        overlay = new Overlay.Overlay();
         Svc.PluginInterface.UiBuilder.Draw += overlay.Draw;
     }
 
@@ -52,6 +66,8 @@ public sealed class Plugin : IDalamudPlugin
 
         Svc.Commands.RemoveHandler(Command);
         Svc.Framework.Update -= trackers.Tick;
+
+        Svc.Framework.Update -= jobs.Tick;
 
         windows.Dispose();
 
