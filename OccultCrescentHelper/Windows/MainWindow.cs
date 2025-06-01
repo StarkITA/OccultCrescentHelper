@@ -107,7 +107,7 @@ public class MainWindow : Window, IDisposable
             var pos = item.Position;
 
             ImGui.TextUnformatted(
-                $"Carrot: ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")}"
+                $"Carrot: ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")})"
             );
         }
 

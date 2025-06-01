@@ -40,7 +40,6 @@ public class CarrotManager
             .Objects.OrderBy(o =>
                 Vector3.Distance(o.Position, Svc.ClientState.LocalPlayer!.Position)
             )
-            .Where(o => o.IsTargetable)
             .Where(o => o.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.EventObj)
             .Where(o => o.DataId == (uint)OccultObjectType.Carrot)
             .ToList();
