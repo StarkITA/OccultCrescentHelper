@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Windowing;
 using ECommons.DalamudServices;
@@ -69,10 +70,17 @@ public class MainWindow : Window, IDisposable
             {
                 var pos = item.Position;
 
+                var data = Svc
+                    .Data.GetExcelSheet<Treasure>()
+                    .ToList()
+                    .FirstOrDefault(t => t.RowId == item.DataId);
+
+                var type = data.SGB.RowId == 1597 ? "Silver" : "Bronze";
+
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
                 ImGui.TextUnformatted(
-                    $"Bronze Treasure Coffer ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")})"
+                    $"{type} Treasure Coffer ({pos.X.ToString("F2")}, {pos.Y.ToString("F2")}, {pos.Z.ToString("F2")})"
                 );
                 ImGui.TableNextColumn();
                 if (ImGui.Button($"Target###{item.DataId}"))
@@ -89,8 +97,6 @@ public class MainWindow : Window, IDisposable
             ImGui.TextUnformatted("No nearby treasure.");
         }
     }
-
-    // private ITextureProvider
 
     private unsafe void Fates()
     {
