@@ -49,5 +49,15 @@ public class CarrotManager
             .Where(o => o.DataId == (uint)OccultObjectType.Carrot)
             .OrderBy(o => Vector3.Distance(o.Position, pos))
             .ToList();
+
+        foreach (var item in carrots)
+        {
+            if (item == null || item.IsDead || !item.IsValid())
+            {
+                continue;
+            }
+
+            Api.SendCarrot(item.Position, Plugin.Instance.config);
+        }
     }
 }

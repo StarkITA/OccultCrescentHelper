@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
+using Lumina.Excel.Sheets;
 
 namespace OccultCrescentHelper.Managers;
 
@@ -42,5 +43,29 @@ public class TreasureManager
             .Where(o => o.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Treasure)
             .OrderBy(o => Vector3.Distance(o.Position, pos))
             .ToList();
+
+        foreach (var item in treasure)
+        {
+            if (item == null || item.IsDead || !item.IsValid())
+            {
+                continue;
+            }
+
+            var data = Svc
+                .Data.GetExcelSheet<Treasure>()
+                .ToList()
+                .FirstOrDefault(t => t.RowId == item.DataId);
+
+            var isSilver = data.SGB.RowId == 1597;
+
+            if (isSilver)
+            {
+                Api.SendSilverTreasure(item.Position, Plugin.Instance.config);
+            }
+            else
+            {
+                Api.SendBronzeTreasure(item.Position, Plugin.Instance.config);
+            }
+        }
     }
 }

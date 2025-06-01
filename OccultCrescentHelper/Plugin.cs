@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Command;
+﻿using System;
+using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using ECommons;
 using ECommons.DalamudServices;
@@ -14,6 +15,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private const string ConfigCommand = "/ochc";
 
+    public static Plugin Instance;
+
     public Config config { get; init; }
 
     private readonly WindowManager windows;
@@ -26,8 +29,12 @@ public sealed class Plugin : IDalamudPlugin
 
     public Plugin(IDalamudPluginInterface plugin)
     {
+        Instance = this;
+
         ECommonsMain.Init(plugin, this);
         config = plugin.GetPluginConfig() as Config ?? new Config();
+
+        DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
 
         windows = new WindowManager(this);
         Svc.Commands.AddHandler(

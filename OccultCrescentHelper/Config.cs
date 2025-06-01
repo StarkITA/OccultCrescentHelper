@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Dalamud.Configuration;
 using ECommons.DalamudServices;
 
@@ -26,6 +28,14 @@ public class Config : IPluginConfiguration
     public bool DrawLineToSilverChests { get; set; } = true;
 
     public bool DrawLineToCarrots { get; set; } = true;
+
+    public bool ShareObjectPositionData { get; set; } = true;
+
+    public List<Vector3> BronzeTreasureLocations { get; set; } = [];
+
+    public List<Vector3> SilverTreasureLocations { get; set; } = [];
+
+    public List<Vector3> CarrotLocations { get; set; } = [];
 
     public void Save()
     {

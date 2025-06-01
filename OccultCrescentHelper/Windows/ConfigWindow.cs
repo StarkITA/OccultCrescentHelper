@@ -35,6 +35,8 @@ public class ConfigWindow : Window, IDisposable
             plugin.config.Save();
         }
 
+        ImGui.Separator();
+
         var SwitchJobOnCombatEnd = plugin.config.SwitchJobOnCombatEnd;
         if (ImGui.Checkbox("Switch jobs after combat", ref SwitchJobOnCombatEnd))
         {
@@ -46,8 +48,6 @@ public class ConfigWindow : Window, IDisposable
 
         if (plugin.config.SwitchJobOnCombatEnd)
         {
-            ImGui.TextUnformatted($"State: {plugin.jobs.GetStateText()}");
-
             var CombatJob = Jobs.FirstOrDefault(job => job.RowId == plugin.config.CombatJob);
             if (ImGui.BeginCombo("Combat Job", CombatJob.Unknown0.ToString()))
             {
@@ -102,6 +102,8 @@ public class ConfigWindow : Window, IDisposable
             }
         }
 
+        ImGui.Separator();
+
         var DrawLineToBronzeChests = plugin.config.DrawLineToBronzeChests;
         if (ImGui.Checkbox("Draw line to nearby bronze treasure", ref DrawLineToBronzeChests))
         {
@@ -120,6 +122,15 @@ public class ConfigWindow : Window, IDisposable
         if (ImGui.Checkbox("Draw line to nearby carrots", ref DrawLineToCarrots))
         {
             plugin.config.DrawLineToCarrots = DrawLineToCarrots;
+            plugin.config.Save();
+        }
+
+        ImGui.Separator();
+
+        var ShareObjectPositionData = plugin.config.ShareObjectPositionData;
+        if (ImGui.Checkbox("Share object position data", ref ShareObjectPositionData))
+        {
+            plugin.config.ShareObjectPositionData = ShareObjectPositionData;
             plugin.config.Save();
         }
     }
