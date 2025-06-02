@@ -36,6 +36,7 @@ public class JobSwitcher
             [JobSwitcherState.InCombat] = new InCombat(this, jobs, expJob, combatJob),
             [JobSwitcherState.InFate] = new InFate(this, jobs, expJob, combatJob),
             [JobSwitcherState.InCriticalEncounter] = new InCriticalEncounter(this, jobs, expJob, combatJob),
+            [JobSwitcherState.OccultReturn] = new OccultReturn(this, jobs, expJob, combatJob),
             [JobSwitcherState.PostContent] = new PostContent(this, jobs, expJob, combatJob),
             [JobSwitcherState.PostExp] = new PostExp(this, jobs, expJob, combatJob),
         };

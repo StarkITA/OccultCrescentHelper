@@ -57,22 +57,5 @@ public class MosnterSpawnsTracker
                 api.SendMonsterSpawn(payload);
             }
         }
-
-        // var treasures = Svc
-        //     .Objects.Where(o => o != null)
-        //     .Where(o => o.ObjectKind == ObjectKind.Treasure)
-        //     .OrderBy(o => Vector3.Distance(o.Position, pos))
-        //     .Select(o => new Treasure(o))
-        //     .ToList();
-
-        // foreach (var treasure in treasures)
-        // {
-        //     if (!treasure.IsValid())
-        //     {
-        //         continue;
-        //     }
-
-        //     api.SendTreasure(treasure.GetPosition(), treasure.GetModelId());
-        // }
     }
 }

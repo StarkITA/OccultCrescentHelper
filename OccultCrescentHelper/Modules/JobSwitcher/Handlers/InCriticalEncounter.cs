@@ -32,6 +32,6 @@ public class InCriticalEncounter : Handler
             return;
         }
 
-        // ActionManager.Instance()->UseAction(ActionType.GeneralAction, 8);
+        switcher.SetState(JobSwitcherState.OccultReturn);
     }
 }

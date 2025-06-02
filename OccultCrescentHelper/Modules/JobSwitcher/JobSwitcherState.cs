@@ -7,5 +7,6 @@ public enum JobSwitcherState
     InFate,
     InCriticalEncounter,
     PostContent,
+    OccultReturn,
     PostExp,
 }

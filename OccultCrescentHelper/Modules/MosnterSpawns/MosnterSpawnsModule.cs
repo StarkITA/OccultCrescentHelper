@@ -19,6 +19,11 @@ public class MosnterSpawnsModule : Module, IDisposable
         plugin.OnUpdate += Tick;
     }
 
+    public override bool enabled
+    {
+        get => false;
+    }
+
     public void Tick(IFramework framework)
     {
         if (!enabled)
