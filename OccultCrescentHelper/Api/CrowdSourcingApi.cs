@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ECommons.DalamudServices;
 
 namespace OccultCrescentHelper.Api;
@@ -23,43 +24,34 @@ public class CrowdSourcingApi
         get => plugin.config.CrowdSourcingConfig;
     }
 
-    public void SendMonsterSpawn(MonsterPayload payload)
+    public async Task SendMonsterSpawn(MonsterPayload payload)
     {
-        if (!config.ShareMonsterSpawnData)
-        {
+        if (!config.ShareMonsterSpawnData || config.SharedMonsterSpawns.Contains(payload))
             return;
-        }
-
-        var url = "https://api.oc.ohkannaduh.com/monster_spawn";
-
-        if (config.SharedMonsterSpawns.Contains(payload))
-        {
-            return;
-        }
 
         config.SharedMonsterSpawns.Add(payload);
         plugin.config.Save();
 
+        var url = "https://api.oc.ohkannaduh.com/monster_spawn";
         var json = JsonSerializer.Serialize(payload);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         client.DefaultRequestHeaders.Clear();
-
         client.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("API_KEY"));
 
         try
         {
-            var response = client.PostAsync(url, content).GetAwaiter().GetResult();
+            var response = await client.PostAsync(url, content);
             if (response.IsSuccessStatusCode)
             {
                 Svc.Log.Info("Data sent successfully.");
-                var responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var responseBody = await response.Content.ReadAsStringAsync();
                 Svc.Log.Info($"Response: {responseBody}");
             }
             else
             {
                 Svc.Log.Error($"Failed to send data. Status code: {response.StatusCode}");
-                var errorContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var errorContent = await response.Content.ReadAsStringAsync();
                 Svc.Log.Error($"Error response: {errorContent}");
             }
         }
@@ -69,43 +61,34 @@ public class CrowdSourcingApi
         }
     }
 
-    public void SendObjectPosition(ObjectPositionPayload payload)
+    public async Task SendObjectPosition(ObjectPositionPayload payload)
     {
-        if (!config.ShareObjectPositionData)
-        {
+        if (!config.ShareObjectPositionData || config.SharedObjectPosition.Contains(payload))
             return;
-        }
-
-        var url = "https://api.oc.ohkannaduh.com/object_position";
-
-        if (config.SharedObjectPosition.Contains(payload))
-        {
-            return;
-        }
 
         config.SharedObjectPosition.Add(payload);
         plugin.config.Save();
 
+        var url = "https://api.oc.ohkannaduh.com/object_position";
         var json = JsonSerializer.Serialize(payload);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         client.DefaultRequestHeaders.Clear();
-
         client.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("API_KEY"));
 
         try
         {
-            var response = client.PostAsync(url, content).GetAwaiter().GetResult();
+            var response = await client.PostAsync(url, content);
             if (response.IsSuccessStatusCode)
             {
                 Svc.Log.Info("Data sent successfully.");
-                var responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var responseBody = await response.Content.ReadAsStringAsync();
                 Svc.Log.Info($"Response: {responseBody}");
             }
             else
             {
                 Svc.Log.Error($"Failed to send data. Status code: {response.StatusCode}");
-                var errorContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var errorContent = await response.Content.ReadAsStringAsync();
                 Svc.Log.Error($"Error response: {errorContent}");
             }
         }
@@ -115,7 +98,7 @@ public class CrowdSourcingApi
         }
     }
 
-    public void SendTreasure(Vector3 position, uint? modelId)
+    public async Task SendTreasure(Vector3 position, uint? modelId)
     {
         ObjectPositionPayload payload = new ObjectPositionPayload
         {
@@ -129,10 +112,10 @@ public class CrowdSourcingApi
             model_id = modelId,
         };
 
-        SendObjectPosition(payload);
+        await SendObjectPosition(payload);
     }
 
-    public void SendCarrot(Vector3 position)
+    public async Task SendCarrot(Vector3 position)
     {
         ObjectPositionPayload payload = new ObjectPositionPayload
         {
@@ -145,6 +128,6 @@ public class CrowdSourcingApi
             },
         };
 
-        SendObjectPosition(payload);
+        await SendObjectPosition(payload);
     }
 }
