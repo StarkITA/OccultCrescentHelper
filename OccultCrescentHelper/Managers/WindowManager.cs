@@ -5,9 +5,9 @@ using OccultCrescentHelper.Windows;
 
 namespace OccultCrescentHelper.Managers;
 
-internal class WindowManager : IDisposable
+public class WindowManager : IDisposable
 {
-    private readonly WindowSystem windows = new("Ferret");
+    private readonly WindowSystem windows = new("OccultCrescentHelper");
 
     private ConfigWindow config { get; init; }
 
@@ -34,6 +34,10 @@ internal class WindowManager : IDisposable
 
     public void Dispose()
     {
+        Svc.PluginInterface.UiBuilder.Draw -= DrawUI;
+        Svc.PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUI;
+        Svc.PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUI;
+
         windows.RemoveAllWindows();
 
         config.Dispose();

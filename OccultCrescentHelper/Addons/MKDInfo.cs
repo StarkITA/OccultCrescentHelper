@@ -55,9 +55,7 @@ public unsafe partial class MKDInfo : AddonMasterBase<AtkUnitBase>
     {
         get
         {
-            string raw = MemoryHelper
-                .ReadSeStringNullTerminated((nint)Addon->AtkValues[12].String.Value)
-                .GetText();
+            string raw = MemoryHelper.ReadSeStringNullTerminated((nint)Addon->AtkValues[12].String.Value).GetText();
             if (int.TryParse(raw, out int result))
                 return result;
             return -1;
@@ -66,12 +64,7 @@ public unsafe partial class MKDInfo : AddonMasterBase<AtkUnitBase>
 
     public MKDSupportJob? PhantomJob
     {
-        get
-        {
-            return Svc
-                .Data.GetExcelSheet<MKDSupportJob>()
-                .FirstOrNull((job) => job.RowId == PhantomJobId);
-        }
+        get { return Svc.Data.GetExcelSheet<MKDSupportJob>().FirstOrNull((job) => job.RowId == PhantomJobId); }
     }
 
     public override string AddonDescription => "Occult Crescent Common Information";

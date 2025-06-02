@@ -18,34 +18,20 @@ public unsafe class Agent
         return agent == null ? null : SendEvent(agent, eventKind, eventparams);
     }
 
-    public static AtkValue* SendEvent(
-        AgentInterface* agentInterface,
-        ulong eventKind,
-        params object[] eventParams
-    )
+    public static AtkValue* SendEvent(AgentInterface* agentInterface, ulong eventKind, params object[] eventParams)
     {
         var eventObject = stackalloc AtkValue[1];
         return SendEvent(agentInterface, eventObject, eventKind, eventParams);
     }
 
-    public static AtkValue* SendEvent(
-        AgentInterface* agentInterface,
-        AtkValue* eventObject,
-        ulong eventKind,
-        params object[] eventParams
-    )
+    public static AtkValue* SendEvent(AgentInterface* agentInterface, AtkValue* eventObject, ulong eventKind, params object[] eventParams)
     {
         var atkValues = CreateAtkValueArray(eventParams);
         if (atkValues == null)
             return eventObject;
         try
         {
-            agentInterface->ReceiveEvent(
-                eventObject,
-                atkValues,
-                (uint)eventParams.Length,
-                eventKind
-            );
+            agentInterface->ReceiveEvent(eventObject, atkValues, (uint)eventParams.Length, eventKind);
             return eventObject;
         }
         finally
@@ -101,9 +87,7 @@ public unsafe class Agent
                         break;
                     }
                     default:
-                        throw new ArgumentException(
-                            $"Unable to convert type {v.GetType()} to AtkValue"
-                        );
+                        throw new ArgumentException($"Unable to convert type {v.GetType()} to AtkValue");
                 }
             }
         }

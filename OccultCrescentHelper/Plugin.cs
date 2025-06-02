@@ -1,9 +1,14 @@
-﻿using System;
-using Dalamud.Game.Command;
-using Dalamud.Plugin;
+﻿using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using ECommons;
 using ECommons.DalamudServices;
+using OccultCrescentHelper.Api;
+using OccultCrescentHelper.Carrots;
+using OccultCrescentHelper.Currency;
+using OccultCrescentHelper.Fates;
+using OccultCrescentHelper.JobSwitcher;
 using OccultCrescentHelper.Managers;
+using OccultCrescentHelper.Treasure;
 
 namespace OccultCrescentHelper;
 
@@ -11,80 +16,76 @@ public sealed class Plugin : IDalamudPlugin
 {
     internal string Name = "Occult Crescent Helper";
 
-    private const string Command = "/och";
-
-    private const string ConfigCommand = "/ochc";
-
-    public static Plugin Instance;
-
     public Config config { get; init; }
 
-    private readonly WindowManager windows;
+    public readonly CrowdSourcingApi api;
 
-    public readonly TrackersManager trackers;
+    // Managers
 
-    public readonly JobManager jobs;
+    public readonly WindowManager windows;
 
-    public readonly Overlay.Overlay overlay;
+    public readonly CommandManager commands;
+
+    // Tick helper
+
+    public delegate void OnUpdateDelegate(IFramework framework);
+
+    public event OnUpdateDelegate? OnUpdate;
+
+    // Modules
+    public readonly TreasureModule treasures;
+
+    public readonly CarrotsModule carrots;
+
+    public readonly FatesModule fates;
+
+    public readonly CurrencyModule currency;
+
+    public readonly JobSwitcherModule jobSwitcher;
 
     public Plugin(IDalamudPluginInterface plugin)
     {
-        Instance = this;
-
         ECommonsMain.Init(plugin, this);
         config = plugin.GetPluginConfig() as Config ?? new Config();
 
         DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
 
+        api = new CrowdSourcingApi(this);
+
         windows = new WindowManager(this);
-        Svc.Commands.AddHandler(
-            Command,
-            new CommandInfo((string command, string args) => windows.ToggleMainUI())
-            {
-                HelpMessage = $"Opens the {Name} window.",
-            }
-        );
+        commands = new CommandManager(this);
 
-        Svc.Commands.AddHandler(
-            ConfigCommand,
-            new CommandInfo((string command, string args) => windows.ToggleConfigUI())
-            {
-                HelpMessage = $"Opens the {Name} config window.",
-            }
-        );
+        treasures = new TreasureModule(this);
+        carrots = new CarrotsModule(this);
+        fates = new FatesModule(this);
+        currency = new CurrencyModule(this);
+        jobSwitcher = new JobSwitcherModule(this);
 
-        Svc.Framework.Update += TreasureManager.UpdateTreasureList;
-        Svc.Framework.Update += FatesManager.UpdateFatesList;
-        Svc.Framework.Update += CarrotManager.UpdateCarrotList;
+        Svc.Framework.Update += Tick;
+    }
 
-        trackers = TrackersManager.Instance;
-        Svc.Framework.Update += trackers.Tick;
+    public void Tick(IFramework framework)
+    {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
 
-        jobs = new JobManager(this);
-        Svc.Framework.Update += jobs.Tick;
-        Svc.Chat.ChatMessage += jobs.OnChatMessage;
-
-        overlay = new Overlay.Overlay(this);
-        Svc.PluginInterface.UiBuilder.Draw += overlay.Draw;
-
-        Svc.Log.Info(Svc.ClientState.TerritoryType.ToString());
+        OnUpdate?.Invoke(framework);
     }
 
     public void Dispose()
     {
-        Svc.Framework.Update -= TreasureManager.UpdateTreasureList;
-        Svc.Framework.Update -= FatesManager.UpdateFatesList;
-        Svc.Framework.Update -= CarrotManager.UpdateCarrotList;
-
-        Svc.Commands.RemoveHandler(Command);
-        Svc.Framework.Update -= trackers.Tick;
-
-        Svc.Framework.Update -= jobs.Tick;
-        Svc.Chat.ChatMessage -= jobs.OnChatMessage;
+        Svc.Framework.Update -= Tick;
 
         windows.Dispose();
+        commands.Dispose();
 
-        Svc.PluginInterface.UiBuilder.Draw -= overlay.Draw;
+        treasures.Dispose();
+        carrots.Dispose();
+        fates.Dispose();
+        currency.Dispose();
+        jobSwitcher.Dispose();
 
         ECommonsMain.Dispose();
     }

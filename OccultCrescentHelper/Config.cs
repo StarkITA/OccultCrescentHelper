@@ -1,44 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
 using Dalamud.Configuration;
 using ECommons.DalamudServices;
+using OccultCrescentHelper.Carrots;
+using OccultCrescentHelper.Currency;
+using OccultCrescentHelper.Fates;
+using OccultCrescentHelper.JobSwitcher;
+using OccultCrescentHelper.Treasure;
 
 namespace OccultCrescentHelper;
 
 [Serializable]
 public class Config : IPluginConfiguration
 {
-    public int Version { get; set; } = 0;
+    public int Version { get; set; } = 1;
 
-    public bool SwitchJobOnCombatEnd { get; set; } = false;
+    public CrowdSourcingConfig CrowdSourcingConfig { get; set; } = new();
 
-    public uint CombatJob { get; set; } = 1;
+    public CarrotsConfig CarrotsConfig { get; set; } = new();
 
-    public uint ExpJob { get; set; } = 1;
+    public TreasureConfig TreasureConfig { get; set; } = new();
 
-    public bool SwitchToExpJobOnCE { get; set; } = true;
+    public CurrencyConfig CurrencyConfig { get; set; } = new();
 
-    public bool ShowDemiatmaDrops { get; set; } = true;
+    public FatesConfig FatesConfig { get; set; } = new();
 
-    public bool ShowNoteDrops { get; set; } = true;
+    public JobSwitcherConfig JobSwitcherConfig { get; set; } = new();
 
-    public bool DrawLineToBronzeChests { get; set; } = true;
-
-    public bool DrawLineToSilverChests { get; set; } = true;
-
-    public bool DrawLineToCarrots { get; set; } = true;
-
-    public bool ShareObjectPositionData { get; set; } = true;
-
-    public List<Vector3> BronzeTreasureLocations { get; set; } = [];
-
-    public List<Vector3> SilverTreasureLocations { get; set; } = [];
-
-    public List<Vector3> CarrotLocations { get; set; } = [];
-
-    public void Save()
-    {
-        Svc.PluginInterface.SavePluginConfig(this);
-    }
+    public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

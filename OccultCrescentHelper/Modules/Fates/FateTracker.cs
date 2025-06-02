@@ -1,82 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.ClientState.Fates;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.Game.Fate;
-using FFXIVClientStructs.Interop;
 using OccultCrescentHelper.Enums;
 
-namespace OccultCrescentHelper.Managers;
+namespace OccultCrescentHelper.Fates;
 
-public struct FateData
+public class FateTracker
 {
-    public uint id;
+    public Dictionary<uint, IFate> fates = [];
 
-    public string Name;
+    public Dictionary<uint, FateProgress> tracker { get; } = [];
 
-    public Demiatma? demiatma;
-
-    public SoulShard? soulshard;
-
-    public MonsterNote? notes;
-
-    public Monster? monster;
-}
-
-public class FateProgressTracker
-{
-    private const int MaxSamples = 100;
-
-    public uint FateId { get; }
-
-    public List<ProgressSample> ProgressSamples { get; } = new();
-
-    public FateProgressTracker(uint fateId)
-    {
-        FateId = fateId;
-    }
-
-    public void AddProgress(float progress)
-    {
-        if (ProgressSamples.Count >= MaxSamples)
-            ProgressSamples.RemoveAt(0);
-
-        ProgressSamples.Add(new ProgressSample(progress, DateTimeOffset.UtcNow));
-    }
-
-    public TimeSpan? EstimateTimeToCompletion()
-    {
-        if (ProgressSamples.Count < 2)
-            return null;
-
-        var first = ProgressSamples.First();
-        var last = ProgressSamples.Last();
-
-        float deltaProgress = last.Progress - first.Progress;
-        double deltaSeconds = (last.Timestamp - first.Timestamp).TotalSeconds;
-
-        if (deltaProgress <= 0 || deltaSeconds <= 0)
-            return null;
-
-        float remainingProgress = 100f - last.Progress;
-        double ratePerSecond = deltaProgress / deltaSeconds;
-        double estimatedSecondsRemaining = remainingProgress / ratePerSecond;
-
-        return TimeSpan.FromSeconds(estimatedSecondsRemaining);
-    }
-
-    public record ProgressSample(float Progress, DateTimeOffset Timestamp);
-}
-
-public class FatesManager
-{
-    public static List<Pointer<FateContext>> fates = [];
-
-    public static Dictionary<uint, FateProgressTracker> FateProgress = new();
-
-    public static readonly Dictionary<uint, FateData> FateData = new Dictionary<uint, FateData>
+    public static readonly Dictionary<uint, FateData> data = new Dictionary<uint, FateData>
     {
         {
             1968,
@@ -84,7 +22,7 @@ public class FatesManager
             {
                 id = 1968,
                 Name = "A Delicate Balance",
-                demiatma = Demiatma.Verdigris,
+                demiatma = Enums.Demiatma.Verdigris,
             }
         },
         {
@@ -359,60 +297,42 @@ public class FatesManager
         },
     };
 
-    public static unsafe void UpdateFatesList(IFramework framework)
+    public void Tick(IFramework _)
     {
-        if (!Helpers.IsInOccultCrescent())
+        var pos = Svc.ClientState.LocalPlayer!.Position;
+
+        fates = Svc.Fates.OrderBy(f => Vector3.Distance(f.Position, pos)).ToDictionary(f => (uint)f.FateId, f => f);
+
+        foreach (var fate in fates.Values)
         {
-            return;
-        }
-
-        var pos = Svc.ClientState.LocalPlayer.Position;
-
-        fates = FateManager
-            .Instance()
-            ->Fates.AsSpan()
-            .ToArray()
-            .Where(f => f.Value is not null)
-            .OrderBy(f => Vector3.Distance(f.Value->Location, pos))
-            .ToList();
-
-        foreach (var f in fates)
-        {
-            var fateId = f.Value->FateId;
-            var progress = f.Value->Progress;
-            if (progress == 0)
+            if (fate.Progress == 0)
             {
                 continue;
             }
 
-            if (!FateProgress.TryGetValue(fateId, out var tracker))
+            if (!tracker.TryGetValue(fate.FateId, out var progress))
             {
-                tracker = new FateProgressTracker(fateId);
-                FateProgress[fateId] = tracker;
+                progress = new FateProgress(fate.FateId);
+                tracker[fate.FateId] = progress;
             }
 
-            if (
-                tracker.ProgressSamples.Count == 0
-                || tracker.ProgressSamples[^1].Progress != progress
-            )
+            if (progress.samples.Count == 0 || progress.samples[^1].Progress != fate.Progress)
             {
-                tracker.AddProgress(progress);
+                progress.AddProgress(fate.Progress);
             }
 
-            if (progress == 100)
+            if (fate.Progress == 100)
             {
-                FateProgress.Remove(fateId);
+                tracker.Remove(fate.FateId);
             }
         }
 
-        var activeFateIds = fates.Select(f => f.Value->FateId).ToHashSet();
-        var obsoleteFates = FateProgress
-            .Keys.Where(id => !activeFateIds.Contains((ushort)id))
-            .ToList();
-
-        foreach (var id in obsoleteFates)
+        // Remove non-active fates
+        var active = fates.Select(f => f.Key).ToHashSet();
+        var obsolete = tracker.Keys.Where(id => !active.Contains(id)).ToList();
+        foreach (var id in obsolete)
         {
-            FateProgress.Remove(id);
+            tracker.Remove(id);
         }
     }
 }
