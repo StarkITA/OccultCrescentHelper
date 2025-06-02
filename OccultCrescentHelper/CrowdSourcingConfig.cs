@@ -15,7 +15,10 @@ public class CrowdSourcingConfig : ModuleConfig
 
     public List<ObjectPositionPayload> SharedObjectPosition { get; set; } = [];
 
-    // public bool ShareMonsterPositionData { get; set; } = true;
+    [CheckboxConfig]
+    [Label("Share mosnter spawn position data")]
+    [Tooltip("Send the positions of detected monster spawn positions to the crowdsourcing api.")]
+    public bool ShareMonsterSpawnData { get; set; } = true;
 
-    // public List<MonsterPayload> SharedMonsterLocations { get; set; } = [];
+    public List<MonsterPayload> SharedMonsterSpawns { get; set; } = [];
 }

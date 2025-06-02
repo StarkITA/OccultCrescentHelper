@@ -8,6 +8,7 @@ using OccultCrescentHelper.Currency;
 using OccultCrescentHelper.Fates;
 using OccultCrescentHelper.JobSwitcher;
 using OccultCrescentHelper.Managers;
+using OccultCrescentHelper.MosnterSpawns;
 using OccultCrescentHelper.Treasure;
 
 namespace OccultCrescentHelper;
@@ -43,6 +44,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public readonly JobSwitcherModule jobSwitcher;
 
+    public readonly MosnterSpawnsModule mosnterSpawns;
+
     public Plugin(IDalamudPluginInterface plugin)
     {
         ECommonsMain.Init(plugin, this);
@@ -60,6 +63,7 @@ public sealed class Plugin : IDalamudPlugin
         fates = new FatesModule(this);
         currency = new CurrencyModule(this);
         jobSwitcher = new JobSwitcherModule(this);
+        mosnterSpawns = new MosnterSpawnsModule(this);
 
         Svc.Framework.Update += Tick;
     }
@@ -86,6 +90,7 @@ public sealed class Plugin : IDalamudPlugin
         fates.Dispose();
         currency.Dispose();
         jobSwitcher.Dispose();
+        mosnterSpawns.Dispose();
 
         ECommonsMain.Dispose();
     }
