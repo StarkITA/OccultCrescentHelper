@@ -30,8 +30,7 @@ public class CrowdSourcingApi
             return;
         }
 
-        // var url = "https://api.oc.ohkannaduh.com/monster_spawn";
-        var url = "http://127.0.0.1:3000/monster_spawn";
+        var url = "https://api.oc.ohkannaduh.com/monster_spawn";
 
         if (config.SharedMonsterSpawns.Contains(payload))
         {
@@ -77,8 +76,7 @@ public class CrowdSourcingApi
             return;
         }
 
-        // var url = "https://api.oc.ohkannaduh.com/object_position";
-        var url = "http://127.0.0.1:3000/object_position";
+        var url = "https://api.oc.ohkannaduh.com/object_position";
 
         if (config.SharedObjectPosition.Contains(payload))
         {
