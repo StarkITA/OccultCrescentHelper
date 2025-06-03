@@ -14,6 +14,11 @@ public class JobSwitcherConfig : ModuleConfig
 
     [CheckboxConfig]
     [RenderIf(nameof(Enabled))]
+    [Label("Show State Debug")]
+    public bool ShowStateDebug { get; set; } = false;
+
+    [CheckboxConfig]
+    [RenderIf(nameof(Enabled))]
     [Label("Switch Job when combat is over")]
     [Tooltip("This works for fates and mob farming.\nThis allows you to get exp in a different Phantom job than the one you fought with.")]
     public bool SwitchJobOnCombatEnd { get; set; } = false;
@@ -49,4 +54,11 @@ public class JobSwitcherConfig : ModuleConfig
     [Label("Return after finishing a Critical Encounter")]
     [Tooltip("Cast Occult Return after finishing a Critical Encounter (wip.)")]
     public bool ReturnAfterCE { get; set; } = false;
+
+    [CheckboxConfig]
+    [ExperimentalFeature]
+    [RenderIf(nameof(Enabled))]
+    [Label("Walk to the Aetheryte in camp after returning")]
+    [Tooltip("Walk to the Aetheryte in camp after returning, ready to teleport to the next event.")]
+    public bool ApproachAetheryteAfterReturn { get; set; } = false;
 }

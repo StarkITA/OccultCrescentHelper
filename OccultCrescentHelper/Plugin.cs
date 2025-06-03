@@ -80,6 +80,9 @@ public sealed class Plugin : IDalamudPlugin
         mosnterSpawns = new MosnterSpawnsModule(this);
 
         Svc.Framework.Update += Tick;
+
+        windows.ToggleConfigUI();
+        windows.ToggleMainUI();
     }
 
     public void Tick(IFramework framework)

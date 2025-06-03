@@ -24,6 +24,7 @@ public class MainWindow : Window, IDisposable
             return;
         }
 
+        plugin.jobSwitcher.Draw();
         plugin.treasures.Draw();
         plugin.carrots.Draw();
         plugin.currency.Draw();

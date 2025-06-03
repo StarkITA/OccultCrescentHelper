@@ -66,5 +66,5 @@ public class JobSwitcher
         currentState.Enter();
     }
 
-    public string GetStateText() => currentState.ToString() ?? "Unknown State";
+    public string GetStateText() => currentState?.ToString() ?? "Unknown State";
 }

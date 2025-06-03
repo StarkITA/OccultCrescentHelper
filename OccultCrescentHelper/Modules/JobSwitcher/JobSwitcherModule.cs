@@ -11,6 +11,8 @@ public class JobSwitcherModule : Module, IDisposable
 {
     public readonly JobSwitcher switcher;
 
+    private Panel panel = new Panel();
+
     public JobSwitcherConfig config
     {
         get => _config.JobSwitcherConfig;
@@ -28,6 +30,16 @@ public class JobSwitcherModule : Module, IDisposable
 
         plugin.OnUpdate += Tick;
         Svc.Chat.ChatMessage += OnChatMessage;
+    }
+
+    public void Draw()
+    {
+        if (!enabled || !Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
+        panel.Draw(this);
     }
 
     public void Tick(IFramework framework)
