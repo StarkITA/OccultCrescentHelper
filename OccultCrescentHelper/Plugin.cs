@@ -23,6 +23,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public readonly CrowdSourcingApi api;
 
+    public readonly Teleporter teleporter;
+
     // Managers
 
     public readonly WindowManager windows;
@@ -52,7 +54,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public Plugin(IDalamudPluginInterface plugin)
     {
-        ECommonsMain.Init(plugin, this);
+        ECommonsMain.Init(plugin, this, Module.DalamudReflector);
         config = plugin.GetPluginConfig() as Config ?? new Config();
 
         var gameVersion = DalamudReflector.TryGetDalamudStartInfo(out var ver) ? ver.GameVersion.ToString() : "unknown";
@@ -67,6 +69,7 @@ public sealed class Plugin : IDalamudPlugin
         DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
 
         api = new CrowdSourcingApi(this);
+        teleporter = new Teleporter(this);
 
         windows = new WindowManager(this);
         commands = new CommandManager(this);
@@ -90,6 +93,11 @@ public sealed class Plugin : IDalamudPlugin
         if (!Helpers.IsInOccultCrescent())
         {
             return;
+        }
+
+        if (!teleporter.IsReady())
+        {
+            teleporter.ReadyCheck();
         }
 
         OnUpdate?.Invoke(framework);

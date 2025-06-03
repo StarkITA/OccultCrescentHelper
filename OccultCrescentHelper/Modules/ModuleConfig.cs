@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using Dalamud.Interface;
 using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using OccultCrescentHelper.ConfigAttributes;
@@ -20,7 +23,12 @@ public abstract class ModuleConfig
     {
         jobs = Svc.Data.GetExcelSheet<MKDSupportJob>().ToList();
 
-        renderers = new() { [typeof(CheckboxConfigAttribute)] = DrawCheckbox, [typeof(PhantomJobConfigAttribute)] = DrawPhantomJobSelector };
+        renderers = new()
+        {
+            [typeof(CheckboxConfigAttribute)] = DrawCheckbox,
+            [typeof(PhantomJobConfigAttribute)] = DrawPhantomJobSelector,
+            [typeof(MountConfigAttribute)] = DrawMountSelector,
+        };
     }
 
     public virtual bool Draw()
@@ -120,6 +128,54 @@ public abstract class ModuleConfig
                 if (ImGui.Selectable(job.Unknown0.ToString(), isSelected))
                 {
                     prop.SetValue(this, job.RowId);
+                    dirty = true;
+                }
+
+                if (isSelected)
+                    ImGui.SetItemDefaultFocus();
+            }
+
+            ImGui.EndCombo();
+        }
+
+        return (true, dirty);
+    }
+
+    private (bool handled, bool dirty) DrawMountSelector(PropertyInfo prop, bool experimental)
+    {
+        if (prop.PropertyType != typeof(uint))
+            return (false, false);
+
+        var labelAttr = prop.GetCustomAttribute<LabelAttribute>();
+        string label = labelAttr?.Label ?? prop.Name;
+
+        uint currentValue = (uint)(prop.GetValue(this) ?? 0);
+
+        var mounts = Svc.Data.GetExcelSheet<Mount>().ToList();
+        var currentMount = mounts.FirstOrDefault(job => job.RowId == currentValue);
+        TextInfo t = CultureInfo.CurrentCulture.TextInfo;
+
+        bool dirty = false;
+        if (ImGui.BeginCombo($"{label}##{prop.GetHashCode()}", t.ToTitleCase(currentMount.Singular.ToString()) ?? "None"))
+        {
+            foreach (var mount in mounts)
+            {
+                if (mount.RowId <= 0)
+                    continue;
+
+                unsafe
+                {
+                    if (!PlayerState.Instance()->IsMountUnlocked(mount.RowId))
+                    {
+                        continue;
+                    }
+                }
+
+                bool isSelected = mount.RowId == currentValue;
+
+                if (ImGui.Selectable(t.ToTitleCase(mount.Singular.ToString()), isSelected))
+                {
+                    prop.SetValue(this, mount.RowId);
                     dirty = true;
                 }
 

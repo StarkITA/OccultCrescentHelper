@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
+using OccultCrescentHelper.Enums;
 
 namespace OccultCrescentHelper.CriticalEncounters;
 
@@ -100,6 +101,15 @@ public class Panel
             }
 
             ImGui.Unindent(16);
+
+            if (module.plugin.teleporter.IsReady() && ce.State == DynamicEventState.Register)
+            {
+                var aethernet = module.plugin.teleporter.GetClosestAethernet(ce.MapMarker.Position);
+                if (ImGui.Button($"Tekeport to {aethernet.ToFriendlyString()}##ce_{id}"))
+                {
+                    module.plugin.teleporter.Teleport(aethernet);
+                }
+            }
 
             id++;
         }

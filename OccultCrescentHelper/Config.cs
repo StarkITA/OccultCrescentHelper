@@ -31,5 +31,7 @@ public class Config : IPluginConfiguration
 
     public JobSwitcherConfig JobSwitcherConfig { get; set; } = new();
 
+    public TeleporterConfig TeleporterConfig { get; set; } = new();
+
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

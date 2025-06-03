@@ -7,6 +7,7 @@ using Dalamud.Plugin.Services;
 using ECommons;
 using ECommons.Automation;
 using ECommons.DalamudServices;
+using ECommons.EzIpcManager;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -131,7 +132,7 @@ public class OccultReturn : Handler
             ChangeTeleportState(TeleportState.Done);
         }
 
-        if (teleportState == TeleportState.Done && !GenericHelpers.IsOccupied())
+        if (teleportState == TeleportState.Done)
         {
             Svc.Log.Info("MovingToAetheryte");
             ChangeTeleportState(TeleportState.MovingToAetheryte);

@@ -28,6 +28,11 @@
           "System.Text.RegularExpressions": "4.3.1"
         }
       },
+      "JetBrains.Annotations": {
+        "type": "Transitive",
+        "resolved": "2024.3.0",
+        "contentHash": "ox5pkeLQXjvJdyAB4b2sBYAlqZGLh3PjSnP1bQNVx72ONuTJ9+34/+Rq91Fc0dG29XG9RgZur9+NcP4riihTug=="
+      },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
         "resolved": "1.1.2",
@@ -45,6 +50,19 @@
           "Microsoft.Extensions.Primitives": "1.1.1",
           "NETStandard.Library": "1.6.1"
         }
+      },
+      "Microsoft.Extensions.DependencyInjection": {
+        "type": "Transitive",
+        "resolved": "9.0.2",
+        "contentHash": "ZffbJrskOZ40JTzcTyKwFHS5eACSWp2bUQBBApIgGV+es8RaTD4OxUG7XxFr3RIPLXtYQ1jQzF2DjKB5fZn7Qg==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.2"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.2",
+        "contentHash": "MNe7GSTBf3jQx5vYrXF0NZvn6l7hUKF6J54ENfAgCO8y6xjN1XUmKKWG464LP2ye6QqDiA1dkaWEZBYnhoZzjg=="
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
@@ -125,6 +143,11 @@
           "System.Xml.ReaderWriter": "4.3.0",
           "System.Xml.XDocument": "4.3.0"
         }
+      },
+      "NotificationMasterAPI": {
+        "type": "Transitive",
+        "resolved": "1.0.0.1",
+        "contentHash": "ta+lQtxQzHkqPC3doDn3ud8MvtwNnTgTIeXqfqu92G4lAy+/UJZ6iEefFH4MRZmX8Z99nUmUJZ4zcRvVMABzjQ=="
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
@@ -1027,6 +1050,12 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "autoretainerapi": {
+        "type": "Project",
+        "dependencies": {
+          "ECommons": "[2.2.0.2, )"
+        }
+      },
       "dotrecast.core": {
         "type": "Project"
       },
@@ -1053,6 +1082,39 @@
       },
       "interopgenerator.runtime": {
         "type": "Project"
+      },
+      "lifestream": {
+        "type": "Project",
+        "dependencies": {
+          "AutoRetainerAPI": "[1.0.0, )",
+          "DalamudPackager": "[2.1.13, )",
+          "ECommons": "[2.2.0.2, )",
+          "NightmareUI": "[1.0.0, )",
+          "NightmareUI.OtterGuiWrapper": "[1.0.0, )",
+          "NotificationMasterAPI": "[1.0.0.1, )",
+          "OtterGui": "[1.0.0, )"
+        }
+      },
+      "nightmareui": {
+        "type": "Project",
+        "dependencies": {
+          "ECommons": "[2.2.0.2, )"
+        }
+      },
+      "nightmareui.otterguiwrapper": {
+        "type": "Project",
+        "dependencies": {
+          "ECommons": "[2.2.0.2, )",
+          "NightmareUI": "[1.0.0, )",
+          "OtterGui": "[1.0.0, )"
+        }
+      },
+      "ottergui": {
+        "type": "Project",
+        "dependencies": {
+          "JetBrains.Annotations": "[2024.3.0, )",
+          "Microsoft.Extensions.DependencyInjection": "[9.0.2, )"
+        }
       },
       "vnavmesh": {
         "type": "Project",

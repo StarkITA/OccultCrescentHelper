@@ -4,6 +4,3 @@
 [submodule "FFXIVClientStructs"]
 	path = FFXIVClientStructs
 	url = https://github.com/aers/FFXIVClientStructs.git
-[submodule "ffxiv_navmesh"]
-	path = ffxiv_navmesh
-	url = https://github.com/awgil/ffxiv_navmesh.git

@@ -21,7 +21,6 @@
       <Visible>false</Visible>
     </Content>
     <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
-    <ProjectReference Include="..\ffxiv_navmesh\vnavmesh\vnavmesh.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />

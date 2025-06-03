@@ -52,6 +52,11 @@ public class ConfigWindow : Window, IDisposable
             plugin.config.Save();
         }
 
+        if (plugin.config.TeleporterConfig.Draw())
+        {
+            plugin.config.Save();
+        }
+
         if (plugin.api.config.Draw())
         {
             plugin.config.Save();

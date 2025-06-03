@@ -6,6 +6,7 @@ using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
+using OccultCrescentHelper.Enums;
 
 namespace OccultCrescentHelper.Fates;
 
@@ -66,6 +67,15 @@ public class Panel
                 Notes(data);
             }
             ImGui.Unindent(16);
+
+            if (module.plugin.teleporter.IsReady())
+            {
+                var aethernet = module.plugin.teleporter.GetClosestAethernet(fate.Position);
+                if (ImGui.Button($"Teleport to {aethernet.ToFriendlyString()}##fate_{fate.FateId}"))
+                {
+                    module.plugin.teleporter.Teleport(aethernet);
+                }
+            }
         }
 
         Helpers.VSpace();
