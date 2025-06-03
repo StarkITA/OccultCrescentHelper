@@ -21,7 +21,6 @@ Repo: https://raw.githubusercontent.com/OhKannaDuh/plugins/refs/heads/master/man
 ## Plans
 
 -   Show instance id
--   Lifestream integration in fate list
 -   Exp per hour tracker
 -   Auto buffs (Bard/Knight/Monk)
 -   Auto chest run
