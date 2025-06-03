@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Reflection;
 using Dalamud.Interface;
 using ECommons.DalamudServices;
-using ECommons.ImGuiMethods;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using OccultCrescentHelper.ConfigAttributes;
@@ -14,23 +13,14 @@ namespace OccultCrescentHelper.Modules;
 
 public abstract class ModuleConfig
 {
-    private List<MKDSupportJob> jobs;
+    private readonly List<MKDSupportJob> jobs;
+    private readonly Dictionary<Type, Func<PropertyInfo, bool, (bool handled, bool dirty)>> renderers;
 
     public ModuleConfig()
     {
         jobs = Svc.Data.GetExcelSheet<MKDSupportJob>().ToList();
-    }
 
-    protected bool Checkbox(string label, Func<bool> getter, Action<bool> setter)
-    {
-        bool value = getter();
-        if (ImGui.Checkbox(label, ref value) && value != getter())
-        {
-            setter(value);
-            return true;
-        }
-
-        return false;
+        renderers = new() { [typeof(CheckboxConfigAttribute)] = DrawCheckbox, [typeof(PhantomJobConfigAttribute)] = DrawPhantomJobSelector };
     }
 
     public virtual bool Draw()
@@ -46,107 +36,128 @@ public abstract class ModuleConfig
         ImGui.Indent(16);
         foreach (var prop in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
-            if (!prop.CanRead)
+            if (!prop.CanRead || prop.GetMethod.IsStatic || !ShouldRender(prop))
                 continue;
 
-            if (prop.GetMethod.IsStatic)
-                continue;
+            bool isExperimental = prop.GetCustomAttribute<ExperimentalFeatureAttribute>() != null;
 
-            var value = prop.GetValue(this);
-
-            var experimental = prop.GetCustomAttribute<ExperimentalFeatureAttribute>() is not null;
-
-            var renderIfAttr = prop.GetCustomAttribute<RenderIfAttribute>();
-            if (renderIfAttr != null)
+            foreach (var kv in renderers)
             {
-                var dependentProp = GetType().GetProperty(renderIfAttr.DependentPropertyName);
-                if (dependentProp == null)
-                    continue;
-
-                var dependentValue = dependentProp.GetValue(this);
-                if (dependentValue is bool boolValue && !boolValue)
-                    continue;
-            }
-
-            // CheckboxConfig
-            if (prop.GetCustomAttribute<CheckboxConfigAttribute>() is not null && prop.PropertyType == typeof(bool))
-            {
-                var labelAttr = prop.GetCustomAttribute<LabelAttribute>();
-                string label = labelAttr?.Label ?? prop.Name;
-
-                bool currentValue = (bool)(prop.GetValue(this) ?? false);
-                bool valueCopy = currentValue;
-
-                if (experimental)
+                if (prop.GetCustomAttribute(kv.Key) != null)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 0.9f, 0.0f, 1.0f));
-                    ImGui.PushFont(UiBuilder.IconFont);
-                    ImGui.TextUnformatted(FontAwesomeIcon.ExclamationTriangle.ToIconString());
-                    ImGui.PopFont();
-                    ImGui.PopStyleColor();
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip("Experimental");
-                    }
-
-                    ImGui.SameLine();
-                }
-
-                if (ImGui.Checkbox($"{label}##{prop.GetHashCode()}", ref valueCopy) && valueCopy != currentValue)
-                {
-                    prop.SetValue(this, valueCopy);
-                    dirty = true;
+                    var (handled, modified) = kv.Value.Invoke(prop, isExperimental);
+                    if (handled && modified)
+                        dirty = true;
                 }
             }
 
-            // PhantomJobConfig
+            ShowTooltip(prop);
+        }
+        ImGui.Unindent(16);
+        Helpers.VSpace();
+        ImGui.Separator();
+        return dirty;
+    }
 
-            if (prop.GetCustomAttribute<PhantomJobConfigAttribute>() is not null && prop.PropertyType == typeof(uint))
+    private (bool handled, bool dirty) DrawCheckbox(PropertyInfo prop, bool experimental)
+    {
+        if (prop.PropertyType != typeof(bool))
+            return (false, false);
+
+        var labelAttr = prop.GetCustomAttribute<LabelAttribute>();
+        string label = labelAttr?.Label ?? prop.Name;
+
+        bool currentValue = (bool)(prop.GetValue(this) ?? false);
+        bool valueCopy = currentValue;
+
+        if (experimental)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 0.9f, 0.0f, 1.0f));
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGui.TextUnformatted(FontAwesomeIcon.ExclamationTriangle.ToIconString());
+            ImGui.PopFont();
+            ImGui.PopStyleColor();
+
+            if (ImGui.IsItemHovered())
             {
-                var labelAttr = prop.GetCustomAttribute<LabelAttribute>();
-                string label = labelAttr?.Label ?? prop.Name;
-
-                uint currentValue = (uint)(prop.GetValue(this) ?? 0);
-
-                // Find the current job from your Jobs list (you'll need to access your jobs list here)
-                var currentJob = jobs.FirstOrDefault(job => job.RowId == currentValue);
-
-                if (ImGui.BeginCombo($"{label}##{prop.GetHashCode()}", currentJob.Unknown0.ToString()))
-                {
-                    foreach (var job in jobs)
-                    {
-                        if (job.RowId <= 0)
-                            continue;
-
-                        bool isSelected = job.RowId == currentValue;
-
-                        if (ImGui.Selectable(job.Unknown0.ToString(), isSelected))
-                        {
-                            prop.SetValue(this, job.RowId);
-                            dirty = true;
-                        }
-
-                        if (isSelected)
-                            ImGui.SetItemDefaultFocus();
-                    }
-
-                    ImGui.EndCombo();
-                }
+                ImGui.SetTooltip("Experimental");
             }
 
-            var tooltip = prop.GetCustomAttribute<TooltipAttribute>();
-
-            if (tooltip != null && ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip(tooltip.text);
-            }
+            ImGui.SameLine();
         }
 
-        ImGui.Unindent(16);
+        if (ImGui.Checkbox($"{label}##{prop.GetHashCode()}", ref valueCopy) && valueCopy != currentValue)
+        {
+            prop.SetValue(this, valueCopy);
+            return (true, true);
+        }
 
-        ImGui.Separator();
+        return (true, false);
+    }
 
-        return dirty;
+    private (bool handled, bool dirty) DrawPhantomJobSelector(PropertyInfo prop, bool experimental)
+    {
+        if (prop.PropertyType != typeof(uint))
+            return (false, false);
+
+        var labelAttr = prop.GetCustomAttribute<LabelAttribute>();
+        string label = labelAttr?.Label ?? prop.Name;
+
+        uint currentValue = (uint)(prop.GetValue(this) ?? 0);
+
+        var currentJob = jobs.FirstOrDefault(job => job.RowId == currentValue);
+
+        bool dirty = false;
+        if (ImGui.BeginCombo($"{label}##{prop.GetHashCode()}", currentJob.Unknown0.ToString() ?? "None"))
+        {
+            foreach (var job in jobs)
+            {
+                if (job.RowId <= 0)
+                    continue;
+
+                bool isSelected = job.RowId == currentValue;
+
+                if (ImGui.Selectable(job.Unknown0.ToString(), isSelected))
+                {
+                    prop.SetValue(this, job.RowId);
+                    dirty = true;
+                }
+
+                if (isSelected)
+                    ImGui.SetItemDefaultFocus();
+            }
+
+            ImGui.EndCombo();
+        }
+
+        return (true, dirty);
+    }
+
+    private bool ShouldRender(PropertyInfo prop)
+    {
+        var renderIfAttr = prop.GetCustomAttribute<RenderIfAttribute>();
+        if (renderIfAttr == null)
+            return true;
+
+        foreach (var propName in renderIfAttr.DependentPropertyNames)
+        {
+            var dependentProp = GetType().GetProperty(propName);
+            if (dependentProp == null || dependentProp.PropertyType != typeof(bool))
+                return false;
+
+            if (!(bool)(dependentProp.GetValue(this) ?? false))
+                return false;
+        }
+
+        return true;
+    }
+
+    private void ShowTooltip(PropertyInfo prop)
+    {
+        var tooltip = prop.GetCustomAttribute<TooltipAttribute>();
+        if (tooltip != null && ImGui.IsItemHovered())
+        {
+            ImGui.SetTooltip(tooltip.text);
+        }
     }
 }

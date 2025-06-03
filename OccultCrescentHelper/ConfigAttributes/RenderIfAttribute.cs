@@ -5,10 +5,10 @@ namespace OccultCrescentHelper.ConfigAttributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class RenderIfAttribute : Attribute
 {
-    public string DependentPropertyName { get; }
+    public string[] DependentPropertyNames { get; }
 
-    public RenderIfAttribute(string dependentPropertyName)
+    public RenderIfAttribute(params string[] dependentPropertyNames)
     {
-        DependentPropertyName = dependentPropertyName;
+        DependentPropertyNames = dependentPropertyNames;
     }
 }
