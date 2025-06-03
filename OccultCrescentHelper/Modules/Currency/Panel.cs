@@ -1,3 +1,4 @@
+using System.Numerics;
 using ECommons.ImGuiMethods;
 using ImGuiNET;
 
@@ -7,6 +8,9 @@ public class Panel
 {
     public void Draw(CurrencyModule module)
     {
+        ImGui.TextColored(new Vector4(1f, 0.75f, 0.25f, 1f), "Currency:");
+        ImGui.Indent(16);
+
         if (ImGui.BeginTable("CurrencyData##OCH", 3, ImGuiTableFlags.SizingFixedFit))
         {
             // Silver
@@ -42,6 +46,8 @@ public class Panel
             ImGui.EndTable();
         }
 
+        ImGui.Unindent(16);
+        Helpers.VSpace();
         Helpers.Separator();
     }
 }

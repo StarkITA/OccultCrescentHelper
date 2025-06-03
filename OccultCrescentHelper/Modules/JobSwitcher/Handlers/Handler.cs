@@ -4,6 +4,7 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 
@@ -38,7 +39,19 @@ public abstract class Handler : IJobStateHandler
 
     public virtual void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) { }
 
-    protected unsafe void ChangeJob(MKDSupportJob job) => Agent.SendEvent(AgentId.MKDSupportJobList, 1, 0, job.RowId);
+    protected unsafe void ChangeJob(MKDSupportJob job)
+    {
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
+
+        byte id = (byte)job.RowId;
+        if (PublicContentOccultCrescent.GetInstance()->State.CurrentSupportJob != id)
+        {
+            PublicContentOccultCrescent.ChangeSupportJob(id);
+        }
+    }
 
     protected void ChangeToCombatJob() => ChangeJob(combatJob);
 

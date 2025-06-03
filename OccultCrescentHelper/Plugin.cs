@@ -2,8 +2,10 @@
 using Dalamud.Plugin.Services;
 using ECommons;
 using ECommons.DalamudServices;
+using ECommons.Reflection;
 using OccultCrescentHelper.Api;
 using OccultCrescentHelper.Carrots;
+using OccultCrescentHelper.CriticalEncounters;
 using OccultCrescentHelper.Currency;
 using OccultCrescentHelper.Fates;
 using OccultCrescentHelper.JobSwitcher;
@@ -40,6 +42,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public readonly FatesModule fates;
 
+    public readonly CriticalEncounterModule criticalEncounters;
+
     public readonly CurrencyModule currency;
 
     public readonly JobSwitcherModule jobSwitcher;
@@ -51,6 +55,15 @@ public sealed class Plugin : IDalamudPlugin
         ECommonsMain.Init(plugin, this);
         config = plugin.GetPluginConfig() as Config ?? new Config();
 
+        var gameVersion = DalamudReflector.TryGetDalamudStartInfo(out var ver) ? ver.GameVersion.ToString() : "unknown";
+        InteropGenerator.Runtime.Resolver.GetInstance.Setup(
+            Svc.SigScanner.SearchBase,
+            gameVersion,
+            new(Svc.PluginInterface.ConfigDirectory.FullName + "/cs.json")
+        );
+        FFXIVClientStructs.Interop.Generated.Addresses.Register();
+        InteropGenerator.Runtime.Resolver.GetInstance.Resolve();
+
         DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
 
         api = new CrowdSourcingApi(this);
@@ -61,6 +74,7 @@ public sealed class Plugin : IDalamudPlugin
         treasures = new TreasureModule(this);
         carrots = new CarrotsModule(this);
         fates = new FatesModule(this);
+        criticalEncounters = new CriticalEncounterModule(this);
         currency = new CurrencyModule(this);
         jobSwitcher = new JobSwitcherModule(this);
         mosnterSpawns = new MosnterSpawnsModule(this);
@@ -88,6 +102,7 @@ public sealed class Plugin : IDalamudPlugin
         treasures.Dispose();
         carrots.Dispose();
         fates.Dispose();
+        criticalEncounters.Dispose();
         currency.Dispose();
         jobSwitcher.Dispose();
         mosnterSpawns.Dispose();

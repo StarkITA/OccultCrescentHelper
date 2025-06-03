@@ -36,7 +36,7 @@ public class CarrotsModule : Module, IDisposable
 
     public void Draw()
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }
@@ -47,7 +47,7 @@ public class CarrotsModule : Module, IDisposable
 
     public void Radar()
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }

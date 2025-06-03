@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 using ECommons.DalamudServices;
 using ImGuiNET;
@@ -14,7 +13,7 @@ public static class Helpers
 
     public static bool IsInOccultCrescent()
     {
-        return IsInSouthHorn() && Svc.ClientState.LocalPlayer != null;
+        return Svc.ClientState.LocalPlayer != null && IsInSouthHorn();
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float thickness, Vector4 color)
@@ -41,5 +40,10 @@ public static class Helpers
         ImGui.Dummy(new Vector2(width, 1));
 
         ImGui.PopStyleVar();
+    }
+
+    public static void VSpace(int px = 8)
+    {
+        ImGui.Dummy(new Vector2(0, px));
     }
 }

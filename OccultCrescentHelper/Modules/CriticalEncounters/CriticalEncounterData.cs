@@ -1,9 +1,8 @@
-using Dalamud.Game.ClientState.Fates;
 using OccultCrescentHelper.Enums;
 
-namespace OccultCrescentHelper.Fates;
+namespace OccultCrescentHelper.CriticalEncounters;
 
-public struct FateData
+public struct CriticalEncounterData
 {
     public uint id;
 

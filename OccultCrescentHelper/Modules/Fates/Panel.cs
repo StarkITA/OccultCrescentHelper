@@ -13,9 +13,13 @@ public class Panel
 {
     public void Draw(FatesModule module)
     {
+        ImGui.TextColored(new Vector4(1f, 0.75f, 0.25f, 1f), "Fates:");
+        ImGui.Indent(16);
+
         if (module.tracker.fates.Count <= 0)
         {
             ImGui.TextUnformatted("No active fates.");
+            ImGui.Unindent(16);
             Helpers.Separator();
             return;
         }
@@ -32,7 +36,7 @@ public class Panel
                 continue;
             }
 
-            ImGui.TextUnformatted($"Active Fate: {data.Name} ({fate.Progress}%)");
+            ImGui.TextUnformatted($"{data.Name} ({fate.Progress}%)");
 
             if (module.tracker.tracker.TryGetValue(fate.FateId, out var progress))
             {
@@ -44,14 +48,14 @@ public class Panel
                 }
             }
 
-            ImGui.Indent(20);
-            var showDemiatma = data.demiatma != null && module.config.ShowDemiatmaDrops;
+            ImGui.Indent(16);
+            var showDemiatma = data.demiatma != null && module._config.EventDropConfig.ShowDemiatmaDrops;
             if (showDemiatma)
             {
                 Demiatma(data);
             }
 
-            var showNotes = data.notes != null && module.config.ShowNoteDrops;
+            var showNotes = data.notes != null && module._config.EventDropConfig.ShowNoteDrops;
             if (showNotes)
             {
                 if (showDemiatma)
@@ -61,9 +65,11 @@ public class Panel
 
                 Notes(data);
             }
-            ImGui.Unindent(20);
+            ImGui.Unindent(16);
         }
 
+        Helpers.VSpace();
+        ImGui.Unindent(16);
         Helpers.Separator();
     }
 
@@ -78,7 +84,7 @@ public class Panel
 
         var demiatma = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
 
-        DrawIcon(demiatma, border, $"Demiatma_{itemData.RowId}");
+        DrawIcon(demiatma, border, $"Demiatma_{itemData.RowId}_fate_{data.id}");
 
         if (ImGui.IsItemHovered())
         {
@@ -102,7 +108,7 @@ public class Panel
 
         var notes = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
 
-        DrawIcon(notes, new Vector4(1f, 1f, 1f, 1f), $"Note_{itemData.RowId}");
+        DrawIcon(notes, new Vector4(1f, 1f, 1f, 1f), $"Note_{itemData.RowId}_fate_{data.id}");
 
         if (ImGui.IsItemHovered())
         {

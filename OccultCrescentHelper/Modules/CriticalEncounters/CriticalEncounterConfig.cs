@@ -2,11 +2,11 @@ using System;
 using OccultCrescentHelper.ConfigAttributes;
 using OccultCrescentHelper.Modules;
 
-namespace OccultCrescentHelper.Fates;
+namespace OccultCrescentHelper.CriticalEncounters;
 
 [Serializable]
-[Title("Fates Config")]
-public class FatesConfig : ModuleConfig
+[Title("Critical Encounter Config")]
+public class CriticalEncounterConfig : ModuleConfig
 {
     [CheckboxConfig]
     [Label("Enabled")]

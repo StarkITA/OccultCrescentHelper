@@ -41,7 +41,7 @@ public class JobSwitcher
             [JobSwitcherState.PostExp] = new PostExp(this, jobs, expJob, combatJob),
         };
 
-        SetState(JobSwitcherState.PostExp);
+        Svc.Framework.RunOnFrameworkThread(() => SetState(JobSwitcherState.PostExp));
     }
 
     public void Tick(IFramework framework)

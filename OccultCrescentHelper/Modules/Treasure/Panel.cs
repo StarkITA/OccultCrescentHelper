@@ -1,3 +1,4 @@
+using System.Numerics;
 using ImGuiNET;
 
 namespace OccultCrescentHelper.Treasure;
@@ -6,9 +7,14 @@ public class Panel
 {
     public void Draw(TreasureModule module)
     {
+        ImGui.TextColored(new Vector4(1f, 0.75f, 0.25f, 1f), "Treasure:");
+        ImGui.Indent(16);
+
         if (module.tracker.treasures.Count <= 0)
         {
             ImGui.TextUnformatted("No nearby Treasure.");
+            ImGui.Unindent(16);
+            Helpers.VSpace();
             return;
         }
 
@@ -39,5 +45,8 @@ public class Panel
 
             ImGui.EndTable();
         }
+
+        ImGui.Unindent(16);
+        Helpers.VSpace();
     }
 }

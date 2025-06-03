@@ -2,6 +2,7 @@
 using Dalamud.Configuration;
 using ECommons.DalamudServices;
 using OccultCrescentHelper.Carrots;
+using OccultCrescentHelper.CriticalEncounters;
 using OccultCrescentHelper.Currency;
 using OccultCrescentHelper.Fates;
 using OccultCrescentHelper.JobSwitcher;
@@ -22,7 +23,11 @@ public class Config : IPluginConfiguration
 
     public CurrencyConfig CurrencyConfig { get; set; } = new();
 
+    public EventDropConfig EventDropConfig { get; set; } = new();
+
     public FatesConfig FatesConfig { get; set; } = new();
+
+    public CriticalEncounterConfig CriticalEncounterConfig { get; set; } = new();
 
     public JobSwitcherConfig JobSwitcherConfig { get; set; } = new();
 

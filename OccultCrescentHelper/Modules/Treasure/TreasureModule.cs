@@ -53,7 +53,7 @@ public class TreasureModule : Module, IDisposable
 
     public void Draw()
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }
@@ -64,7 +64,7 @@ public class TreasureModule : Module, IDisposable
 
     public void Radar()
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }

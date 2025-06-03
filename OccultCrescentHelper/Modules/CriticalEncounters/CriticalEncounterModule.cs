@@ -2,17 +2,17 @@ using System;
 using Dalamud.Plugin.Services;
 using OccultCrescentHelper.Modules;
 
-namespace OccultCrescentHelper.Fates;
+namespace OccultCrescentHelper.CriticalEncounters;
 
-public class FatesModule : Module, IDisposable
+public class CriticalEncounterModule : Module, IDisposable
 {
-    public readonly FateTracker tracker = new FateTracker();
+    public readonly CriticalEncounterTracker tracker = new CriticalEncounterTracker();
 
     private Panel panel = new Panel();
 
-    public FatesConfig config
+    public CriticalEncounterConfig config
     {
-        get => _config.FatesConfig;
+        get => _config.CriticalEncounterConfig;
     }
 
     public override bool enabled
@@ -20,7 +20,7 @@ public class FatesModule : Module, IDisposable
         get => config.Enabled;
     }
 
-    public FatesModule(Plugin plugin)
+    public CriticalEncounterModule(Plugin plugin)
         : base(plugin)
     {
         plugin.OnUpdate += Tick;
@@ -38,7 +38,7 @@ public class FatesModule : Module, IDisposable
 
     public void Tick(IFramework framework)
     {
-        if (!enabled || !Helpers.IsInOccultCrescent())
+        if (!enabled)
         {
             return;
         }

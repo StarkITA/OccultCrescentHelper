@@ -31,7 +31,7 @@ public class CurrencyModule : Module, IDisposable
 
     public void Draw()
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }
@@ -41,7 +41,7 @@ public class CurrencyModule : Module, IDisposable
 
     public void Tick(IFramework framework)
     {
-        if (!enabled)
+        if (!enabled || !Helpers.IsInOccultCrescent())
         {
             return;
         }

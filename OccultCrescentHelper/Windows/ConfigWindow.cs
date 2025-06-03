@@ -32,7 +32,17 @@ public class ConfigWindow : Window, IDisposable
             plugin.config.Save();
         }
 
+        if (plugin.config.EventDropConfig.Draw())
+        {
+            plugin.config.Save();
+        }
+
         if (plugin.fates.config.Draw())
+        {
+            plugin.config.Save();
+        }
+
+        if (plugin.criticalEncounters.config.Draw())
         {
             plugin.config.Save();
         }

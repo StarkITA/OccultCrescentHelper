@@ -16,18 +16,18 @@ public class JobSwitcherConfig : ModuleConfig
     [PhantomJobConfig]
     [RenderIf(nameof(SwitchJobOnCombatEnd))]
     [Label("Combat Job")]
-    [Tooltip("Job to switch to for Fates/Combat.\nCritical engagements too depending on the value of [Switch to experience job beore Critical Encounter].")]
+    [Tooltip("Job to switch to for Fates/Combat.\nCritical encounters too depending on the value of [Switch to experience job before Critical Encounter].")]
     public uint CombatJob { get; set; } = 1;
 
     [PhantomJobConfig]
     [RenderIf(nameof(SwitchJobOnCombatEnd))]
     [Label("Experience Job")]
-    [Tooltip("Job to switch to after Fates/Combat.\nCritical engagements too depending on the value of [Switch to experience job beore Critical Encounter].")]
+    [Tooltip("Job to switch to after Fates/Combat.\nCritical encounters too depending on the value of [Switch to experience job before Critical Encounter].")]
     public uint ExpJob { get; set; } = 1;
 
     [CheckboxConfig]
     [RenderIf(nameof(SwitchJobOnCombatEnd))]
-    [Label("Switch to experience job beore Critical Encounter")]
+    [Label("Switch to experience job before Critical Encounter")]
     [Tooltip("Since you cannot switch to a job before getting experience from a ce, we switch before hand.")]
     public bool SwitchToExpJobOnCE { get; set; } = true;
 
