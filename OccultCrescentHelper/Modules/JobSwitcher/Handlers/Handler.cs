@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -15,22 +16,15 @@ public abstract class Handler : IJobStateHandler
     protected readonly JobSwitcher switcher;
 
     protected readonly List<MKDSupportJob> jobs;
-
-    protected readonly MKDSupportJob expJob;
-
-    protected readonly MKDSupportJob combatJob;
-
     protected JobSwitcherConfig config
     {
         get => switcher.config;
     }
 
-    public Handler(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
+    public Handler(JobSwitcher switcher, List<MKDSupportJob> jobs)
     {
         this.switcher = switcher;
         this.jobs = jobs;
-        this.expJob = expJob;
-        this.combatJob = combatJob;
     }
 
     public virtual void Enter() { }
@@ -53,9 +47,9 @@ public abstract class Handler : IJobStateHandler
         }
     }
 
-    protected void ChangeToCombatJob() => ChangeJob(combatJob);
+    protected void ChangeToCombatJob() => ChangeJob(jobs.FirstOrDefault(job => job.RowId == switcher.plugin.config.JobSwitcherConfig.CombatJob));
 
-    protected void ChangeToExpJob() => ChangeJob(expJob);
+    protected void ChangeToExpJob() => ChangeJob(jobs.FirstOrDefault(job => job.RowId == switcher.plugin.config.JobSwitcherConfig.ExpJob));
 
     protected bool IsInCombat() => Svc.Condition[ConditionFlag.InCombat];
 }

@@ -10,8 +10,8 @@ namespace OccultCrescentHelper.JobSwitcher.Handlers;
 
 public class PreContent : Handler
 {
-    public PreContent(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
-        : base(switcher, jobs, expJob, combatJob) { }
+    public PreContent(JobSwitcher switcher, List<MKDSupportJob> jobs)
+        : base(switcher, jobs) { }
 
     public override void Enter() => ChangeToCombatJob();
 

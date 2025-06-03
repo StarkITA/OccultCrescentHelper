@@ -27,18 +27,16 @@ public class JobSwitcher
         this.plugin = plugin;
 
         var jobs = Svc.Data.GetExcelSheet<MKDSupportJob>().ToList();
-        var expJob = jobs.FirstOrDefault(job => job.RowId == plugin.config.JobSwitcherConfig.ExpJob);
-        var combatJob = jobs.FirstOrDefault(job => job.RowId == plugin.config.JobSwitcherConfig.CombatJob);
 
         states = new()
         {
-            [JobSwitcherState.PreContent] = new PreContent(this, jobs, expJob, combatJob),
-            [JobSwitcherState.InCombat] = new InCombat(this, jobs, expJob, combatJob),
-            [JobSwitcherState.InFate] = new InFate(this, jobs, expJob, combatJob),
-            [JobSwitcherState.InCriticalEncounter] = new InCriticalEncounter(this, jobs, expJob, combatJob),
-            [JobSwitcherState.OccultReturn] = new OccultReturn(this, jobs, expJob, combatJob),
-            [JobSwitcherState.PostContent] = new PostContent(this, jobs, expJob, combatJob),
-            [JobSwitcherState.PostExp] = new PostExp(this, jobs, expJob, combatJob),
+            [JobSwitcherState.PreContent] = new PreContent(this, jobs),
+            [JobSwitcherState.InCombat] = new InCombat(this, jobs),
+            [JobSwitcherState.InFate] = new InFate(this, jobs),
+            [JobSwitcherState.InCriticalEncounter] = new InCriticalEncounter(this, jobs),
+            [JobSwitcherState.OccultReturn] = new OccultReturn(this, jobs),
+            [JobSwitcherState.PostContent] = new PostContent(this, jobs),
+            [JobSwitcherState.PostExp] = new PostExp(this, jobs),
         };
 
         Svc.Framework.RunOnFrameworkThread(() => SetState(JobSwitcherState.PostExp));

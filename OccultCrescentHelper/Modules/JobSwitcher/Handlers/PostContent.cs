@@ -15,8 +15,8 @@ public class PostContent : Handler
 
     private float maxWait = 5f;
 
-    public PostContent(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
-        : base(switcher, jobs, expJob, combatJob) { }
+    public PostContent(JobSwitcher switcher, List<MKDSupportJob> jobs)
+        : base(switcher, jobs) { }
 
     public override void Enter()
     {

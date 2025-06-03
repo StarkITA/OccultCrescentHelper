@@ -6,8 +6,8 @@ namespace OccultCrescentHelper.JobSwitcher.Handlers;
 
 public class InCriticalEncounter : Handler
 {
-    public InCriticalEncounter(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
-        : base(switcher, jobs, expJob, combatJob) { }
+    public InCriticalEncounter(JobSwitcher switcher, List<MKDSupportJob> jobs)
+        : base(switcher, jobs) { }
 
     public override void Enter()
     {

@@ -6,8 +6,8 @@ namespace OccultCrescentHelper.JobSwitcher.Handlers;
 
 public class InCombat : Handler
 {
-    public InCombat(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
-        : base(switcher, jobs, expJob, combatJob) { }
+    public InCombat(JobSwitcher switcher, List<MKDSupportJob> jobs)
+        : base(switcher, jobs) { }
 
     public override void Tick(IFramework _)
     {

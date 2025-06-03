@@ -20,8 +20,8 @@ public class OccultReturn : Handler
     private bool waitingForPopup = false;
     private bool waitingForTeleport = false;
 
-    public OccultReturn(JobSwitcher switcher, List<MKDSupportJob> jobs, MKDSupportJob expJob, MKDSupportJob combatJob)
-        : base(switcher, jobs, expJob, combatJob) { }
+    public OccultReturn(JobSwitcher switcher, List<MKDSupportJob> jobs)
+        : base(switcher, jobs) { }
 
     public override void Enter()
     {
