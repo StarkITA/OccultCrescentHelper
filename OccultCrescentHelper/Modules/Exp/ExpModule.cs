@@ -13,6 +13,8 @@ public class ExpModule : Module<Plugin, Config>
         get => _config.ExpConfig;
     }
 
+    public override bool enabled => config.Enabled;
+
     public readonly ExpTracker tracker = new();
 
     private Panel panel = new();

@@ -14,6 +14,8 @@ public class FatesModule : Module<Plugin, Config>
         get => _config.FatesConfig;
     }
 
+    public override bool enabled => config.Enabled;
+
     public readonly FateTracker tracker = new();
 
     public Dictionary<uint, IFate> fates => tracker.fates;

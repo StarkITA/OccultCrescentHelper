@@ -12,6 +12,8 @@ public class CarrotsModule : Module<Plugin, Config>
         get => _config.CarrotsConfig;
     }
 
+    public override bool enabled => config.Enabled;
+
     private readonly CarrotsTracker tracker = new();
 
     public List<Carrot> carrots => tracker.carrots;

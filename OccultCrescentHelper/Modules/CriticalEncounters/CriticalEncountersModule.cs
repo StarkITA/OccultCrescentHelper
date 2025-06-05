@@ -14,6 +14,8 @@ public class CriticalEncountersModule : Module<Plugin, Config>
         get => _config.CriticalEncountersConfig;
     }
 
+    public override bool enabled => config.Enabled;
+
     public readonly CriticalEncounterTracker tracker = new();
 
     public List<DynamicEvent> criticalEncounters => tracker.criticalEncounters;
