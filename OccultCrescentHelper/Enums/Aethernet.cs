@@ -6,6 +6,7 @@ namespace OccultCrescentHelper.Enums;
 
 public enum Aethernet : uint
 {
+    BaseCamp = 4944,
     // -173.02 8.19 -611.14
     TheWanderersHaven = 4936,
 

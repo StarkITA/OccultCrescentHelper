@@ -4,23 +4,16 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
-using OccultCrescentHelper.Api;
 using OccultCrescentHelper.Enums;
+using OccultCrescentHelper.Modules.CrowdSourcing;
 
-namespace OccultCrescentHelper.Carrots;
+namespace OccultCrescentHelper.Modules.Carrots;
 
 public class CarrotsTracker
 {
     public List<Carrot> carrots = [];
 
-    private CrowdSourcingApi api;
-
-    public CarrotsTracker(CrowdSourcingApi api)
-    {
-        this.api = api;
-    }
-
-    public void Tick(IFramework _)
+    public void Tick(IFramework _, Plugin plugin)
     {
         var pos = Svc.ClientState.LocalPlayer!.Position;
 
@@ -30,8 +23,10 @@ public class CarrotsTracker
             .Where(o => o.DataId == (uint)OccultObjectType.Carrot)
             .OrderBy(o => Vector3.Distance(o.Position, pos))
             .Select(o => new Carrot(o))
+            .Where(c => c.IsValid())
             .ToList();
 
+        var api = plugin.modules!.GetModule<CrowdSourcingModule>()!.api;
         foreach (var carrot in carrots)
         {
             if (!carrot.IsValid())

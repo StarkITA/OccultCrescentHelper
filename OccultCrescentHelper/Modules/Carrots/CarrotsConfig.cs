@@ -1,20 +1,18 @@
-using System;
-using OccultCrescentHelper.ConfigAttributes;
-using OccultCrescentHelper.Modules;
+using Ocelot.Config.Attributes;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Carrots;
+namespace OccultCrescentHelper.Modules.Carrots;
 
-[Serializable]
 [Title("Carrots Config")]
 public class CarrotsConfig : ModuleConfig
 {
-    [CheckboxConfig]
+    [Checkbox]
     [Label("Enabled")]
     public bool Enabled { get; set; } = true;
 
-    [CheckboxConfig]
+    [Checkbox]
     [RenderIf(nameof(Enabled))]
     [Label("Draw line to Carrots")]
-    [Tooltip("Render a line from your characters position to nearby carrots.\n * Only carrots in screen space can have lines drawn to them.")]
+    [Tooltip("Render a line from your characters position to nearby carrots.")]
     public bool DrawLineToCarrots { get; set; } = true;
 }

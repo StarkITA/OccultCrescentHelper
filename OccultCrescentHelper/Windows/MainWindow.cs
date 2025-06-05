@@ -1,20 +1,14 @@
-﻿using System;
-using Dalamud.Interface.Windowing;
-using ImGuiNET;
+﻿using ImGuiNET;
+using Ocelot.Modules;
+using Ocelot.Windows;
 
 namespace OccultCrescentHelper.Windows;
 
-public class MainWindow : Window, IDisposable
+[OcelotMainWindow]
+public class MainWindow : OcelotMainWindow
 {
-    private Plugin plugin;
-
-    public MainWindow(Plugin plugin)
-        : base(plugin.Name)
-    {
-        this.plugin = plugin;
-    }
-
-    public void Dispose() { }
+    public MainWindow(Plugin plugin, Config config)
+        : base(plugin, config) { }
 
     public override void Draw()
     {
@@ -24,11 +18,6 @@ public class MainWindow : Window, IDisposable
             return;
         }
 
-        plugin.jobSwitcher.Draw();
-        plugin.treasures.Draw();
-        plugin.carrots.Draw();
-        plugin.currency.Draw();
-        plugin.fates.Draw();
-        plugin.criticalEncounters.Draw();
+        plugin.modules?.DrawMainUi();
     }
 }

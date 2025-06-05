@@ -20,7 +20,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
-    <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+    <PackageReference Include="FFXIVOcelot" Version="0.1.1" />
+    <PackageReference Include="ECommons" Version="2.2.0.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
@@ -35,5 +36,14 @@
     <ProjectReference Include="..\..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="true" />
     <ProjectReference Include="..\..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="true" />
     <ProjectReference Include="..\..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <!-- Add client structs dlls in dev mode for completion -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Reference Include="FFXIVClientStructs" Condition="Exists('bin\Debug\FFXIVClientStructs.dll')">
+      <HintPath>bin\Debug\FFXIVClientStructs.dll</HintPath>
+    </Reference>
+    <Reference Include="InteropGenerator.Runtime" Condition="Exists('bin\Debug\InteropGenerator.Runtime.dll')">
+      <HintPath>bin\Debug\InteropGenerator.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -4,22 +4,15 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
-using OccultCrescentHelper.Api;
+using OccultCrescentHelper.Modules.CrowdSourcing;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
 public class TreasureTracker
 {
-    public List<Treasure> treasures = [];
+    public List<Treasure> treasures { get; private set; } = [];
 
-    private CrowdSourcingApi api;
-
-    public TreasureTracker(CrowdSourcingApi api)
-    {
-        this.api = api;
-    }
-
-    public void Tick(IFramework _)
+    public void Tick(IFramework _, Plugin plugin)
     {
         var pos = Svc.ClientState.LocalPlayer!.Position;
 
@@ -28,8 +21,10 @@ public class TreasureTracker
             .Where(o => o.ObjectKind == ObjectKind.Treasure)
             .OrderBy(o => Vector3.Distance(o.Position, pos))
             .Select(o => new Treasure(o))
+            .Where(t => t.IsValid())
             .ToList();
 
+        var api = plugin.modules!.GetModule<CrowdSourcingModule>()!.api;
         foreach (var treasure in treasures)
         {
             if (!treasure.IsValid())

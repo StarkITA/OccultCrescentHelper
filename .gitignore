@@ -1,5 +1,6 @@
 .vs/
-obj/
-bin/
+OccultCrescentHelper/obj/
+OccultCrescentHelper/bin/
 *.user
 OccultCrescentHelper/.env
+node_modules/

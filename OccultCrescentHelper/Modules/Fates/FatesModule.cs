@@ -1,53 +1,35 @@
-using System;
+
+using System.Collections.Generic;
+using Dalamud.Game.ClientState.Fates;
 using Dalamud.Plugin.Services;
-using OccultCrescentHelper.Modules;
+using OccultCrescentHelper.Data;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Fates;
+namespace OccultCrescentHelper.Modules.Fates;
 
-public class FatesModule : Module, IDisposable
+[OcelotModule(7, 5)]
+public class FatesModule : Module<Plugin, Config>
 {
-    public readonly FateTracker tracker = new FateTracker();
-
-    private Panel panel = new Panel();
-
-    public FatesConfig config
-    {
+    public override FatesConfig config {
         get => _config.FatesConfig;
     }
 
-    public override bool enabled
-    {
-        get => config.Enabled;
-    }
+    public readonly FateTracker tracker = new();
 
-    public FatesModule(Plugin plugin)
-        : base(plugin)
-    {
-        plugin.OnUpdate += Tick;
-    }
+    public Dictionary<uint, IFate> fates => tracker.fates;
 
-    public void Draw()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
+    public Dictionary<uint, EventProgress> progress => tracker.progress;
 
+    private Panel panel = new();
+
+    public FatesModule(Plugin plugin, Config config)
+        : base(plugin, config) { }
+
+    public override void Tick(IFramework framework) => tracker.Tick(framework);
+
+    public override bool DrawMainUi()
+    {
         panel.Draw(this);
-    }
-
-    public void Tick(IFramework framework)
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
-        tracker.Tick(framework);
-    }
-
-    public void Dispose()
-    {
-        plugin.OnUpdate -= Tick;
+        return true;
     }
 }

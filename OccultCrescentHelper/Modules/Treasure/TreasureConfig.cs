@@ -1,26 +1,24 @@
-using System;
-using OccultCrescentHelper.ConfigAttributes;
-using OccultCrescentHelper.Modules;
+using Ocelot.Config.Attributes;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
-[Serializable]
 [Title("Treasure Config")]
 public class TreasureConfig : ModuleConfig
 {
-    [CheckboxConfig]
+    [Checkbox]
     [Label("Enabled")]
     public bool Enabled { get; set; } = true;
 
-    [CheckboxConfig]
+    [Checkbox]
     [RenderIf(nameof(Enabled))]
     [Label("Draw lines to bronze coffers")]
-    [Tooltip("Render a line from your characters position to nearby bronze coffers.\n * Only coffers in screen space can have lines drawn to them.")]
+    [Tooltip("Render a line from your characters position to nearby bronze coffers.")]
     public bool DrawLineToBronzeChests { get; set; } = true;
 
-    [CheckboxConfig]
+    [Checkbox]
     [RenderIf(nameof(Enabled))]
     [Label("Draw lines to silver coffers")]
-    [Tooltip("Render a line from your characters position to nearby silver coffers.\n * Only coffers in screen space can have lines drawn to them.")]
+    [Tooltip("Render a line from your characters position to nearby silver coffers.")]
     public bool DrawLineToSilverChests { get; set; } = true;
 }

@@ -1,25 +1,29 @@
 ﻿using System;
-using Dalamud.Configuration;
 using ECommons.DalamudServices;
-using OccultCrescentHelper.Carrots;
-using OccultCrescentHelper.CriticalEncounters;
-using OccultCrescentHelper.Currency;
-using OccultCrescentHelper.Fates;
-using OccultCrescentHelper.JobSwitcher;
-using OccultCrescentHelper.Treasure;
+using OccultCrescentHelper.Modules.CrowdSourcing;
+using OccultCrescentHelper.Modules.EventDrop;
+using OccultCrescentHelper.Modules.Teleporter;
+using OccultCrescentHelper.Modules.Treasure;
+using OccultCrescentHelper.Modules.Carrots;
+using OccultCrescentHelper.Modules.Currency;
+using OccultCrescentHelper.Modules.CriticalEncounters;
+using OccultCrescentHelper.Modules.Fates;
+
+using Ocelot;
+using OccultCrescentHelper.Modules.Exp;
 
 namespace OccultCrescentHelper;
 
 [Serializable]
-public class Config : IPluginConfiguration
+public class Config : IOcelotConfig
 {
     public int Version { get; set; } = 1;
 
     public CrowdSourcingConfig CrowdSourcingConfig { get; set; } = new();
 
-    public CarrotsConfig CarrotsConfig { get; set; } = new();
-
     public TreasureConfig TreasureConfig { get; set; } = new();
+
+    public CarrotsConfig CarrotsConfig { get; set; } = new();
 
     public CurrencyConfig CurrencyConfig { get; set; } = new();
 
@@ -27,9 +31,9 @@ public class Config : IPluginConfiguration
 
     public FatesConfig FatesConfig { get; set; } = new();
 
-    public CriticalEncounterConfig CriticalEncounterConfig { get; set; } = new();
+    public CriticalEncountersConfig CriticalEncountersConfig { get; set; } = new();
 
-    public JobSwitcherConfig JobSwitcherConfig { get; set; } = new();
+    public ExpConfig ExpConfig { get; set; } = new();
 
     public TeleporterConfig TeleporterConfig { get; set; } = new();
 

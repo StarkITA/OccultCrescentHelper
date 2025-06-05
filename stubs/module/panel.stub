@@ -1,0 +1,14 @@
+using Ocelot;
+
+namespace OccultCrescentHelper.Modules.{{name}};
+
+public class Panel
+{
+    public void Draw({{name}}Module module)
+    {
+        OcelotUI.Title("{{name}}:");
+        OcelotUI.Indent(16, () => {
+            // Content here
+        });
+    }
+}

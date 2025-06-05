@@ -1,15 +1,17 @@
-using System;
+
+using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Plugin.Services;
-using ECommons.DalamudServices;
-using ImGuiNET;
-using OccultCrescentHelper.Modules;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
-public class TreasureModule : Module, IDisposable
+[OcelotModule(3, 1)]
+public class TreasureModule : Module<Plugin, Config>
 {
-    public readonly TreasureTracker tracker;
+    public override TreasureConfig config {
+        get => _config.TreasureConfig;
+    }
 
     public static Vector4 bronze = new Vector4(0.804f, 0.498f, 0.196f, 1f);
 
@@ -17,64 +19,25 @@ public class TreasureModule : Module, IDisposable
 
     public static Vector4 unknown = new Vector4(0.6f, 0.2f, 0.8f, 1f);
 
-    private Panel panel = new Panel();
+    private readonly TreasureTracker tracker = new();
 
-    private Radar radar;
+    public List<Treasure> treasures => tracker.treasures;
 
-    public TreasureConfig config
+    private readonly Panel panel = new();
+
+    private readonly Radar radar = new();
+
+    public TreasureModule(Plugin plugin, Config config)
+        : base(plugin, config) { }
+
+    public override void Tick(IFramework framework) => tracker.Tick(framework, plugin);
+
+    public override void Draw() => radar.Draw(this);
+
+
+    public override bool DrawMainUi()
     {
-        get => _config.TreasureConfig;
-    }
-
-    public override bool enabled
-    {
-        get => config.Enabled;
-    }
-
-    public TreasureModule(Plugin plugin)
-        : base(plugin)
-    {
-        tracker = new TreasureTracker(plugin.api);
-        radar = new Radar(this);
-
-        plugin.OnUpdate += Tick;
-        Svc.PluginInterface.UiBuilder.Draw += Radar;
-    }
-
-    public void Tick(IFramework framework)
-    {
-        if (!enabled)
-        {
-            return;
-        }
-
-        tracker.Tick(framework);
-    }
-
-    public void Draw()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
         panel.Draw(this);
-        ImGui.Separator();
-    }
-
-    public void Radar()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
-        radar.Draw();
-    }
-
-    public void Dispose()
-    {
-        Svc.PluginInterface.UiBuilder.Draw -= Draw;
-        plugin.OnUpdate -= Tick;
+        return true;
     }
 }

@@ -1,73 +1,35 @@
-using System;
+
+using System.Collections.Generic;
 using Dalamud.Plugin.Services;
-using ECommons.DalamudServices;
-using ImGuiNET;
-using OccultCrescentHelper.Modules;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Carrots;
+namespace OccultCrescentHelper.Modules.Carrots;
 
-public class CarrotsModule : Module, IDisposable
+[OcelotModule(4, 2)]
+public class CarrotsModule : Module<Plugin, Config>
 {
-    public readonly CarrotsTracker tracker;
-
-    private Radar radar;
-
-    private Panel panel = new Panel();
-
-    public CarrotsConfig config
-    {
+    public override CarrotsConfig config {
         get => _config.CarrotsConfig;
     }
 
-    public override bool enabled
+    private readonly CarrotsTracker tracker = new();
+
+    public List<Carrot> carrots => tracker.carrots;
+
+    private readonly Panel panel = new();
+
+    private readonly Radar radar = new();
+
+    public CarrotsModule(Plugin plugin, Config config)
+        : base(plugin, config) { }
+
+    public override void Tick(IFramework framework) => tracker.Tick(framework, plugin);
+
+    public override void Draw() => radar.Draw(this);
+
+    public override bool DrawMainUi()
     {
-        get => config.Enabled;
-    }
-
-    public CarrotsModule(Plugin plugin)
-        : base(plugin)
-    {
-        tracker = new CarrotsTracker(plugin.api);
-        radar = new Radar(this);
-
-        plugin.OnUpdate += Tick;
-        Svc.PluginInterface.UiBuilder.Draw += Radar;
-    }
-
-    public void Draw()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
         panel.Draw(this);
-        ImGui.Separator();
-    }
-
-    public void Radar()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
-        radar.Draw();
-    }
-
-    public void Tick(IFramework framework)
-    {
-        if (!enabled)
-        {
-            return;
-        }
-
-        tracker.Tick(framework);
-    }
-
-    public void Dispose()
-    {
-        Svc.PluginInterface.UiBuilder.Draw -= Radar;
-        plugin.OnUpdate -= Tick;
+        return true;
     }
 }

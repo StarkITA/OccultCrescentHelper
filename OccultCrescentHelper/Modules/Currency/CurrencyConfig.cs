@@ -1,14 +1,12 @@
-using System;
-using OccultCrescentHelper.ConfigAttributes;
-using OccultCrescentHelper.Modules;
+using Ocelot.Config.Attributes;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Currency;
+namespace OccultCrescentHelper.Modules.Currency;
 
-[Serializable]
 [Title("Currency Config")]
 public class CurrencyConfig : ModuleConfig
 {
-    [CheckboxConfig]
+    [Checkbox]
     [Label("Enabled")]
     public bool Enabled { get; set; } = true;
 }

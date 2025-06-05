@@ -1,52 +1,50 @@
 using System.Numerics;
+using ECommons.DalamudServices;
 using ImGuiNET;
+using Ocelot;
+using Ocelot.IPC;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
 public class Panel
 {
     public void Draw(TreasureModule module)
     {
-        ImGui.TextColored(new Vector4(1f, 0.75f, 0.25f, 1f), "Treasure:");
-        ImGui.Indent(16);
-
-        if (module.tracker.treasures.Count <= 0)
-        {
-            ImGui.TextUnformatted("No nearby Treasure.");
-            ImGui.Unindent(16);
-            Helpers.VSpace();
-            return;
-        }
-
-        if (ImGui.BeginTable("Treasure", 2, ImGuiTableFlags.SizingFixedFit))
-        {
-            int index = 0;
-            foreach (var treasure in module.tracker.treasures)
+        OcelotUI.Title("Treasure:");
+        OcelotUI.Indent(16, () => {
+            if (module.treasures.Count <= 0)
             {
-                if (!treasure.IsValid())
-                {
-                    continue;
-                }
-
-                var pos = treasure.GetPosition();
-
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.TextUnformatted($"{treasure.GetName()} ({pos.X:F2}, {pos.Y:F2}, {pos.Z:F2})");
-
-                ImGui.TableNextColumn();
-                if (ImGui.Button($"Target###{index}"))
-                {
-                    treasure.Target();
-                }
-
-                index++;
+                ImGui.TextUnformatted("No nearby Treasure.");
+                return;
             }
 
-            ImGui.EndTable();
-        }
+            if (ImGui.BeginTable("Treasure", 2, ImGuiTableFlags.SizingFixedFit))
+            {
+                int index = 0;
+                foreach (var treasure in module.treasures)
+                {
+                    if (!treasure.IsValid())
+                    {
+                        continue;
+                    }
 
-        ImGui.Unindent(16);
-        Helpers.VSpace();
+                    var pos = treasure.GetPosition();
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.TextUnformatted($"{treasure.GetName()} ({pos.X:F2}, {pos.Y:F2}, {pos.Z:F2})");
+
+                    ImGui.TableNextColumn();
+                    if (ImGui.Button($"Target###{index}"))
+                    {
+                        treasure.Target();
+                    }
+
+                    index++;
+                }
+
+                ImGui.EndTable();
+            }
+        });
     }
 }

@@ -1,27 +1,31 @@
+using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
 using OccultCrescentHelper.Enums;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
 public class Radar
 {
-    private TreasureModule module;
-
-    public Radar(TreasureModule module)
+    public void Draw(TreasureModule module)
     {
-        this.module = module;
-    }
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
 
-    public void Draw()
-    {
         if (!module.config.DrawLineToBronzeChests && !module.config.DrawLineToSilverChests)
+        {
+            return;
+        }
+
+        if (Svc.ClientState.LocalPlayer == null || Svc.Condition[ConditionFlag.InCombat])
         {
             return;
         }
 
         var pos = Svc.ClientState.LocalPlayer!.Position;
 
-        foreach (var treasure in module.tracker.treasures)
+        foreach (var treasure in module.treasures)
         {
             if (!treasure.IsValid())
             {

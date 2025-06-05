@@ -1,67 +1,28 @@
-using System;
+
 using Dalamud.Plugin.Services;
-using ECommons.DalamudServices;
-using ImGuiNET;
-using OccultCrescentHelper.Modules;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Currency;
+namespace OccultCrescentHelper.Modules.Currency;
 
-public class CurrencyModule : Module, IDisposable
+[OcelotModule(5, 3)]
+public class CurrencyModule : Module<Plugin, Config>
 {
-    public readonly CurrencyTracker tracker = new CurrencyTracker();
-
-    private Panel panel = new Panel();
-
-    public CurrencyConfig config
-    {
+    public override CurrencyConfig config {
         get => _config.CurrencyConfig;
     }
 
-    public override bool enabled
-    {
-        get => config.Enabled;
-    }
+    public readonly CurrencyTracker tracker = new();
 
-    public CurrencyModule(Plugin plugin)
-        : base(plugin)
-    {
-        plugin.OnUpdate += Tick;
-        Svc.ClientState.TerritoryChanged += TerritoryChanged;
-    }
+    private Panel panel = new();
 
-    public void Draw()
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
+    public CurrencyModule(Plugin plugin, Config config)
+        : base(plugin, config) { }
 
+    public override void Tick(IFramework framework) => tracker.Tick(framework);
+
+    public override bool DrawMainUi()
+    {
         panel.Draw(this);
-    }
-
-    public void Tick(IFramework framework)
-    {
-        if (!enabled || !Helpers.IsInOccultCrescent())
-        {
-            return;
-        }
-
-        tracker.Tick(framework);
-    }
-
-    public void TerritoryChanged(ushort territory)
-    {
-        if (!enabled)
-        {
-            return;
-        }
-
-        tracker.TerritoryChanged(territory);
-    }
-
-    public void Dispose()
-    {
-        plugin.OnUpdate -= Tick;
-        Svc.ClientState.TerritoryChanged -= TerritoryChanged;
+        return true;
     }
 }

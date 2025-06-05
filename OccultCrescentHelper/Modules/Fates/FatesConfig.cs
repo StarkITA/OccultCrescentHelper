@@ -1,14 +1,12 @@
-using System;
-using OccultCrescentHelper.ConfigAttributes;
-using OccultCrescentHelper.Modules;
+using Ocelot.Config.Attributes;
+using Ocelot.Modules;
 
-namespace OccultCrescentHelper.Fates;
+namespace OccultCrescentHelper.Modules.Fates;
 
-[Serializable]
 [Title("Fates Config")]
 public class FatesConfig : ModuleConfig
 {
-    [CheckboxConfig]
+    [Checkbox]
     [Label("Enabled")]
     public bool Enabled { get; set; } = true;
 }

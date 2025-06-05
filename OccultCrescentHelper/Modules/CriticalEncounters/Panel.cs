@@ -1,202 +1,121 @@
 using System;
+using System.Linq;
 using System.Numerics;
-using Dalamud.Interface.Textures;
-using Dalamud.Interface.Textures.TextureWraps;
-using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.Game;
+using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using ImGuiNET;
-using Lumina.Excel.Sheets;
+using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
+using OccultCrescentHelper.Modules.Teleporter;
+using Ocelot;
 
-namespace OccultCrescentHelper.CriticalEncounters;
+namespace OccultCrescentHelper.Modules.CriticalEncounters;
 
 public class Panel
 {
-    public void Draw(CriticalEncounterModule module)
+    public void Draw(CriticalEncountersModule module)
     {
-        var active = 0;
-        uint id = 0;
-
-        ImGui.TextColored(new Vector4(1f, 0.75f, 0.25f, 1f), "Critical Encounters:");
-        ImGui.Indent(16);
-
-        foreach (var ce in module.tracker.criticalEncounters)
-        {
-            if (ce.State == DynamicEventState.Inactive)
+        OcelotUI.Title("Critical Encounters:");
+        OcelotUI.Indent(16, () => {
+            var active = module.criticalEncounters.Where(ev => ev.State != DynamicEventState.Inactive).Count();
+            if (active <= 0)
             {
-                id++;
-                continue;
+
+                ImGui.TextUnformatted("No active critical engagements.");
+                return;
             }
 
-            if (!CriticalEncounterTracker.data.TryGetValue(id, out var data))
+
+            uint index = 0;
+            foreach (var ev in module.criticalEncounters)
             {
-                id++;
-                continue;
-            }
-
-            active++;
-
-            ImGui.TextUnformatted(ce.Name.ToString());
-
-            if (ce.State == DynamicEventState.Register && id > 0)
-            {
-                DateTime start = DateTimeOffset.FromUnixTimeSeconds(ce.StartTimestamp).DateTime;
-                TimeSpan timeUntilStart = start - DateTime.UtcNow;
-                string formattedTime = $"{timeUntilStart.Minutes:D2}:{timeUntilStart.Seconds:D2}";
-
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"(Preparing: {formattedTime})");
-            }
-
-            if (ce.State == DynamicEventState.Warmup)
-            {
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"(Starting)");
-            }
-
-            if (ce.State == DynamicEventState.Battle)
-            {
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"({ce.Progress}%)");
-
-                if (module.tracker.tracker.TryGetValue(id, out var progress))
+                if (ev.State == DynamicEventState.Inactive)
                 {
-                    var estimate = progress.EstimateTimeToCompletion();
-                    if (estimate != null)
+                    index++;
+                    continue;
+                }
+
+                if (!EventData.CriticalEncounters.TryGetValue(index, out var data))
+                {
+                    index++;
+                    continue;
+                }
+
+                ImGui.TextUnformatted(ev.Name.ToString());
+                if (index == 0)
+                {
+                    HandlerTower(ev);
+                    index++;
+                    return;
+                }
+
+                if (ev.State == DynamicEventState.Register)
+                {
+                    DateTime start = DateTimeOffset.FromUnixTimeSeconds(ev.StartTimestamp).DateTime;
+                    TimeSpan timeUntilStart = start - DateTime.UtcNow;
+                    string formattedTime = $"{timeUntilStart.Minutes:D2}:{timeUntilStart.Seconds:D2}";
+
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"(Preparing: {formattedTime})");
+                }
+
+                if (ev.State == DynamicEventState.Warmup)
+                {
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"(Starting)");
+                }
+
+                if (ev.State == DynamicEventState.Battle)
+                {
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"({ev.Progress}%)");
+
+                    if (module.progress.TryGetValue(index, out var progress))
                     {
-                        ImGui.SameLine();
-                        ImGui.TextUnformatted($"(Est. {estimate.Value:mm\\:ss})");
+                        var estimate = progress.EstimateTimeToCompletion();
+                        if (estimate != null)
+                        {
+                            ImGui.SameLine();
+                            ImGui.TextUnformatted($"(Est. {estimate.Value:mm\\:ss})");
+                        }
                     }
                 }
-            }
 
-            ImGui.Indent(16);
-            var showDemiatma = data.demiatma != null && module._config.EventDropConfig.ShowDemiatmaDrops;
-            if (showDemiatma)
-            {
-                Demiatma(data);
-            }
+                OcelotUI.Indent(16, () => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
 
-            var showNotes = data.notes != null && module._config.EventDropConfig.ShowNoteDrops;
-            if (showNotes)
-            {
-                if (showDemiatma)
+                if (ev.State != DynamicEventState.Register)
                 {
-                    ImGui.SameLine();
+                    index++;
+                    continue;
                 }
 
-                Notes(data);
-            }
-
-            var showSoulShard = data.soulshard != null && module._config.EventDropConfig.ShowSoulShardDrops;
-            if (showSoulShard)
-            {
-                if (showDemiatma || showNotes)
+                if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
                 {
-                    ImGui.SameLine();
+                    Vector3 start = ev.MapMarker.Position;
+                    var aethernet = data.aethernet ?? teleporter.GetClosestAethernet(start);
+                    if (ImGui.Button($"Teleport to {aethernet.ToFriendlyString()}##ce_{index}"))
+                    {
+                        Vector3 point = start;
+                        var random = new Random();
+                        double angle = random.NextDouble() * Math.PI * 2;
+                        double radius = random.NextDouble() * ev.MapMarker.Radius;
+                        float offsetX = (float)(Math.Cos(angle) * radius);
+                        float offsetZ = (float)(Math.Sin(angle) * radius);
+                        point = new Vector3(start.X + offsetX, start.Y, start.Z + offsetZ);
+
+                        teleporter.Teleport(aethernet, point);
+                    }
                 }
 
-                SoulShard(data);
+                index++;
             }
-
-            ImGui.Unindent(16);
-
-            if (module.plugin.teleporter.IsReady() && ce.State == DynamicEventState.Register)
-            {
-                var aethernet = module.plugin.teleporter.GetClosestAethernet(ce.MapMarker.Position);
-                if (ImGui.Button($"Tekeport to {aethernet.ToFriendlyString()}##ce_{id}"))
-                {
-                    module.plugin.teleporter.Teleport(aethernet);
-                }
-            }
-
-            id++;
-        }
-
-        if (active == 0)
-        {
-            ImGui.TextUnformatted("No active critical engagements.");
-        }
-
-        Helpers.VSpace();
-        ImGui.Unindent(16);
-        Helpers.Separator();
+        });
     }
 
-    private unsafe void Demiatma(CriticalEncounterData data)
+
+    private void HandlerTower(DynamicEvent ev)
+
     {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.demiatma);
 
-        var count = InventoryManager.Instance()->GetInventoryItemCount(itemData.RowId);
-        var needed = Math.Max(0, 3 - count);
-
-        var border = needed > 0 ? new Vector4(0.3f, 0.85f, 0.39f, 1f) : new Vector4(0.95f, 0.26f, 0.21f, 1f);
-
-        var demiatma = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
-
-        DrawIcon(demiatma, border, $"Demiatma_{itemData.RowId}_ce_{data.id}");
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-
-            var label = $"Needed ({needed})";
-            ;
-            if (needed <= 0)
-            {
-                label = $"Not Needed ({count})";
-            }
-
-            ImGui.TextUnformatted($"{itemData.Name}: {label}");
-            ImGui.EndTooltip();
-        }
-    }
-
-    private unsafe void Notes(CriticalEncounterData data)
-    {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.notes);
-
-        var notes = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
-
-        DrawIcon(notes, new Vector4(1f, 1f, 1f, 1f), $"Note_{itemData.RowId}_ce_{data.id}");
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted(itemData.Name.ToString());
-            ImGui.EndTooltip();
-        }
-    }
-
-    private unsafe void SoulShard(CriticalEncounterData data)
-    {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.soulshard);
-
-        var soulshard = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
-
-        DrawIcon(soulshard, new Vector4(1f, 1f, 1f, 1f), $"SoulShard_{itemData.RowId}_ce_{data.id}");
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted(itemData.Name.ToString());
-            ImGui.EndTooltip();
-        }
-    }
-
-    private void DrawIcon(IDalamudTextureWrap icon, Vector4 border, string id)
-    {
-        ImGui.PushStyleColor(ImGuiCol.Border, border);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-
-        ImGui.BeginChild($"ImageBorder##{id}", new Vector2(50, 50), true, ImGuiWindowFlags.NoScrollbar);
-
-        ImGui.Image(icon.ImGuiHandle, new System.Numerics.Vector2(48, 48));
-
-        ImGui.EndChild();
-
-        ImGui.PopStyleVar();
-        ImGui.PopStyleColor();
     }
 }

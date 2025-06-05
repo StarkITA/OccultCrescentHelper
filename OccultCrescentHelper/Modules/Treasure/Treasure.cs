@@ -5,7 +5,7 @@ using ECommons.DalamudServices;
 using OccultCrescentHelper.Enums;
 using XIVTreasure = Lumina.Excel.Sheets.Treasure;
 
-namespace OccultCrescentHelper.Treasure;
+namespace OccultCrescentHelper.Modules.Treasure;
 
 public class Treasure
 {
@@ -18,7 +18,7 @@ public class Treasure
 
     private XIVTreasure? GetData() => Svc.Data.GetExcelSheet<XIVTreasure>().ToList().FirstOrDefault(t => t.RowId == gameObject.DataId);
 
-    public bool IsValid() => gameObject != null && !gameObject.IsDead && gameObject.IsValid();
+    public bool IsValid() => gameObject != null && gameObject.IsValid() && !gameObject.IsDead && gameObject.IsTargetable;
 
     public Vector3 GetPosition() => gameObject.Position;
 
@@ -26,18 +26,15 @@ public class Treasure
 
     public TreasureType GetTreasureType()
     {
-        var model = GetModelId();
-        if (model == 1597)
+        switch (GetModelId() ?? 0)
         {
-            return TreasureType.Silver;
+            case 1597:
+                return TreasureType.Silver;
+            case 1596:
+                return TreasureType.Bronze;
+            default:
+                return TreasureType.Unknown;
         }
-
-        if (model == 1596)
-        {
-            return TreasureType.Bronze;
-        }
-
-        return TreasureType.Unknown;
     }
 
     public Vector4 GetColor()

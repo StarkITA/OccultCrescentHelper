@@ -1,7 +1,7 @@
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Types;
 
-namespace OccultCrescentHelper.Carrots;
+namespace OccultCrescentHelper.Modules.Carrots;
 
 public class Carrot
 {

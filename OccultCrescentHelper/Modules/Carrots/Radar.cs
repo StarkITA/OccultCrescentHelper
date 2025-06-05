@@ -1,26 +1,30 @@
+using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
 
-namespace OccultCrescentHelper.Carrots;
+namespace OccultCrescentHelper.Modules.Carrots;
 
 public class Radar
 {
-    private CarrotsModule module;
-
-    public Radar(CarrotsModule module)
+    public void Draw(CarrotsModule module)
     {
-        this.module = module;
-    }
+        if (!Helpers.IsInOccultCrescent())
+        {
+            return;
+        }
 
-    public void Draw()
-    {
         if (!module.config.DrawLineToCarrots)
+        {
+            return;
+        }
+
+        if (Svc.ClientState.LocalPlayer == null || Svc.Condition[ConditionFlag.InCombat])
         {
             return;
         }
 
         var pos = Svc.ClientState.LocalPlayer!.Position;
 
-        foreach (var carrot in module.tracker.carrots)
+        foreach (var carrot in module.carrots)
         {
             if (!carrot.IsValid())
             {

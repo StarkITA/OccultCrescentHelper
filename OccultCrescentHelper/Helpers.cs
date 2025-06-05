@@ -1,5 +1,7 @@
+using System;
 using System.Numerics;
 using ECommons.DalamudServices;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
 using ImGuiNET;
 
 namespace OccultCrescentHelper;
@@ -16,7 +18,7 @@ public static class Helpers
         return Svc.ClientState.LocalPlayer != null && IsInSouthHorn();
     }
 
-    public static void DrawLine(Vector3 start, Vector3 end, float thickness, Vector4 color)
+    public static void KDrawLine(Vector3 start, Vector3 end, float thickness, Vector4 color)
     {
         bool startValid = Svc.GameGui.WorldToScreen(start, out Vector2 startScreen);
         bool endValid = Svc.GameGui.WorldToScreen(end, out Vector2 endScreen);
@@ -28,22 +30,21 @@ public static class Helpers
         }
     }
 
-    public static void Separator()
+    public unsafe static void DrawLine(Vector3 start, Vector3 end, float thickness, Vector4 color)
     {
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, 0));
-        var pos = ImGui.GetCursorScreenPos();
-        var width = ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
-        var drawList = ImGui.GetWindowDrawList();
+        var camera = FFXIVClientStructs.FFXIV.Client.Graphics.Scene.CameraManager.Instance()->CurrentCamera;
+        var renderCamera = camera->RenderCamera;
 
-        drawList.AddLine(new Vector2(pos.X, pos.Y), new Vector2(pos.X + width, pos.Y), ImGui.GetColorU32(ImGuiCol.Separator));
+        Matrix4x4 view = camera->ViewMatrix;
+        Matrix4x4 projection = renderCamera->ProjectionMatrix;
+        float nearPlane = renderCamera->NearPlane;
+        uint width = Device.Instance()->Width;
+        uint height = Device.Instance()->Height;
 
-        ImGui.Dummy(new Vector2(width, 1));
+        if (!CameraHelper.WorldLineToScreen(start, end, view, projection, nearPlane, width, height, out Vector2 screenStart, out Vector2 screenEnd))
+            return;
 
-        ImGui.PopStyleVar();
-    }
-
-    public static void VSpace(int px = 8)
-    {
-        ImGui.Dummy(new Vector2(0, px));
+        uint imguiColor = ImGui.ColorConvertFloat4ToU32(color);
+        ImGui.GetBackgroundDrawList().AddLine(screenStart, screenEnd, imguiColor, thickness);
     }
 }
