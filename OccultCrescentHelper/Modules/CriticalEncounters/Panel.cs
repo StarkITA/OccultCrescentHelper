@@ -46,7 +46,7 @@ public class Panel
                 {
                     HandlerTower(ev);
                     index++;
-                    return;
+                    continue;
                 }
 
                 if (ev.State == DynamicEventState.Register)
