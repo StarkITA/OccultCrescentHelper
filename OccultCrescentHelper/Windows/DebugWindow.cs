@@ -5,13 +5,11 @@ using Ocelot.Windows;
 
 namespace OccultCrescentHelper.Windows;
 
-public class DebugWindow : OcelotMainWindow
+public class DebugWindow : OcelotWindow
 {
     public DebugWindow(Plugin plugin, Config config)
-        : base(plugin, config)
-    {
-        WindowName = "OCH Debug";
-    }
+        : base(plugin, config, "OCH Debug")
+    { }
 
     public override void Draw()
     {

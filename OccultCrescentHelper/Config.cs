@@ -1,6 +1,5 @@
 ﻿using System;
 using ECommons.DalamudServices;
-using OccultCrescentHelper.Modules.CrowdSourcing;
 using OccultCrescentHelper.Modules.EventDrop;
 using OccultCrescentHelper.Modules.Teleporter;
 using OccultCrescentHelper.Modules.Treasure;
@@ -8,9 +7,9 @@ using OccultCrescentHelper.Modules.Carrots;
 using OccultCrescentHelper.Modules.Currency;
 using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
-
 using Ocelot;
 using OccultCrescentHelper.Modules.Exp;
+using OccultCrescentHelper.Modules.WindowManager;
 
 namespace OccultCrescentHelper;
 
@@ -18,8 +17,6 @@ namespace OccultCrescentHelper;
 public class Config : IOcelotConfig
 {
     public int Version { get; set; } = 1;
-
-    public CrowdSourcingConfig CrowdSourcingConfig { get; set; } = new();
 
     public TreasureConfig TreasureConfig { get; set; } = new();
 
@@ -36,6 +33,8 @@ public class Config : IOcelotConfig
     public ExpConfig ExpConfig { get; set; } = new();
 
     public TeleporterConfig TeleporterConfig { get; set; } = new();
+
+    public WindowManagerConfig WindowManagerConfig { get; set; } = new();
 
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

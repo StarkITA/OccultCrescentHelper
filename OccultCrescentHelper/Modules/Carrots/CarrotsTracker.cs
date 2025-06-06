@@ -5,7 +5,6 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
 using OccultCrescentHelper.Enums;
-using OccultCrescentHelper.Modules.CrowdSourcing;
 
 namespace OccultCrescentHelper.Modules.Carrots;
 
@@ -25,16 +24,5 @@ public class CarrotsTracker
             .Select(o => new Carrot(o))
             .Where(c => c.IsValid())
             .ToList();
-
-        var api = plugin.modules!.GetModule<CrowdSourcingModule>()!.api;
-        foreach (var carrot in carrots)
-        {
-            if (!carrot.IsValid())
-            {
-                continue;
-            }
-
-            api.SendCarrot(carrot.GetPosition());
-        }
     }
 }

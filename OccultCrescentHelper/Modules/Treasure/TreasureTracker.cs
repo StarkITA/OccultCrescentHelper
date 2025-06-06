@@ -4,7 +4,6 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
-using OccultCrescentHelper.Modules.CrowdSourcing;
 
 namespace OccultCrescentHelper.Modules.Treasure;
 
@@ -23,16 +22,5 @@ public class TreasureTracker
             .Select(o => new Treasure(o))
             .Where(t => t.IsValid())
             .ToList();
-
-        var api = plugin.modules!.GetModule<CrowdSourcingModule>()!.api;
-        foreach (var treasure in treasures)
-        {
-            if (!treasure.IsValid())
-            {
-                continue;
-            }
-
-            api.SendTreasure(treasure.GetPosition(), treasure.GetModelId());
-        }
     }
 }
