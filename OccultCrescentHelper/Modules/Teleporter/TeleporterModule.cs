@@ -1,6 +1,5 @@
-using System.Numerics;
-using Lumina.Excel.Sheets;
-using OccultCrescentHelper.Enums;
+using ImGuiNET;
+using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Teleporter;
@@ -18,6 +17,24 @@ public class TeleporterModule : Module<Plugin, Config>
         : base(plugin, config)
     {
         teleporter = new(this);
+    }
+
+    public override void Initialize()
+    {
+        if (TryGetModule<StateManagerModule>(out var states) && states != null)
+        {
+            states.OnExitInFate += teleporter.OnFateEnd;
+            states.OnExitInCriticalEngagement += teleporter.OnCriticalEncounterEnd;
+        }
+    }
+
+    public override void Dispose()
+    {
+        if (TryGetModule<StateManagerModule>(out var states) && states != null)
+        {
+            states.OnExitInFate -= teleporter.OnFateEnd;
+            states.OnExitInCriticalEngagement -= teleporter.OnCriticalEncounterEnd;
+        }
     }
 
     public bool IsReady() => teleporter.IsReady();

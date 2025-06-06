@@ -14,6 +14,7 @@ using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using Ocelot;
 using Ocelot.Chain;
+using Ocelot.Chain.ChainBuilderEx;
 using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Modules.Teleporter;
@@ -27,6 +28,8 @@ public class Teleporter
     {
         this.module = module;
     }
+
+    private readonly Dictionary<uint, Vector3> aetherytes = new() { { 1252, new Vector3(830.75f, 72.98f, -695.98f) } };
 
     private Chain GetTeleportChain(Lifestream lifestream, Aethernet aethernet)
         => ChainBuilder.Begin()
@@ -161,6 +164,62 @@ public class Teleporter
                 }
             }
         });
+    }
+
+    public void OnFateEnd()
+    {
+        if (!module.config.ReturnAfterFate)
+        {
+            return;
+        }
+
+        Return();
+    }
+
+    public void OnCriticalEncounterEnd()
+    {
+        if (!module.config.ReturnAfterCritcalEncounter)
+        {
+            return;
+        }
+
+        Return();
+    }
+
+    public void Return()
+    {
+        var player = Svc.ClientState.LocalPlayer;
+        if (player == null)
+        {
+            return;
+        }
+
+        var chain = ChainBuilder.Begin()
+            .WaitGcd()
+            .UseAction(ActionType.GeneralAction, 8)
+            .AddonCallback("SelectYesno", true, 0)
+            .WaitCastingCycle()
+            .WaitForConditionCycle(ConditionFlag.BetweenAreas);
+
+        if (module.config.ApproachAetheryte && module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
+        {
+            Random random = new();
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = (float)(Math.Sqrt(random.NextDouble()) * (4.5f - 2f) + 2f);
+
+            float xOffset = (float)Math.Cos(angle) * distance;
+            float zOffset = (float)Math.Sin(angle) * distance;
+
+            var aetheryte = aetherytes[Svc.ClientState.TerritoryType];
+            var destination = new Vector3(aetheryte.X + xOffset, aetheryte.Y, aetheryte.Z + zOffset);
+
+            chain = chain
+                .Wait(500)
+                .PathfindAndMoveTo(vnav, destination)
+                .WaitForPathfindingCycle(vnav);
+        }
+
+        chain.Run();
     }
 
     private Aethernet GetClosestAethernet(Vector3 position)

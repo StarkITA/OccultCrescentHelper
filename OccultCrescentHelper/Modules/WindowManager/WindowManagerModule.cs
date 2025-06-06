@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using ECommons.DalamudServices;
 using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.WindowManager;
@@ -18,7 +19,7 @@ public class WindowManagerModule : Module<Plugin, Config>
     private List<uint> occultCrescentTerritoryIds = [1252];
 
 
-    public override void Initialize()
+    public override void PostInitialize()
     {
         if (config.OpenMainOnStartUp)
         {
