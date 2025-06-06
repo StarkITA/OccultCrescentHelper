@@ -16,7 +16,7 @@ public class Panel
     public void Draw(CriticalEncountersModule module)
     {
         OcelotUI.Title("Critical Encounters:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             var active = module.criticalEncounters.Where(ev => ev.State != DynamicEventState.Inactive).Count();
             if (active <= 0)
             {
@@ -81,10 +81,9 @@ public class Panel
                     }
                 }
 
-                OcelotUI.Indent(16, () => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-
                 if (ev.State != DynamicEventState.Register)
                 {
+                    OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
                     index++;
                     continue;
                 }
@@ -92,20 +91,11 @@ public class Panel
                 if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
                 {
                     Vector3 start = ev.MapMarker.Position;
-                    var aethernet = data.aethernet ?? teleporter.GetClosestAethernet(start);
-                    if (ImGui.Button($"Teleport to {aethernet.ToFriendlyString()}##ce_{index}"))
-                    {
-                        Vector3 point = start;
-                        var random = new Random();
-                        double angle = random.NextDouble() * Math.PI * 2;
-                        double radius = random.NextDouble() * ev.MapMarker.Radius;
-                        float offsetX = (float)(Math.Cos(angle) * radius);
-                        float offsetZ = (float)(Math.Sin(angle) * radius);
-                        point = new Vector3(start.X + offsetX, start.Y, start.Z + offsetZ);
 
-                        teleporter.Teleport(aethernet, point);
-                    }
+                    teleporter.teleporter.Button(data.aethernet, start, data.Name, $"ce_{index}", data);
                 }
+
+                OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
 
                 index++;
             }

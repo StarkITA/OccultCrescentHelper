@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Ocelot.Modules;
 using Ocelot.Commands;
+using OccultCrescentHelper.Modules.Debug;
 
 namespace OccultCrescentHelper.Commands;
 
@@ -18,7 +19,7 @@ Opens Occult Crescent Helper main ui
 
     public override IReadOnlyList<string> aliases => ["/occultcrescenthelper"];
 
-    public override IReadOnlyList<string> validArguments => ["config", "cfg"];
+    public override IReadOnlyList<string> validArguments => ["config", "cfg", "debug"];
 
 
     private readonly Plugin plugin;
@@ -36,6 +37,18 @@ Opens Occult Crescent Helper main ui
             plugin.windows?.ToggleConfigUI();
             return;
         }
+
+#if DEBUG_BUILD
+        if (arguments == "debug")
+        {
+            var debug = plugin.modules?.GetModule<DebugModule>();
+            if (debug != null)
+            {
+                debug.window.Toggle();
+                return;
+            }
+        }
+#endif
 
         plugin.windows?.ToggleMainUI();
     }

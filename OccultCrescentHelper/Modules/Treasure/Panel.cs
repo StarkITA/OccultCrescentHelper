@@ -11,7 +11,7 @@ public class Panel
     public void Draw(TreasureModule module)
     {
         OcelotUI.Title("Treasure:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             if (module.treasures.Count <= 0)
             {
                 ImGui.TextUnformatted("No nearby Treasure.");

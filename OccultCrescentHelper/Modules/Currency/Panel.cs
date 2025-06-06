@@ -9,7 +9,7 @@ public class Panel
     public void Draw(CurrencyModule module)
     {
         OcelotUI.Title("Currency:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             // Content here
             if (ImGui.BeginTable("CurrencyData##OCH", 3, ImGuiTableFlags.SizingFixedFit))
             {

@@ -1,49 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/12.0.2">
-  <PropertyGroup>
-    <Version>0.0.0.1</Version>
-    <Description>A helper for Occult Crescent.</Description>
-    <PackageProjectUrl>https://github.com/OhKannaDuh/OccultCrescentHelper</PackageProjectUrl>
-    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
-    <IsPackable>false</IsPackable>
-    <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="..\assets\icon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include=".env">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <PackageReference Include="FFXIVOcelot" Version="0.1.1" />
-    <PackageReference Include="ECommons" Version="2.2.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DotNetEnv" Version="3.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Dalamud.Common">
-      <HintPath>$(DalamudLibPath)Dalamud.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="true" />
-    <ProjectReference Include="..\..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="true" />
-    <ProjectReference Include="..\..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-  <!-- Add client structs dlls in dev mode for completion -->
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Reference Include="FFXIVClientStructs" Condition="Exists('bin\Debug\FFXIVClientStructs.dll')">
-      <HintPath>bin\Debug\FFXIVClientStructs.dll</HintPath>
-    </Reference>
-    <Reference Include="InteropGenerator.Runtime" Condition="Exists('bin\Debug\InteropGenerator.Runtime.dll')">
-      <HintPath>bin\Debug\InteropGenerator.Runtime.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <PropertyGroup>
+        <Version>0.0.0.1</Version>
+        <Description>A helper for Occult Crescent.</Description>
+        <PackageProjectUrl>https://github.com/OhKannaDuh/OccultCrescentHelper</PackageProjectUrl>
+        <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+        <IsPackable>false</IsPackable>
+        <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
+        <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>DEBUG;TRACE;DEBUG_BUILD</DefineConstants>
+      </PropertyGroup>
+    <!-- Files -->
+    <ItemGroup>
+        <Content Include="..\assets\icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Visible>false</Visible>
+        </Content>
+        <Content Include=".env">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Visible>false</Visible>
+        </Content>
+    </ItemGroup>
+    <!-- Packages -->
+    <ItemGroup>
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    </ItemGroup>
+    <!-- Ocelot/Ecommons -->
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <ProjectReference Include="../../Ocelot/Ocelot/Ocelot.csproj" />
+        <ProjectReference Include="../../Ocelot/Ecommons/Ecommons/Ecommons.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <PackageReference Include="FFXIVOcelot" Version="0.2.0" />
+        <PackageReference Include="ECommons" Version="2.2.0.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Dalamud.Common">
+            <HintPath>$(DalamudLibPath)Dalamud.Common.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+    <!-- FFXIVClientStructs -->
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Reference Include="FFXIVClientStructs" Condition="Exists('bin\Debug\FFXIVClientStructs.dll')">
+            <HintPath>bin\Debug\FFXIVClientStructs.dll</HintPath>
+        </Reference>
+        <Reference Include="InteropGenerator.Runtime" Condition="Exists('bin\Debug\InteropGenerator.Runtime.dll')">
+            <HintPath>bin\Debug\InteropGenerator.Runtime.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="true" />
+        <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="true" />
+        <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
 </Project>

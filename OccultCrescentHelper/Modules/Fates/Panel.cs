@@ -1,8 +1,6 @@
-using System;
-using System.Numerics;
+using System.Linq;
 using ImGuiNET;
 using OccultCrescentHelper.Data;
-using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot;
 
@@ -13,7 +11,7 @@ public class Panel
     public void Draw(FatesModule module)
     {
         OcelotUI.Title("Fates:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             if (module.tracker.fates.Count <= 0)
             {
                 ImGui.TextUnformatted("No active fates.");
@@ -45,23 +43,16 @@ public class Panel
                     }
                 }
 
-                OcelotUI.Indent(16, () => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-
                 if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
                 {
-                    var aethernet = data.aethernet ?? teleporter.GetClosestAethernet(fate.Position);
-                    if (ImGui.Button($"Teleport to {aethernet.ToFriendlyString()}##fate_{fate.FateId}"))
-                    {
-                        Vector3 point = fate.Position;
-                        var random = new Random();
-                        double angle = random.NextDouble() * Math.PI * 2;
-                        double radius = random.NextDouble() * fate.Radius;
-                        float offsetX = (float)(Math.Cos(angle) * radius);
-                        float offsetZ = (float)(Math.Sin(angle) * radius);
-                        point = new Vector3(fate.Position.X + offsetX, fate.Position.Y, fate.Position.Z + offsetZ);
+                    teleporter.teleporter.Button(data.aethernet, fate.Position, data.Name, $"fate_{fate.FateId}", data);
+                }
 
-                        teleporter.Teleport(aethernet, point);
-                    }
+                OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
+
+                if (!fate.Equals(module.fates.Values.Last()))
+                {
+                    OcelotUI.VSpace();
                 }
             }
         });

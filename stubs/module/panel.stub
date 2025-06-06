@@ -7,7 +7,7 @@ public class Panel
     public void Draw({{name}}Module module)
     {
         OcelotUI.Title("{{name}}:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             // Content here
         });
     }

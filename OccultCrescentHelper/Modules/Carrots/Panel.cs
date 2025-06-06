@@ -9,7 +9,7 @@ public class Panel
     public void Draw(CarrotsModule module)
     {
         OcelotUI.Title("Carrots:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             if (module.carrots.Count <= 0)
             {
                 ImGui.TextUnformatted("No nearby carrots.");

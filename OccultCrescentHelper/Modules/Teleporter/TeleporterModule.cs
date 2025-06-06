@@ -20,9 +20,5 @@ public class TeleporterModule : Module<Plugin, Config>
         teleporter = new(this);
     }
 
-    public void Teleport(Aethernet aethernet, Vector3? destination = null) => teleporter.Teleport(aethernet, destination ?? Vector3.Zero);
-
     public bool IsReady() => teleporter.IsReady();
-
-    public Aethernet GetClosestAethernet(Vector3 position) => teleporter.GetClosestAethernet(position);
 }

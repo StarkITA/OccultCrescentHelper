@@ -39,5 +39,5 @@ public sealed class Plugin : OcelotPlugin
     }
 
 
-    public override bool ShouldTick() => Helpers.IsInOccultCrescent();
+    public override bool ShouldTick() => Helpers.IsInOccultCrescent() && !GenericHelpers.IsOccupied();
 }

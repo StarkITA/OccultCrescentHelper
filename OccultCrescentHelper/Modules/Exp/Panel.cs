@@ -9,7 +9,7 @@ public class Panel
     public void Draw(ExpModule module)
     {
         OcelotUI.Title("Exp:");
-        OcelotUI.Indent(16, () => {
+        OcelotUI.Indent(() => {
             // Content here
 
             if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Redo, $"Reset##Exp"))
