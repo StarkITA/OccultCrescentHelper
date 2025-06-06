@@ -5,6 +5,7 @@ using Ocelot.Modules;
 namespace OccultCrescentHelper.Modules.Teleporter;
 
 [Title("Teleporter Config")]
+[RequiredPlugin("vnavmesh", "Lifestream")]
 public class TeleporterConfig : ModuleConfig
 {
     public override string ProviderNamespace => "OccultCrescentHelper.Modules.Teleporter";
@@ -24,6 +25,4 @@ public class TeleporterConfig : ModuleConfig
     [Label("Path to event after teleporting")]
     [Tooltip("Use vnavmesh to head to the next event after teleporting")]
     public bool PathToDestination { get; set; } = false;
-
-
 }
