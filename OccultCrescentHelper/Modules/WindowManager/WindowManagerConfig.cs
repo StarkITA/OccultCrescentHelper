@@ -7,7 +7,7 @@ namespace OccultCrescentHelper.Modules.WindowManager;
 public class WindowManagerConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Open the main UI on load")]
+    [Label("Open main UI on load")]
     [Tooltip("Opens the main UI when the plugin is loaded")]
     public bool OpenMainOnStartUp { get; set; } = false;
 
@@ -23,7 +23,7 @@ public class WindowManagerConfig : ModuleConfig
 
 
     [Checkbox]
-    [Label("Open the config UI on load")]
+    [Label("Open config UI on load")]
     [Tooltip("Opens the config UI when the plugin is loaded")]
     public bool OpenConfigOnStartUp { get; set; } = false;
 
