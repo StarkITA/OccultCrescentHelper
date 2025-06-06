@@ -10,6 +10,7 @@ using OccultCrescentHelper.Modules.Fates;
 using Ocelot;
 using OccultCrescentHelper.Modules.Exp;
 using OccultCrescentHelper.Modules.WindowManager;
+using OccultCrescentHelper.Modules.StateManager;
 
 namespace OccultCrescentHelper;
 
@@ -35,6 +36,8 @@ public class Config : IOcelotConfig
     public TeleporterConfig TeleporterConfig { get; set; } = new();
 
     public WindowManagerConfig WindowManagerConfig { get; set; } = new();
+
+    public StateManagerConfig StateManagerConfig { get; set; } = new();
 
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

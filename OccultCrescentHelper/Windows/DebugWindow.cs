@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using OccultCrescentHelper.Modules.Debug;
-using Ocelot.Modules;
 using Ocelot.Windows;
 
 namespace OccultCrescentHelper.Windows;
