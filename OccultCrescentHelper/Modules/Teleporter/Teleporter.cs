@@ -8,6 +8,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
+using ECommons.Reflection;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using OccultCrescentHelper.Data;
@@ -100,70 +101,98 @@ public class Teleporter
             return;
         }
 
-        if (!module.TryGetIPCProvider<Lifestream>(out var lifestream) || lifestream == null || !lifestream.IsReady())
-        {
-            return;
-        }
 
         if (aethernet == null)
         {
             aethernet = GetClosestAethernet(destination);
         }
 
-        var random = new Random();
-        double angle = random.NextDouble() * Math.PI * 2;
-        double radius = random.NextDouble() * 20f;
-        float offsetX = (float)(Math.Cos(angle) * radius);
-        float offsetZ = (float)(Math.Sin(angle) * radius);
-        var point = new Vector3(destination.X + offsetX, destination.Y, destination.Z + offsetZ);
+
+
+        OcelotUI.Indent(() => {
+            PathfindingButton(destination, name, id, ev);
+            TeleportButton((Aethernet)aethernet, destination, name, id, ev);
+        });
+    }
+
+    private void PathfindingButton(Vector3 destination, string name, string id, EventData ev)
+    {
+        if (!module.TryGetIPCProvider<VNavmesh>(out var vnav) || vnav == null || !vnav.IsReady())
+        {
+            return;
+        }
+
+        if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Running, $"{name}##{id}"))
+        {
+            Svc.Log.Info($"Pathfinding to {name} at {destination}");
+            ChainBuilder.Begin()
+                .Log("Starting Pathfinding Action sequence")
+                .Merge(GetMountChain())
+                .Merge(GetPathfindingChain(vnav, ev, destination))
+                .Run();
+        }
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetTooltip($"Pathfind to {name}");
+        }
+
+
+        if (!module.TryGetIPCProvider<Lifestream>(out var lifestream) || lifestream == null || !lifestream.IsReady())
+        {
+            return;
+        }
+
+        ImGui.SameLine();
+    }
+
+    private void TeleportButton(Aethernet aethernet, Vector3 destination, string name, string id, EventData ev)
+    {
+        if (!module.TryGetIPCProvider<Lifestream>(out var lifestream) || lifestream == null || !lifestream.IsReady())
+        {
+            return;
+        }
 
         var isNearShards = GetNearbyAethernetShards().Count() > 0;
         var isNearCurrentShard = IsNear((Aethernet)aethernet);
 
-        OcelotUI.Indent(() => {
-            if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Running, $"{name}##{id}"))
+        if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
+        {
+            var chain = ChainBuilder.Begin()
+                .Log("Starting Teleport Action sequence")
+                .Merge(GetTeleportChain(lifestream, aethernet))
+                .Merge(GetMountChain());
+
+            if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
             {
-                Svc.Log.Info($"Pathfinding to {name} at {destination}");
-                ChainBuilder.Begin()
-                    .Log("Starting Pathfinding Action sequence")
-                    .Merge(GetMountChain())
-                    .Merge(GetPathfindingChain(vnav, ev, destination))
-                    .Run();
+                var random = new Random();
+                double angle = random.NextDouble() * Math.PI * 2;
+                double radius = random.NextDouble() * 20f;
+                float offsetX = (float)(Math.Cos(angle) * radius);
+                float offsetZ = (float)(Math.Sin(angle) * radius);
+                var point = new Vector3(destination.X + offsetX, destination.Y, destination.Z + offsetZ);
+
+                chain = chain.Merge(GetPathfindingChain(vnav, ev, point));
             }
 
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip($"Pathfind to {name}");
-            }
+            chain.Run();
+        }
 
-            ImGui.SameLine();
-
-            if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
+        if (ImGui.IsItemHovered())
+        {
+            if (!isNearShards)
             {
-                ChainBuilder.Begin()
-                    .Log("Starting Teleport Action sequence")
-                    .Merge(GetTeleportChain(lifestream, (Aethernet)aethernet))
-                    .Merge(GetMountChain())
-                    .Merge(GetPathfindingChain(vnav, ev, destination))
-                    .Run();
+                ImGui.SetTooltip($"You must be near an aetheryte to teleport");
             }
-
-            if (ImGui.IsItemHovered())
+            else if (isNearCurrentShard)
             {
-                if (!isNearShards)
-                {
-                    ImGui.SetTooltip($"You must be near an aetheryte to teleport");
-                }
-                else if (isNearCurrentShard)
-                {
-                    ImGui.SetTooltip($"You're already at this aetheryte");
-                }
-                else
-                {
-                    ImGui.SetTooltip($"Teleport to {aethernet?.ToFriendlyString()}");
-                }
+                ImGui.SetTooltip($"You're already at this aetheryte");
             }
-        });
+            else
+            {
+                ImGui.SetTooltip($"Teleport to {aethernet.ToFriendlyString()}");
+            }
+        }
     }
 
     public void OnFateEnd()
@@ -188,6 +217,11 @@ public class Teleporter
 
     public void Return()
     {
+        if (DalamudReflector.TryGetDalamudPlugin("ReAction", out _, false, true))
+        {
+            return;
+        }
+
         var player = Svc.ClientState.LocalPlayer;
         if (player == null)
         {
@@ -195,6 +229,7 @@ public class Teleporter
         }
 
         var chain = ChainBuilder.Begin()
+            .EnableDebug()
             .WaitGcd()
             .UseAction(ActionType.GeneralAction, 8)
             .AddonCallback("SelectYesno", true, 0)

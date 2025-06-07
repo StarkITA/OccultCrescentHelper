@@ -29,6 +29,11 @@ public class Panel
 
     public void ProcessLgbData(ushort id)
     {
+        if (id == 0)
+        {
+            return;
+        }
+
         FateLocations.Clear();
 
         var territorySheet = Svc.Data.GetExcelSheet<TerritoryType>();
