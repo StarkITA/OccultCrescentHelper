@@ -1,4 +1,5 @@
-﻿using Dalamud.Plugin;
+﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Plugin;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
@@ -39,5 +40,15 @@ public sealed class Plugin : OcelotPlugin
     }
 
 
-    public override bool ShouldTick() => Helpers.IsInOccultCrescent() && !GenericHelpers.IsOccupied();
+    public override bool ShouldTick()
+        => Helpers.IsInOccultCrescent()
+        && !(
+            Svc.Condition[ConditionFlag.BetweenAreas] ||
+            Svc.Condition[ConditionFlag.BetweenAreas51] ||
+            Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] ||
+            Svc.Condition[ConditionFlag.OccupiedInEvent] ||
+            Svc.Condition[ConditionFlag.WatchingCutscene] ||
+            Svc.Condition[ConditionFlag.WatchingCutscene78] ||
+            Svc.ClientState.LocalPlayer?.IsTargetable != true
+        );
 }

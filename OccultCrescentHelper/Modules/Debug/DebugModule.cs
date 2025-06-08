@@ -1,4 +1,5 @@
 using Dalamud.Interface.Windowing;
+using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
 using OccultCrescentHelper.Windows;
 using Ocelot.Modules;
@@ -28,6 +29,8 @@ public class DebugModule : Module<Plugin, Config>
     }
 
     public void DrawPanel() => panel.Draw(this);
+
+    public override void Tick(IFramework _) => panel.Tick(this);
 
 
     public override void OnTerritoryChanged(ushort id) => panel.OnTerritoryChanged(id);

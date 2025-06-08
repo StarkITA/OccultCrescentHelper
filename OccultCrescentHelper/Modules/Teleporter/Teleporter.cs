@@ -47,7 +47,8 @@ public class Teleporter
         => Chain.Create("Follow Path")
             .BreakIf(() => !module.config.PathToDestination)
             .PathfindAndMoveTo(vnav, start)
-            .WaitForPathfindingCycle(vnav)
+            .WaitUntilNear(vnav, start)
+            .Log($"Near {start}")
             .Then(_ => vnav.FollowPath(path, false));
 
     private Chain GetPathfindAndMoveToChain(VNavmesh vnav, Vector3 destination)
@@ -57,21 +58,16 @@ public class Teleporter
 
     private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination)
     {
-        if (ev.customPath != null && ev.customPath.Count() > 0)
+        if (ev.pathFactory != null)
         {
-            var pos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
-            var path = ev.GetPath(pos, destination);
-            var start = path[0];
-            path.RemoveAt(0);
-
             return Chain.Create("Mounth & Follow")
                 .Then(() => GetMountChain())
-                .Then(() => GetFollowPathChain(vnav, start, path));
+                .Then(Prowler.Create(new(vnav), ev.pathFactory()()));
         }
 
         return Chain.Create()
-        .Then(() => GetMountChain())
-        .Then(() => GetPathfindAndMoveToChain(vnav, destination));
+            .Then(() => GetMountChain())
+            .Then(() => GetPathfindAndMoveToChain(vnav, destination));
     }
 
     private unsafe void Mount()
@@ -89,13 +85,10 @@ public class Teleporter
             return;
         }
 
-
         if (aethernet == null)
         {
             aethernet = GetClosestAethernet(destination);
         }
-
-
 
         OcelotUI.Indent(() => {
             PathfindingButton(destination, name, id, ev);
@@ -207,11 +200,11 @@ public class Teleporter
             return;
         }
 
-        var chain = Chain.Create();
-        chain.UseGcdAction(ActionType.GeneralAction, 8);
-        chain.AddonCallback("SelectYesno", true, 0);
-        chain.WaitToCast();
-        chain.WaitToCycleCondition(ConditionFlag.BetweenAreas);
+        var chain = Chain.Create()
+            .UseGcdAction(ActionType.GeneralAction, 8)
+            .AddonCallback("SelectYesno", true, 0)
+            .WaitToCast()
+            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
 
         if (module.config.ApproachAetheryte && module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
         {
