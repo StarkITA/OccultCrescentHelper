@@ -215,7 +215,7 @@ public class Teleporter
         {
             Random random = new();
             float angle = (float)(random.NextDouble() * Math.PI * 2);
-            float distance = (float)(Math.Sqrt(random.NextDouble()) * (4.5f - 2f) + 2f);
+            float distance = (float)(Math.Sqrt(random.NextDouble()) * (4f - 3f) + 3f);
 
             float xOffset = (float)Math.Cos(angle) * distance;
             float zOffset = (float)Math.Sin(angle) * distance;
