@@ -205,6 +205,11 @@ public class Teleporter
             return;
         }
 
+        if (module.TryGetIPCProvider<YesAlready>(out var yes))
+        {
+            yes.PausePlugin(5000);
+        }
+
         var chain = Chain.Create()
             .UseGcdAction(ActionType.GeneralAction, 8)
             .AddonCallback("SelectYesno", true, 0)
