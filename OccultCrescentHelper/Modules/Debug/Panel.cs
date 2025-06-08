@@ -74,8 +74,27 @@ public class Panel
     {
         OcelotUI.Title("Debug:");
         OcelotUI.Indent(() => {
-            if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
-            {
+            Teleporter(module);
+            OcelotUI.VSpace();
+
+            VNav(module);
+            OcelotUI.VSpace();
+
+            Fates(module);
+            OcelotUI.VSpace();
+
+            CriticalEncounters(module);
+            OcelotUI.VSpace();
+        });
+    }
+
+
+    private unsafe void Teleporter(DebugModule module)
+    {
+        if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
+        {
+            OcelotUI.Title("Teleporter:");
+            OcelotUI.Indent(() => {
                 var shards = teleporter.teleporter.GetNearbyAethernetShards();
                 if (shards.Count() > 0)
                 {
@@ -88,109 +107,102 @@ public class Panel
                         }
                     });
                 }
-            }
 
-            if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav!.IsReady())
-            {
-                OcelotUI.Title("Vnav state:");
-                ImGui.SameLine();
-                ImGui.TextUnformatted(vnav.IsRunning() ? "Running" : "Pending");
-            }
+                if (ImGui.Button("Test Return"))
+                {
+                    teleporter.teleporter.Return();
+                }
+            });
+        }
+    }
 
-            OcelotUI.Title("Fates:");
-            OcelotUI.Indent(() => Fates(module));
-            OcelotUI.Title("Critical Encounters:");
-            OcelotUI.Indent(() => CriticalEncounters(module));
-        });
+    private unsafe void VNav(DebugModule module)
+    {
+        if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav!.IsReady())
+        {
+            OcelotUI.Title("Vnav state:");
+            ImGui.SameLine();
+            ImGui.TextUnformatted(vnav.IsRunning() ? "Running" : "Pending");
+        }
     }
 
     private unsafe void Fates(DebugModule module)
     {
-
-        foreach (var data in EventData.Fates.Values)
-        {
-            if (data.happy)
+        OcelotUI.Title("Fates:");
+        OcelotUI.Indent(() => {
+            foreach (var data in EventData.Fates.Values)
             {
-                continue;
+                ImGui.TextUnformatted(data.Name);
+
+                if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
+                {
+                    var start = FateLocations[data.id];
+
+                    teleporter.teleporter.Button(data.aethernet, start, data.Name, $"fate_{data.id}", data);
+                }
+
+                OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
+
+                if (data.id != EventData.Fates.Keys.Max())
+                {
+                    OcelotUI.VSpace();
+                }
             }
-
-            ImGui.TextUnformatted(data.Name);
-
-            if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
-            {
-                var start = FateLocations[data.id];
-
-                teleporter.teleporter.Button(data.aethernet, start, data.Name, $"fate_{data.id}", data);
-            }
-
-            OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-
-            if (data.id != EventData.Fates.Keys.Max())
-            {
-                OcelotUI.VSpace();
-            }
-        }
+        });
     }
 
     private unsafe void CriticalEncounters(DebugModule module)
     {
-        foreach (var data in EventData.CriticalEncounters.Values)
-        {
-            if (data.happy)
+        OcelotUI.Title("Critical Encounters:");
+        OcelotUI.Indent(() => {
+            foreach (var data in EventData.CriticalEncounters.Values)
             {
-                continue;
+                var ev = PublicContentOccultCrescent.GetInstance()->DynamicEventContainer.Events.ToArray().ToList()[(int)data.id];
+
+                ImGui.TextUnformatted(ev.Name.ToString());
+
+                if (ev.State == DynamicEventState.Inactive)
+                {
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"(Inactive)");
+                }
+
+                if (ev.State == DynamicEventState.Register)
+                {
+                    DateTime start = DateTimeOffset.FromUnixTimeSeconds(ev.StartTimestamp).DateTime;
+                    TimeSpan timeUntilStart = start - DateTime.UtcNow;
+                    string formattedTime = $"{timeUntilStart.Minutes:D2}:{timeUntilStart.Seconds:D2}";
+
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"(Preparing: {formattedTime})");
+                }
+
+                if (ev.State == DynamicEventState.Warmup)
+                {
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"(Starting)");
+                }
+
+                if (ev.State == DynamicEventState.Battle)
+                {
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"({ev.Progress}%)");
+                }
+
+                if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
+                {
+                    Vector3 start = ev.MapMarker.Position;
+
+                    teleporter.teleporter.Button(data.aethernet, start, data.Name, $"ce_{data.id}", data);
+                }
+
+                OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
+
+                if (data.id != EventData.CriticalEncounters.Keys.Max())
+                {
+                    OcelotUI.VSpace();
+                }
             }
-
-            if (data.customPath == null || data.customPath.Count() > 0)
-            {
-                continue;
-            }
-
-            var ev = PublicContentOccultCrescent.GetInstance()->DynamicEventContainer.Events.ToArray().ToList()[(int)data.id];
-
-            ImGui.TextUnformatted(ev.Name.ToString());
-
-            if (ev.State == DynamicEventState.Inactive)
-            {
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"(Inactive)");
-            }
-
-            if (ev.State == DynamicEventState.Register)
-            {
-                DateTime start = DateTimeOffset.FromUnixTimeSeconds(ev.StartTimestamp).DateTime;
-                TimeSpan timeUntilStart = start - DateTime.UtcNow;
-                string formattedTime = $"{timeUntilStart.Minutes:D2}:{timeUntilStart.Seconds:D2}";
-
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"(Preparing: {formattedTime})");
-            }
-
-            if (ev.State == DynamicEventState.Warmup)
-            {
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"(Starting)");
-            }
-
-            if (ev.State == DynamicEventState.Battle)
-            {
-                ImGui.SameLine();
-                ImGui.TextUnformatted($"({ev.Progress}%)");
-            }
-
-            if (module.TryGetModule<TeleporterModule>(out var teleporter) && teleporter!.IsReady())
-            {
-                Vector3 start = ev.MapMarker.Position;
-
-                teleporter.teleporter.Button(data.aethernet, start, data.Name, $"ce_{data.id}", data);
-            }
-
-            OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-
-            if (data.id != EventData.CriticalEncounters.Keys.Max())
-            {
-                OcelotUI.VSpace();
-            }
-        }
+        });
     }
 }

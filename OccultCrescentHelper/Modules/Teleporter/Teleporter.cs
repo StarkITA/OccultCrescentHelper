@@ -5,17 +5,16 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using ECommons.Reflection;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using Ocelot;
 using Ocelot.Chain;
-using Ocelot.Chain.ChainBuilderEx;
+using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Modules.Teleporter;
@@ -24,6 +23,7 @@ public class Teleporter
 {
     private readonly TeleporterModule module;
 
+    private readonly TaskManager taskManager = new();
 
     public Teleporter(TeleporterModule module)
     {
@@ -33,37 +33,27 @@ public class Teleporter
     private readonly Dictionary<uint, Vector3> aetherytes = new() { { 1252, new Vector3(830.75f, 72.98f, -695.98f) } };
 
     private Chain GetTeleportChain(Lifestream lifestream, Aethernet aethernet)
-        => ChainBuilder.Begin()
-            .Log("Starting Teleport Chain")
-            .Then(() => lifestream.AethernetTeleportByPlaceNameId!((uint)aethernet))
-            .WaitUntil(() => Svc.Condition[ConditionFlag.BetweenAreas])
-            .WaitWhile(() => Svc.Condition[ConditionFlag.BetweenAreas])
-            .Build();
+        => Chain.Create("Teleport")
+            .Then(_ => lifestream.AethernetTeleportByPlaceNameId((uint)aethernet))
+            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
 
     private Chain GetMountChain()
-        => ChainBuilder.Begin()
-            .Log("Starting Mount Chain")
+        => Chain.Create("Mount")
             .BreakIf(() => !module.config.ShouldMount)
             .Wait(500)
-            .ThenOnFrameworkThread(() => Mount())
-            .Build();
+            .Then(_ => Mount());
 
     private Chain GetFollowPathChain(VNavmesh vnav, Vector3 start, List<Vector3> path)
-        => ChainBuilder.Begin()
-            .Log("Starting Follow Path Chain")
+        => Chain.Create("Follow Path")
             .BreakIf(() => !module.config.PathToDestination)
-            .Then(() => vnav.PathfindAndMoveTo!(start, false))
-            .Then(vnav.WaitToStart)
-            .Then(vnav.WaitToStop)
-            .Then(() => vnav.FollowPath!(path, false))
-            .Build();
+            .PathfindAndMoveTo(vnav, start)
+            .WaitForPathfindingCycle(vnav)
+            .Then(_ => vnav.FollowPath(path, false));
 
     private Chain GetPathfindAndMoveToChain(VNavmesh vnav, Vector3 destination)
-        => ChainBuilder.Begin()
-            .Log("Starting Pathfinding Chain")
+        => Chain.Create("Pathfinding")
             .BreakIf(() => !module.config.PathToDestination)
-            .Then(() => vnav.PathfindAndMoveTo!(destination, false))
-            .Build();
+            .PathfindAndMoveTo(vnav, destination);
 
     private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination)
     {
@@ -74,16 +64,14 @@ public class Teleporter
             var start = path[0];
             path.RemoveAt(0);
 
-            return ChainBuilder.Begin()
-                .Merge(GetMountChain())
-                .Merge(GetFollowPathChain(vnav!, start, path))
-                .Build();
+            return Chain.Create("Mounth & Follow")
+                .Then(() => GetMountChain())
+                .Then(() => GetFollowPathChain(vnav, start, path));
         }
 
-        return ChainBuilder.Begin()
-            .Merge(GetMountChain())
-            .Merge(GetPathfindAndMoveToChain(vnav, destination))
-            .Build();
+        return Chain.Create()
+        .Then(() => GetMountChain())
+        .Then(() => GetPathfindAndMoveToChain(vnav, destination));
     }
 
     private unsafe void Mount()
@@ -125,11 +113,10 @@ public class Teleporter
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Running, $"{name}##{id}"))
         {
             Svc.Log.Info($"Pathfinding to {name} at {destination}");
-            ChainBuilder.Begin()
-                .Log("Starting Pathfinding Action sequence")
-                .Merge(GetMountChain())
-                .Merge(GetPathfindingChain(vnav, ev, destination))
-                .Run();
+
+            Chain.Create("Mount & Pathfinding")
+                .Then(() => GetMountChain())
+                .Then(() => GetPathfindingChain(vnav, ev, destination));
         }
 
         if (ImGui.IsItemHovered())
@@ -158,10 +145,9 @@ public class Teleporter
 
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
         {
-            var chain = ChainBuilder.Begin()
-                .Log("Starting Teleport Action sequence")
-                .Merge(GetTeleportChain(lifestream, aethernet))
-                .Merge(GetMountChain());
+            var chain = Chain.Create("Teleport Sequence")
+                .Then(() => GetTeleportChain(lifestream, aethernet))
+                .Then(() => GetMountChain());
 
             if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
             {
@@ -172,10 +158,8 @@ public class Teleporter
                 float offsetZ = (float)(Math.Sin(angle) * radius);
                 var point = new Vector3(destination.X + offsetX, destination.Y, destination.Z + offsetZ);
 
-                chain = chain.Merge(GetPathfindingChain(vnav, ev, point));
+                chain.Then(() => GetPathfindingChain(vnav, ev, point));
             }
-
-            chain.Run();
         }
 
         if (ImGui.IsItemHovered())
@@ -217,24 +201,17 @@ public class Teleporter
 
     public void Return()
     {
-        if (DalamudReflector.TryGetDalamudPlugin("ReAction", out _, false, true))
-        {
-            return;
-        }
-
         var player = Svc.ClientState.LocalPlayer;
         if (player == null)
         {
             return;
         }
 
-        var chain = ChainBuilder.Begin()
-            .EnableDebug()
-            .WaitGcd()
-            .UseAction(ActionType.GeneralAction, 8)
-            .AddonCallback("SelectYesno", true, 0)
-            .WaitCastingCycle()
-            .WaitForConditionCycle(ConditionFlag.BetweenAreas);
+        var chain = Chain.Create();
+        chain.UseGcdAction(ActionType.GeneralAction, 8);
+        chain.AddonCallback("SelectYesno", true, 0);
+        chain.WaitToCast();
+        chain.WaitToCycleCondition(ConditionFlag.BetweenAreas);
 
         if (module.config.ApproachAetheryte && module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
         {
@@ -248,13 +225,9 @@ public class Teleporter
             var aetheryte = aetherytes[Svc.ClientState.TerritoryType];
             var destination = new Vector3(aetheryte.X + xOffset, aetheryte.Y, aetheryte.Z + zOffset);
 
-            chain = chain
-                .Wait(500)
-                .PathfindAndMoveTo(vnav, destination)
-                .WaitForPathfindingCycle(vnav);
+            chain.Wait(500);
+            chain.PathfindAndMoveTo(vnav, destination);
         }
-
-        chain.Run();
     }
 
     private Aethernet GetClosestAethernet(Vector3 position)

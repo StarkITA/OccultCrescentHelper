@@ -23,7 +23,6 @@ public class TeleporterModule : Module<Plugin, Config>
     {
         if (TryGetModule<StateManagerModule>(out var states) && states != null)
         {
-            states.OnExitInCombat += teleporter.OnFateEnd;
             states.OnExitInFate += teleporter.OnFateEnd;
             states.OnExitInCriticalEngagement += teleporter.OnCriticalEncounterEnd;
         }
@@ -33,7 +32,6 @@ public class TeleporterModule : Module<Plugin, Config>
     {
         if (TryGetModule<StateManagerModule>(out var states) && states != null)
         {
-            states.OnExitInCombat -= teleporter.OnFateEnd;
             states.OnExitInFate -= teleporter.OnFateEnd;
             states.OnExitInCriticalEngagement -= teleporter.OnCriticalEncounterEnd;
         }

@@ -29,19 +29,16 @@ public class TeleporterConfig : ModuleConfig
     public bool PathToDestination { get; set; } = false;
 
     [Checkbox]
-    [ConflictingPlugin("ReAction")]
     [Label("Return to base after fate")]
     [Tooltip("Use Occult Return upon finishing an fate to return to base camp")]
     public bool ReturnAfterFate { get; set; } = false;
 
     [Checkbox]
-    [ConflictingPlugin("ReAction")]
     [Label("Return to base after critical encounter")]
     [Tooltip("Use Occult Return upon finishing an critical encounter to return to base camp")]
     public bool ReturnAfterCritcalEncounter { get; set; } = false;
 
     [Checkbox]
-    [ConflictingPlugin("ReAction")]
     [RequiredPlugin("vnavmesh")]
     [Label("Approach aetheryte after returning")]
     [Tooltip("Walk to the aetheryte after returning to base camp\n * This only works when returning via the plugin after a fate or critical encounter")]
