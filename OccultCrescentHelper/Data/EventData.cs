@@ -25,8 +25,6 @@ public struct EventData
 
     public Aethernet? aethernet;
 
-    public Vector3? position;
-
     public Func<Func<List<IProwlerAction>>> pathFactory;
 
     public static readonly Dictionary<uint, EventData> Fates = new Dictionary<uint, EventData>
@@ -39,7 +37,6 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "A Delicate Balance",
                 demiatma = Enums.Demiatma.Verdigris,
-                position = new Vector3(370f, 75f, 650f),
             }
         },
         {
@@ -50,6 +47,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "A Prying Eye",
                 demiatma = Demiatma.Azurite,
+                pathFactory = APryingEye.GetPath
             }
         },
         {
@@ -60,6 +58,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "An Unending Duty",
                 demiatma = Demiatma.Malachite,
+                pathFactory = AnUnendingDuty.GetPath
             }
         },
         {
