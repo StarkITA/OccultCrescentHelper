@@ -194,6 +194,11 @@ public class Teleporter
 
     public void Return()
     {
+        if (Helpers.IsInForkedTower())
+        {
+            return;
+        }
+
         var player = Svc.ClientState.LocalPlayer;
         if (player == null)
         {

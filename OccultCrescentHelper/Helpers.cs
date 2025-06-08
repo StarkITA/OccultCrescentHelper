@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
@@ -16,6 +18,18 @@ public static class Helpers
     public static bool IsInOccultCrescent()
     {
         return Svc.ClientState.LocalPlayer != null && IsInSouthHorn();
+    }
+
+    public static bool IsInForkedTower()
+    {
+        var player = Svc.ClientState.LocalPlayer;
+        if (player == null)
+        {
+            return false;
+        }
+
+        List<uint> forkedTowerStatuses = [4262, 4263, 4228];
+        return player.StatusList.Any(s => forkedTowerStatuses.Contains(s.StatusId));
     }
 
     public static void KDrawLine(Vector3 start, Vector3 end, float thickness, Vector4 color)
