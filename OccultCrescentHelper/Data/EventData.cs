@@ -42,7 +42,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Rough Waters",
                 demiatma = Demiatma.Azurite,
-                pathFactory = RoughWaters.GetPath,
+                // pathFactory = RoughWaters.GetPath,
                 start = new(162.00f, 56.00f, 676.00f),
             }
         },
@@ -54,7 +54,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "The Golden Guardian",
                 demiatma = Demiatma.Azurite,
-                pathFactory = TheGoldenGuardian.GetPath,
+                // pathFactory = TheGoldenGuardian.GetPath,
                 start = new(373.20f, 70.00f, 486.00f),
             }
         },
@@ -78,7 +78,7 @@ public struct EventData
                 Name = "The Winged Terror",
                 demiatma = Demiatma.Realgar,
                 aethernet = Aethernet.TheWanderersHaven,
-                pathFactory = TheWingedTerror.GetPath,
+                // pathFactory = TheWingedTerror.GetPath,
                 start = new(-548.50f, 3.00f, -595.00f),
             }
         },
@@ -90,7 +90,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "An Unending Duty",
                 demiatma = Demiatma.Malachite,
-                pathFactory = AnUnendingDuty.GetPath,
+                // pathFactory = AnUnendingDuty.GetPath,
                 start = new(-223.10f, 107.00f, 36.00f),
             }
         },
@@ -136,7 +136,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "A Prying Eye",
                 demiatma = Demiatma.Azurite,
-                pathFactory = APryingEye.GetPath,
+                // pathFactory = APryingEye.GetPath,
                 start = new(-71.00f, 71.31f, 557.00f),
             }
         },
@@ -209,7 +209,7 @@ public struct EventData
                 demiatma = Demiatma.Azurite,
                 monster = Monster.MysteriousMindflayer,
                 aethernet = Aethernet.Eldergrowth,
-                pathFactory = ScourgeOfTheMind.GetPath
+                // pathFactory = ScourgeOfTheMind.GetPath
             }
         },
         {
@@ -224,7 +224,7 @@ public struct EventData
                 monster = Monster.BlackStar,
                 notes = MonsterNote.BlackChocobos,
                 aethernet = Aethernet.Eldergrowth,
-                pathFactory = TheBlackRegiment.GetPath
+                // pathFactory = TheBlackRegiment.GetPath
             }
         },
         {
@@ -239,7 +239,7 @@ public struct EventData
                 monster = Monster.CrescentBerserker,
                 notes = MonsterNote.CrescentBerserker,
                 aethernet = Aethernet.Eldergrowth,
-                pathFactory = TheUnbridled.GetPath
+                // pathFactory = TheUnbridled.GetPath
             }
         },
         {
@@ -252,7 +252,7 @@ public struct EventData
                 demiatma = Demiatma.Azurite,
                 monster = Monster.DeathClawOccultCrescent,
                 aethernet = Aethernet.Eldergrowth,
-                pathFactory = CrawlingDeath.GetPath
+                // pathFactory = CrawlingDeath.GetPath
             }
         },
         {
@@ -291,7 +291,7 @@ public struct EventData
                 monster = Monster.MythicIdol,
                 notes = MonsterNote.MythicIdol,
                 aethernet = Aethernet.Stonemarsh,
-                pathFactory = FromTimesBygone.GetPath
+                // pathFactory = FromTimesBygone.GetPath
             }
         },
         {
@@ -304,7 +304,7 @@ public struct EventData
                 demiatma = Demiatma.CaputMortuum,
                 monster = Monster.OccultKnight,
                 aethernet = Aethernet.BaseCamp,
-                pathFactory = CompanyOfStone.GetPath
+                // pathFactory = CompanyOfStone.GetPath
             }
         },
         {
