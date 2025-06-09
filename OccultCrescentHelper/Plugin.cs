@@ -4,12 +4,14 @@ using ECommons;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
 using Ocelot;
+using Ocelot.Chain;
 
 namespace OccultCrescentHelper;
 
 public sealed class Plugin : OcelotPlugin
 {
-    public override string Name {
+    public override string Name
+    {
         get => "Occult Crescent Helper";
     }
 
@@ -23,6 +25,8 @@ public sealed class Plugin : OcelotPlugin
         config = plugin.GetPluginConfig() as Config ?? new Config();
         InitializeClientStructs();
         OcelotInitialize();
+
+        ChainManager.Initialize();
 
         DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
     }
@@ -51,4 +55,10 @@ public sealed class Plugin : OcelotPlugin
             Svc.Condition[ConditionFlag.WatchingCutscene78] ||
             Svc.ClientState.LocalPlayer?.IsTargetable != true
         );
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        ChainManager.Close();
+    }
 }

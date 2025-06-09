@@ -5,11 +5,13 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
+using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using Ocelot;
@@ -32,42 +34,24 @@ public class Teleporter
 
     private readonly Dictionary<uint, Vector3> aetherytes = new() { { 1252, new Vector3(830.75f, 72.98f, -695.98f) } };
 
-    private Chain GetTeleportChain(Lifestream lifestream, Aethernet aethernet)
-        => Chain.Create("Teleport")
-            .Then(_ => lifestream.AethernetTeleportByPlaceNameId((uint)aethernet))
-            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
-
     private Chain GetMountChain()
-        => Chain.Create("Mount")
-            .BreakIf(() => !module.config.ShouldMount)
-            .Wait(500)
-            .Then(_ => Mount());
+        => Chain.Create()
+            .RunIf(() => module.config.ShouldMount)
+            .Then(new MountChain(module.config.Mount));
 
-    private Chain GetFollowPathChain(VNavmesh vnav, Vector3 start, List<Vector3> path)
-        => Chain.Create("Follow Path")
-            .BreakIf(() => !module.config.PathToDestination)
-            .PathfindAndMoveTo(vnav, start)
-            .WaitUntilNear(vnav, start)
-            .Log($"Near {start}")
-            .Then(_ => vnav.FollowPath(path, false));
-
-    private Chain GetPathfindAndMoveToChain(VNavmesh vnav, Vector3 destination)
-        => Chain.Create("Pathfinding")
-            .BreakIf(() => !module.config.PathToDestination)
-            .PathfindAndMoveTo(vnav, destination);
-
-    private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination)
+    private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
     {
-        if (ev.pathFactory != null)
-        {
-            return Chain.Create("Mounth & Follow")
-                .Then(() => GetMountChain())
-                .Then(Prowler.Create(new(vnav), ev.pathFactory()()));
-        }
+        // @TODO readd custom paths
+        // if (ev.pathFactory != null)
+        // {
+        //     return Chain.Create("Mounth & Follow")
+        //         .Then(GetMountChain)
+        //         .Then(Prowler.Create(new(vnav), ev.pathFactory()()));
+        // }
 
-        return Chain.Create()
-            .Then(() => GetMountChain())
-            .Then(() => GetPathfindAndMoveToChain(vnav, destination));
+        return Chain.Create("Pathfinding Chain")
+            .Then(GetMountChain)
+            .Then(new PathfindAndMoveToChain(vnav, destination, radius));
     }
 
     private unsafe void Mount()
@@ -107,9 +91,11 @@ public class Teleporter
         {
             Svc.Log.Info($"Pathfinding to {name} at {destination}");
 
-            Chain.Create("Mount & Pathfinding")
-                .Then(() => GetMountChain())
-                .Then(() => GetPathfindingChain(vnav, ev, destination));
+            ChainManager.Submit(
+                () => Chain.Create("Mount & Pathfinding")
+                    .Then(GetMountChain)
+                    .Then(() => GetPathfindingChain(vnav, ev, destination))
+            );
         }
 
         if (ImGui.IsItemHovered())
@@ -138,21 +124,21 @@ public class Teleporter
 
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
         {
-            var chain = Chain.Create("Teleport Sequence")
-                .Then(() => GetTeleportChain(lifestream, aethernet))
-                .Then(() => GetMountChain());
 
-            if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
-            {
-                var random = new Random();
-                double angle = random.NextDouble() * Math.PI * 2;
-                double radius = random.NextDouble() * 20f;
-                float offsetX = (float)(Math.Cos(angle) * radius);
-                float offsetZ = (float)(Math.Sin(angle) * radius);
-                var point = new Vector3(destination.X + offsetX, destination.Y, destination.Z + offsetZ);
+            var factory = () => {
+                var chain = Chain.Create("Teleport Sequence")
+                    .Then(new TeleportChain(lifestream, aethernet))
+                    .Then(GetMountChain);
 
-                chain.Then(() => GetPathfindingChain(vnav, ev, point));
-            }
+                if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
+                {
+                    chain.Then(() => GetPathfindingChain(vnav, ev, destination, 20f));
+                }
+
+                return chain;
+            };
+
+            ChainManager.Submit(factory);
         }
 
         if (ImGui.IsItemHovered())
@@ -205,32 +191,11 @@ public class Teleporter
             return;
         }
 
-        if (module.TryGetIPCProvider<YesAlready>(out var yes))
-        {
-            yes.PausePlugin(5000);
-        }
-
-        var chain = Chain.Create()
-            .UseGcdAction(ActionType.GeneralAction, 8)
-            .AddonCallback("SelectYesno", true, 0)
-            .WaitToCast()
-            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
-
-        if (module.config.ApproachAetheryte && module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
-        {
-            Random random = new();
-            float angle = (float)(random.NextDouble() * Math.PI * 2);
-            float distance = (float)(Math.Sqrt(random.NextDouble()) * (4f - 3f) + 3f);
-
-            float xOffset = (float)Math.Cos(angle) * distance;
-            float zOffset = (float)Math.Sin(angle) * distance;
-
-            var aetheryte = aetherytes[Svc.ClientState.TerritoryType];
-            var destination = new Vector3(aetheryte.X + xOffset, aetheryte.Y, aetheryte.Z + zOffset);
-
-            chain.Wait(500);
-            chain.PathfindAndMoveTo(vnav, destination);
-        }
+        ChainManager.Submit(new ReturnChain(
+            aetherytes[Svc.ClientState.TerritoryType],
+            module.GetIPCProvider<YesAlready>(),
+            module.GetIPCProvider<VNavmesh>()
+        ));
     }
 
     private Aethernet GetClosestAethernet(Vector3 position)
@@ -241,10 +206,10 @@ public class Teleporter
         var playerPos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
 
         return Svc.Objects
-                .Where(o => o.ObjectKind == ObjectKind.EventObj)
-                .Where(o => AethernetData.All().Select((datum) => datum.dataId).Contains(o.DataId))
-                .Where(o => Vector3.Distance(o.Position, playerPos) <= 4.5f)
-                .ToList();
+            .Where(o => o.ObjectKind == ObjectKind.EventObj)
+            .Where(o => AethernetData.All().Select((datum) => datum.dataId).Contains(o.DataId))
+            .Where(o => Vector3.Distance(o.Position, playerPos) <= 4.5f)
+            .ToList();
     }
 
     private bool IsNear(Aethernet aethernet) => GetNearbyAethernetShards().Where(o => o.DataId == aethernet.GetData().dataId).Count() > 0;

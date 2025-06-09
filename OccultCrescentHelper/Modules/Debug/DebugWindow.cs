@@ -2,8 +2,11 @@
 using OccultCrescentHelper.Modules.Debug;
 using Ocelot.Windows;
 
-namespace OccultCrescentHelper.Windows;
+namespace OccultCrescentHelper.Modules.Debug;
 
+#if DEBUG_BUILD
+[OcelotWindow]
+#endif
 public class DebugWindow : OcelotWindow
 {
     public DebugWindow(Plugin plugin, Config config)
@@ -18,9 +21,9 @@ public class DebugWindow : OcelotWindow
             return;
         }
 
-        if (plugin.modules.TryGetModule<DebugModule>(out var module))
+        if (plugin.modules.TryGetModule<DebugModule>(out var module) && module != null)
         {
-            module.DrawPanel();
+            module.DrawPanels();
         }
     }
 }

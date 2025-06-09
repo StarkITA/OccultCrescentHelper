@@ -41,10 +41,11 @@ Opens Occult Crescent Helper main ui
 #if DEBUG_BUILD
         if (arguments == "debug")
         {
-            var debug = plugin.modules?.GetModule<DebugModule>();
-            if (debug != null)
+            var debug = plugin.modules.GetModule<DebugModule>();
+            var window = plugin.windows.GetWindow<DebugWindow>();
+            if (debug != null && window != null)
             {
-                debug.window.Toggle();
+                window.Toggle();
                 return;
             }
         }
