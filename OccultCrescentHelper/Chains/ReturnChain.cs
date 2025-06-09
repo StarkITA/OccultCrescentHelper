@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -37,6 +38,7 @@ public class ReturnChain : ChainFactory
         yes?.PausePlugin(5000);
 
         chain
+            .BreakIf(() => Svc.ClientState.LocalPlayer?.IsDead == true)
             .UseGcdAction(ActionType.GeneralAction, 8)
             .AddonCallback("SelectYesno", true, 0)
             .WaitToCast()

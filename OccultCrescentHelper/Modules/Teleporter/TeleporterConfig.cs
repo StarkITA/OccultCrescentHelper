@@ -29,6 +29,13 @@ public class TeleporterConfig : ModuleConfig
     public bool PathToDestination { get; set; } = false;
 
     [Checkbox]
+    [RequiredPlugin("vnavmesh")]
+    [RenderIf(nameof(PathToDestination))]
+    [Label("Use custom paths")]
+    [Tooltip("Use custom paths for certain events to stop vnavmesh from taking you to wild places")]
+    public bool UseCustomPaths { get; set; } = true;
+
+    [Checkbox]
     [Label("Return to base after fate")]
     [Tooltip("Use Occult Return upon finishing an fate to return to base camp")]
     public bool ReturnAfterFate { get; set; } = false;

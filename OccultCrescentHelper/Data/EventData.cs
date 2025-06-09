@@ -30,7 +30,7 @@ public struct EventData
 
     public Vector3? start;
 
-    public Func<Func<List<IProwlerAction>>> pathFactory;
+    public Func<Vector3, List<IProwlerAction>> pathFactory;
 
     public static readonly Dictionary<uint, EventData> Fates = new Dictionary<uint, EventData>
     {
@@ -54,7 +54,13 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "The Golden Guardian",
                 demiatma = Demiatma.Azurite,
-                // pathFactory = TheGoldenGuardian.GetPath,
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [303.81f, 102.83f, 309.89f],
+                        [335.05f, 71.11f, 326.90f],
+                    ]),
+                    Prowler.Pathfind(destination),
+                ],
                 start = new(373.20f, 70.00f, 486.00f),
             }
         },
@@ -78,7 +84,18 @@ public struct EventData
                 Name = "The Winged Terror",
                 demiatma = Demiatma.Realgar,
                 aethernet = Aethernet.TheWanderersHaven,
-                // pathFactory = TheWingedTerror.GetPath,
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [-172.29f, 6.50f, -607.08f],
+                        [-328.85f, 5.00f, -614.96f],
+                        [-391.31f, 5.00f, -637.37f],
+                        [-428.18f, -0.30f, -662.93f],
+                        [-466.69f, 3.00f, -650.32f],
+                        [-510.11f, 3.80f, -604.60f],
+                    ]),
+                    Prowler.Jump(),
+                    Prowler.MoveTo(destination),
+                ],
                 start = new(-548.50f, 3.00f, -595.00f),
             }
         },
@@ -209,7 +226,13 @@ public struct EventData
                 demiatma = Demiatma.Azurite,
                 monster = Monster.MysteriousMindflayer,
                 aethernet = Aethernet.Eldergrowth,
-                // pathFactory = ScourgeOfTheMind.GetPath
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [303.81f, 102.83f, 309.89f],
+                        [335.05f, 71.11f, 326.90f],
+                    ]),
+                    Prowler.Pathfind(destination),
+                ],
             }
         },
         {
@@ -224,7 +247,13 @@ public struct EventData
                 monster = Monster.BlackStar,
                 notes = MonsterNote.BlackChocobos,
                 aethernet = Aethernet.Eldergrowth,
-                // pathFactory = TheBlackRegiment.GetPath
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [303.81f, 102.83f, 309.89f],
+                        [335.05f, 71.11f, 326.90f],
+                    ]),
+                    Prowler.Pathfind(destination),
+                ],
             }
         },
         {
@@ -239,7 +268,13 @@ public struct EventData
                 monster = Monster.CrescentBerserker,
                 notes = MonsterNote.CrescentBerserker,
                 aethernet = Aethernet.Eldergrowth,
-                // pathFactory = TheUnbridled.GetPath
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [303.81f, 102.83f, 309.89f],
+                        [335.05f, 71.11f, 326.90f],
+                    ]),
+                    Prowler.Pathfind(destination),
+                ],
             }
         },
         {
@@ -252,7 +287,13 @@ public struct EventData
                 demiatma = Demiatma.Azurite,
                 monster = Monster.DeathClawOccultCrescent,
                 aethernet = Aethernet.Eldergrowth,
-                // pathFactory = CrawlingDeath.GetPath
+                pathFactory = destination  => [
+                    Prowler.FollowPath([
+                        [303.81f, 102.83f, 309.89f],
+                        [335.05f, 71.11f, 326.90f],
+                    ]),
+                    Prowler.Pathfind(destination),
+                ],
             }
         },
         {

@@ -41,25 +41,15 @@ public class Teleporter
 
     private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
     {
-        // @TODO readd custom paths
-        // if (ev.pathFactory != null)
-        // {
-        //     return Chain.Create("Mounth & Follow")
-        //         .Then(GetMountChain)
-        //         .Then(Prowler.Create(new(vnav), ev.pathFactory()()));
-        // }
-
-        return Chain.Create("Pathfinding Chain")
-            .Then(GetMountChain)
-            .Then(new PathfindAndMoveToChain(vnav, destination, radius));
-    }
-
-    private unsafe void Mount()
-    {
-        if (!Svc.Condition[ConditionFlag.Mounted])
+        if (module.config.UseCustomPaths && ev.pathFactory != null)
         {
-            ActionManager.Instance()->UseAction(ActionType.Mount, module.config.Mount);
+            module.Debug("Using custom path");
+            return Chain.Create("Prowler")
+                .Then(new ProwlerChain(vnav, ev.pathFactory, destination));
         }
+
+        return Chain.Create("Pathfinding")
+            .Then(new PathfindAndMoveToChain(vnav, destination, radius));
     }
 
     public void Button(Aethernet? aethernet, Vector3 destination, string name, string id, EventData ev)
@@ -94,7 +84,7 @@ public class Teleporter
             ChainManager.Submit(
                 () => Chain.Create("Mount & Pathfinding")
                     .Then(GetMountChain)
-                    .Then(() => GetPathfindingChain(vnav, ev, destination))
+                    .Then(() => GetPathfindingChain(vnav, ev, destination, 20f))
             );
         }
 
@@ -120,7 +110,7 @@ public class Teleporter
         }
 
         var isNearShards = GetNearbyAethernetShards().Count() > 0;
-        var isNearCurrentShard = IsNear((Aethernet)aethernet);
+        var isNearCurrentShard = IsNear(aethernet);
 
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
         {

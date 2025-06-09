@@ -27,6 +27,14 @@ public class DebugModule : Module<Plugin, Config>
     public DebugModule(Plugin plugin, Config config)
         : base(plugin, config) { }
 
+    public override void PostInitialize()
+    {
+        if (plugin.windows.TryGetWindow<DebugWindow>(out var window) && window != null && !window.IsOpen)
+        {
+            window.Toggle();
+        }
+    }
+
     public void DrawPanels()
     {
         foreach (var panel in panels)
