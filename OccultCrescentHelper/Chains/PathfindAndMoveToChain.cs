@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
+using ECommons.Automation.NeoTaskManager;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -29,7 +29,13 @@ public class PathfindAndMoveToChain : ChainFactory
     protected override Chain Create(Chain chain)
     {
         return chain
-            .PathfindAndMoveTo(vnav, destination)
-            .WaitUntilNear(vnav, destination);
+            .PathfindAndMoveTo(vnav, destination);
+    }
+
+    public override TaskManagerConfiguration? Config()
+    {
+        return new() {
+            TimeLimitMS = 180000,
+        };
     }
 }

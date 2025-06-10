@@ -14,7 +14,7 @@ public class FatesModule : Module<Plugin, Config>
         get => _config.FatesConfig;
     }
 
-    public override bool enabled => config.Enabled;
+    public override bool enabled => config.IsPropertyEnabled(nameof(config.Enabled));
 
     public readonly FateTracker tracker = new();
 

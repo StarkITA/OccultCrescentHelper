@@ -13,7 +13,7 @@ public class TreasureModule : Module<Plugin, Config>
         get => _config.TreasureConfig;
     }
 
-    public override bool enabled => config.Enabled;
+    public override bool enabled => config.IsPropertyEnabled(nameof(config.Enabled));
 
     public static Vector4 bronze = new Vector4(0.804f, 0.498f, 0.196f, 1f);
 

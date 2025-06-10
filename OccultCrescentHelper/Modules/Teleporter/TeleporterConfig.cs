@@ -17,23 +17,25 @@ public class TeleporterConfig : ModuleConfig
 
     [ExcelSheet(typeof(Mount), nameof(MountProvider))]
     [RequiredPlugin("Lifestream")]
-    [RenderIf(nameof(ShouldMount))]
+    [DependsOn(nameof(ShouldMount))]
     [Label("Mount")]
     [Tooltip("The mount to use after teleporting")]
     public uint Mount { get; set; } = 1;
 
     [Checkbox]
+    [Illegal]
     [RequiredPlugin("vnavmesh")]
     [Label("Path to event after teleporting")]
-    [Tooltip("Use vnavmesh to head to the next event after teleporting")]
+    [Tooltip("Use vnavmesh to head to the next event after teleporting via the och panel")]
     public bool PathToDestination { get; set; } = false;
 
     [Checkbox]
     [RequiredPlugin("vnavmesh")]
-    [RenderIf(nameof(PathToDestination))]
+    [DependsOn(nameof(PathToDestination))]
     [Label("Use custom paths")]
     [Tooltip("Use custom paths for certain events to stop vnavmesh from taking you to wild places")]
     public bool UseCustomPaths { get; set; } = true;
+    public bool ShouldUseCustomPaths => IsPropertyEnabled(nameof(UseCustomPaths));
 
     [Checkbox]
     [Label("Return to base after fate")]

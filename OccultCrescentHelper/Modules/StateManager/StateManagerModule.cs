@@ -48,20 +48,18 @@ public class StateManagerModule : Module<Plugin, Config>
         remove => state.OnExitInFate -= value;
     }
 
-    public event Action? OnEnterInCriticalEngagement {
-        add => state.OnEnterInCriticalEngagement += value;
-        remove => state.OnEnterInCriticalEngagement -= value;
+    public event Action? OnEnterInCriticalEncounter {
+        add => state.OnEnterInCriticalEncounter += value;
+        remove => state.OnEnterInCriticalEncounter -= value;
     }
 
-    public event Action? OnExitInCriticalEngagement {
-        add => state.OnExitInCriticalEngagement += value;
-        remove => state.OnExitInCriticalEngagement -= value;
+    public event Action? OnExitInCriticalEncounter {
+        add => state.OnExitInCriticalEncounter += value;
+        remove => state.OnExitInCriticalEncounter -= value;
     }
-
 
     public StateManagerModule(Plugin plugin, Config config)
         : base(plugin, config) { }
-
 
     public override void Tick(IFramework framework) => state.Tick(framework);
 
@@ -69,6 +67,8 @@ public class StateManagerModule : Module<Plugin, Config>
         => state.OnChatMessage(type, timestamp, sender, message, isHandled);
 
     public override bool DrawMainUi() => panel.Draw(this);
+
+    public State GetState() => state.GetState();
 
     public string GetStateText() => state.GetState().ToString();
 }

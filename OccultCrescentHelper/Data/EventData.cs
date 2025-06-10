@@ -42,6 +42,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Rough Waters",
                 demiatma = Demiatma.Azurite,
+                monster = Monster.Nammu,
                 // pathFactory = RoughWaters.GetPath,
                 start = new(162.00f, 56.00f, 676.00f),
             }
@@ -54,6 +55,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "The Golden Guardian",
                 demiatma = Demiatma.Azurite,
+                monster = Monster.GildedHeadstone,
                 pathFactory = destination  => [
                     Prowler.FollowPath([
                         [303.81f, 102.83f, 309.89f],
@@ -72,6 +74,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "King of the Crescent",
                 demiatma = Demiatma.Orpiment,
+                monster = Monster.Ropross,
                 start = new(-226.10f, 116.38f, 254.00f),
             }
         },
@@ -83,6 +86,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "The Winged Terror",
                 demiatma = Demiatma.Realgar,
+                monster = Monster.GiantBird,
                 aethernet = Aethernet.TheWanderersHaven,
                 pathFactory = destination  => [
                     Prowler.FollowPath([
@@ -107,6 +111,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "An Unending Duty",
                 demiatma = Demiatma.Malachite,
+                monster = Monster.Sisyphus,
                 // pathFactory = AnUnendingDuty.GetPath,
                 start = new(-223.10f, 107.00f, 36.00f),
             }
@@ -119,6 +124,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Brain Drain",
                 demiatma = Demiatma.Realgar,
+                monster = Monster.AdvancedAevis,
                 aethernet = Aethernet.CrystallizedCaverns,
                 start = new(-48.10f, 111.76f, -320.00f),
             }
@@ -131,6 +137,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "A Delicate Balance",
                 demiatma = Demiatma.Verdigris,
+                monster = Monster.Dehumidifier,
                 start = new(-370.00f, 75.00f, 650.00f),
             }
         },
@@ -142,6 +149,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Sworn to Soil",
                 demiatma = Demiatma.Verdigris,
+                monster = Monster.MadMudarch,
                 start = new(-589.10f, 96.50f, 333.00f),
             }
         },
@@ -153,6 +161,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "A Prying Eye",
                 demiatma = Demiatma.Azurite,
+                monster = Monster.Observer,
                 // pathFactory = APryingEye.GetPath,
                 start = new(-71.00f, 71.31f, 557.00f),
             }
@@ -165,6 +174,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Fatal Allure",
                 demiatma = Demiatma.Orpiment,
+                monster = Monster.Execrator,
                 start = new(79.00f, 97.86f, 278.00f),
             }
         },
@@ -176,6 +186,7 @@ public struct EventData
                 type = EventType.Fate,
                 Name = "Serving Darkness",
                 demiatma = Demiatma.CaputMortuum,
+                monster = Monster.Lifereaper,
                 start = new(413.00f, 96.00f, -13.00f),
             }
         },
@@ -204,6 +215,7 @@ public struct EventData
             }
         },
     };
+
 
     public static readonly Dictionary<uint, EventData> CriticalEncounters = new Dictionary<uint, EventData>
     {

@@ -12,26 +12,34 @@ public class ChainManagerPanel : Panel
     {
         OcelotUI.Title("Chain Manager:");
         OcelotUI.Indent(() => {
-            OcelotUI.Title("Is Running:");
+            var instances = ChainManager.Active();
+            OcelotUI.Title("# of instances:");
             ImGui.SameLine();
-            ImGui.TextUnformatted(ChainManager.IsRunning() ? "Yes" : "No");
+            ImGui.TextUnformatted(instances.Count.ToString());
 
-            if (!Ocelot.Chain.ChainManager.IsRunning())
+            foreach (var pair in instances)
             {
-                return;
+                if (pair.Value.CurrentChain == null)
+                {
+                    continue;
+                }
+
+                OcelotUI.Title($"{pair.Key}:");
+                OcelotUI.Indent(() => {
+                    var current = pair.Value.CurrentChain!;
+                    OcelotUI.Title("Current Chain:");
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted(current.name);
+
+                    OcelotUI.Title("Progress:");
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted($"{current.progress * 100}%");
+
+                    OcelotUI.Title("Queued Chains:");
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted(pair.Value.QueueCount.ToString());
+                });
             }
-
-            OcelotUI.Title("Current Chain:");
-            ImGui.SameLine();
-            ImGui.TextUnformatted(ChainManager.Chain()!.name);
-
-            OcelotUI.Title("Progress:");
-            ImGui.SameLine();
-            ImGui.TextUnformatted($"{ChainManager.Chain()!.progress * 100}%");
-
-            OcelotUI.Title("Queued Chains:");
-            ImGui.SameLine();
-            ImGui.TextUnformatted(ChainManager.GetChainQueueCount().ToString());
         });
     }
 }

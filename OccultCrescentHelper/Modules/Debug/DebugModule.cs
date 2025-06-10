@@ -22,6 +22,7 @@ public class DebugModule : Module<Plugin, Config>
         new FatesPanel(),
         new CriticalEncountersPanel(),
         new ChainManagerPanel(),
+        new EnemyPanel(),
     };
 
     public DebugModule(Plugin plugin, Config config)

@@ -12,7 +12,7 @@ public class Radar
             return;
         }
 
-        if (!module.config.DrawLineToCarrots)
+        if (!module.config.ShouldDrawLineToCarrots)
         {
             return;
         }

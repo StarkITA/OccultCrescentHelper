@@ -25,8 +25,6 @@ public class Teleporter
 {
     private readonly TeleporterModule module;
 
-    private readonly TaskManager taskManager = new();
-
     public Teleporter(TeleporterModule module)
     {
         this.module = module;
@@ -39,17 +37,9 @@ public class Teleporter
             .RunIf(() => module.config.ShouldMount)
             .Then(new MountChain(module.config.Mount));
 
-    private Chain GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
+    private ChainFactory GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
     {
-        if (module.config.UseCustomPaths && ev.pathFactory != null)
-        {
-            module.Debug("Using custom path");
-            return Chain.Create("Prowler")
-                .Then(new ProwlerChain(vnav, ev.pathFactory, destination));
-        }
-
-        return Chain.Create("Pathfinding")
-            .Then(new PathfindAndMoveToChain(vnav, destination, radius));
+        return new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, radius);
     }
 
     public void Button(Aethernet? aethernet, Vector3 destination, string name, string id, EventData ev)
@@ -81,10 +71,11 @@ public class Teleporter
         {
             Svc.Log.Info($"Pathfinding to {name} at {destination}");
 
-            ChainManager.Submit(
+            Plugin.Chain.Submit(
                 () => Chain.Create("Mount & Pathfinding")
                     .Then(GetMountChain)
-                    .Then(() => GetPathfindingChain(vnav, ev, destination, 20f))
+                    .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
+                    .WaitUntilNear(vnav, destination)
             );
         }
 
@@ -122,13 +113,15 @@ public class Teleporter
 
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {
-                    chain.Then(() => GetPathfindingChain(vnav, ev, destination, 20f));
+                    chain
+                        .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
+                        .WaitUntilNear(vnav, destination);
                 }
 
                 return chain;
             };
 
-            ChainManager.Submit(factory);
+            Plugin.Chain.Submit(factory);
         }
 
         if (ImGui.IsItemHovered())
@@ -181,7 +174,7 @@ public class Teleporter
             return;
         }
 
-        ChainManager.Submit(new ReturnChain(
+        Plugin.Chain.Submit(new ReturnChain(
             aetherytes[Svc.ClientState.TerritoryType],
             module.GetIPCProvider<YesAlready>(),
             module.GetIPCProvider<VNavmesh>()
@@ -189,7 +182,7 @@ public class Teleporter
     }
 
     private Aethernet GetClosestAethernet(Vector3 position)
-        => AethernetData.All().OrderBy((data) => Vector3.Distance(position, data.position)).FirstOrDefault()!.aethernet;
+        => AethernetData.All().OrderBy((data) => Vector3.Distance(position, data.position)).First()!.aethernet;
 
     public IList<IGameObject> GetNearbyAethernetShards()
     {

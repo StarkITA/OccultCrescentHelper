@@ -1,5 +1,6 @@
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using OccultCrescentHelper.Enums;
 
 namespace OccultCrescentHelper.Modules.Treasure;
@@ -8,23 +9,18 @@ public class Radar
 {
     public void Draw(TreasureModule module)
     {
-        if (!Helpers.IsInOccultCrescent())
+        if (!Helpers.IsInOccultCrescent() || Svc.Condition[ConditionFlag.InCombat])
         {
             return;
         }
 
-        if (!module.config.DrawLineToBronzeChests && !module.config.DrawLineToSilverChests)
+        var config = module.config;
+        if (!config.ShouldDrawLineToBronzeChests && !config.ShouldDrawLineToSilverChests)
         {
             return;
         }
 
-        if (Svc.ClientState.LocalPlayer == null || Svc.Condition[ConditionFlag.InCombat])
-        {
-            return;
-        }
-
-        var pos = Svc.ClientState.LocalPlayer!.Position;
-
+        var pos = Player.Position;
         foreach (var treasure in module.treasures)
         {
             if (!treasure.IsValid())
@@ -35,14 +31,14 @@ public class Radar
             switch (treasure.GetTreasureType())
             {
                 case TreasureType.Bronze:
-                    if (module.config.DrawLineToBronzeChests)
+                    if (config.ShouldDrawLineToBronzeChests)
                     {
                         Helpers.DrawLine(pos, treasure.GetPosition(), 3f, treasure.GetColor());
                     }
                     break;
 
                 case TreasureType.Silver:
-                    if (module.config.DrawLineToSilverChests)
+                    if (config.ShouldDrawLineToSilverChests)
                     {
                         Helpers.DrawLine(pos, treasure.GetPosition(), 3f, treasure.GetColor());
                     }

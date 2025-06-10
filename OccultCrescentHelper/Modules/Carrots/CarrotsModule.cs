@@ -12,7 +12,7 @@ public class CarrotsModule : Module<Plugin, Config>
         get => _config.CarrotsConfig;
     }
 
-    public override bool enabled => config.Enabled;
+    public override bool enabled => config.IsPropertyEnabled(nameof(config.Enabled));
 
     private readonly CarrotsTracker tracker = new();
 

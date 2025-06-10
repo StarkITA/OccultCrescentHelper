@@ -5,5 +5,5 @@ public enum State
     Idle,
     InCombat,
     InFate,
-    InCriticalEngagement,
+    InCriticalEncounter,
 }

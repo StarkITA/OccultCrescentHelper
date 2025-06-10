@@ -10,14 +10,15 @@ namespace OccultCrescentHelper;
 
 public sealed class Plugin : OcelotPlugin
 {
-    public override string Name
-    {
+    public override string Name {
         get => "Occult Crescent Helper";
     }
 
     public Config config { get; init; }
 
     public override IOcelotConfig _config => config;
+
+    public static ChainQueue Chain => ChainManager.Get("OCH##main");
 
     public Plugin(IDalamudPluginInterface plugin)
         : base(plugin, Module.DalamudReflector)

@@ -21,7 +21,7 @@ public class Panel
             if (active <= 0)
             {
 
-                ImGui.TextUnformatted("No active critical engagements.");
+                ImGui.TextUnformatted("No active critical encounters.");
                 return;
             }
 

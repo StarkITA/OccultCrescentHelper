@@ -28,23 +28,6 @@
           "System.Text.RegularExpressions": "4.3.1"
         }
       },
-      "ECommons": {
-        "type": "Direct",
-        "requested": "[2.2.0.2, )",
-        "resolved": "2.2.0.2",
-        "contentHash": "s/FEF4K43Cnsc55zJqrd537LEIxeCAiD9yO6gL4AwJ2lwoWXc4aRBdfeyCT0Upj6JtcLKmrEzevjruKThnfjsQ=="
-      },
-      "FFXIVOcelot": {
-        "type": "Direct",
-        "requested": "[0.12.0, )",
-        "resolved": "0.12.0",
-        "contentHash": "6Gl/Jb4re8SZw8c/ffZr61kBxWbxHpgeQhhnLqdYpG+6B5PqJCfczbWyLrmXgIVt3CE3rkd7DZZJhoqSprN68g==",
-        "dependencies": {
-          "ECommons": "2.2.0.2",
-          "Microsoft.Extensions.Configuration": "7.0.0",
-          "Microsoft.Extensions.Configuration.Abstractions": "7.0.0"
-        }
-      },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -986,14 +969,16 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "ffxivclientstructs": {
+      "ecommons": {
+        "type": "Project"
+      },
+      "FFXIVOcelot": {
         "type": "Project",
         "dependencies": {
-          "InteropGenerator.Runtime": "[1.0.0, )"
+          "Ecommons": "[2.2.0.2, )",
+          "Microsoft.Extensions.Configuration": "[7.0.0, )",
+          "Microsoft.Extensions.Configuration.Abstractions": "[7.0.0, )"
         }
-      },
-      "interopgenerator.runtime": {
-        "type": "Project"
       }
     }
   }

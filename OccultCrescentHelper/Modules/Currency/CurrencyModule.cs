@@ -11,7 +11,7 @@ public class CurrencyModule : Module<Plugin, Config>
         get => _config.CurrencyConfig;
     }
 
-    public override bool enabled => config.Enabled;
+    public override bool enabled => config.IsPropertyEnabled(nameof(config.Enabled));
 
     public readonly CurrencyTracker tracker = new();
 

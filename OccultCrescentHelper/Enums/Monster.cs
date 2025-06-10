@@ -2,6 +2,20 @@ namespace OccultCrescentHelper.Enums;
 
 public enum Monster
 {
+    // Fate
+    Dehumidifier = 18104,
+    Observer = 18396,
+    Sisyphus = 18229,
+    AdvancedAevis = 18231,
+    Execrator = 18399,
+    Ropross = 18135,
+    Nammu = 18200,
+    Lifereaper = 18290,
+    MadMudarch = 18109,
+    GildedHeadstone = 18202,
+    GiantBird = 18113,
+
+    // CE
     BlackStar,
     CloisterDemon,
     CommandUm,
@@ -12,9 +26,9 @@ public enum Monster
     LionRampant,
     MysteriousMindflayer,
     MythicIdol,
-    NeoGarula,
+    NeoGarula = 18078,
     NymianPotaladus,
     OccultKnight,
-    RepairedLion,
+    RepairedLion = 18124,
     TradeTortoise,
 }

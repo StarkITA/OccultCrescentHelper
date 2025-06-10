@@ -25,8 +25,8 @@ public class StateManager
     public event Action? OnEnterInFate;
     public event Action? OnExitInFate;
 
-    public event Action? OnEnterInCriticalEngagement;
-    public event Action? OnExitInCriticalEngagement;
+    public event Action? OnEnterInCriticalEncounter;
+    public event Action? OnExitInCriticalEncounter;
 
     public void Tick(IFramework _)
     {
@@ -86,7 +86,7 @@ public class StateManager
             return;
         }
 
-        if (state == State.InCriticalEngagement)
+        if (state == State.InCriticalEncounter)
         {
             if (!combatFlag)
             {
@@ -116,7 +116,7 @@ public class StateManager
         var pattern = @"You have joined the critical encounter .*?";
         if (Regex.IsMatch(message.ToString(), pattern))
         {
-            ChangeState(State.InCriticalEngagement);
+            ChangeState(State.InCriticalEncounter);
         }
     }
 
@@ -140,8 +140,8 @@ public class StateManager
             case State.InFate:
                 OnExitInFate?.Invoke();
                 break;
-            case State.InCriticalEngagement:
-                OnExitInCriticalEngagement?.Invoke();
+            case State.InCriticalEncounter:
+                OnExitInCriticalEncounter?.Invoke();
                 break;
         }
 
@@ -158,8 +158,8 @@ public class StateManager
             case State.InFate:
                 OnEnterInFate?.Invoke();
                 break;
-            case State.InCriticalEngagement:
-                OnEnterInCriticalEngagement?.Invoke();
+            case State.InCriticalEncounter:
+                OnEnterInCriticalEncounter?.Invoke();
                 break;
         }
     }

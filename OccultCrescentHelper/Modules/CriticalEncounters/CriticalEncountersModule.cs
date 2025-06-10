@@ -14,7 +14,7 @@ public class CriticalEncountersModule : Module<Plugin, Config>
         get => _config.CriticalEncountersConfig;
     }
 
-    public override bool enabled => config.Enabled;
+    public override bool enabled => config.IsPropertyEnabled(nameof(config.Enabled));
 
     public readonly CriticalEncounterTracker tracker = new();
 
