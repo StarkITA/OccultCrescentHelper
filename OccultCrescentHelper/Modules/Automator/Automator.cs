@@ -156,7 +156,10 @@ public class Automator
                 continue;
             }
 
-            return Activity.ForCriticalEncounter(encounter, data, lifestream, vnav).WithMountId(module.plugin.config.TeleporterConfig.Mount);
+            return Activity
+                .ForCriticalEncounter(encounter, data, lifestream, vnav)
+                .WithMountId(module.plugin.config.TeleporterConfig.Mount)
+                .WithDelay(module.config.ShouldDelayCriticalEncounters);
         }
 
         return null;

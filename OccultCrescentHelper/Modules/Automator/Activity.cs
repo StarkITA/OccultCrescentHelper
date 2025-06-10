@@ -42,6 +42,8 @@ public class Activity
 
     private uint mount = 1;
 
+    private bool delay = false;
+
     private Activity(EventData data, Lifestream lifestream, VNavmesh vnav)
     {
         this.data = data;
@@ -71,6 +73,12 @@ public class Activity
         return this;
     }
 
+    public Activity WithDelay(bool delay)
+    {
+        this.delay = delay;
+        return this;
+    }
+
     public unsafe Func<Chain> GetChain(StateManagerModule states)
     {
         return () => {
@@ -79,6 +87,11 @@ public class Activity
                 .Then(_ => state = ActivityState.Pathfinding)
                 .Then(() => {
                     var chain = Chain.Create("Pathfinding");
+
+                    if (delay)
+                    {
+                        chain.Wait(Random.Shared.Next(10000, 15001));
+                    }
 
                     var playerShard = AethernetData.All().OrderBy((data) => Vector3.Distance(Player.Position, data.position)).First();
                     var activityShard = GetAethernetData();

@@ -16,9 +16,9 @@ public enum Monster
     GiantBird = 18113,
 
     // CE
-    BlackStar,
-    CloisterDemon,
-    CommandUm,
+    BlackStar = 18085,
+    CloisterDemon = 18121,
+    CommandUrn = 18145,
     CrescentBerserker,
     CrystalDragon,
     DeathClawOccultCrescent,

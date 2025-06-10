@@ -28,6 +28,11 @@ public class EnemyPanel : Panel
         OcelotUI.Indent(() => {
             foreach (var enemy in enemies)
             {
+                if (enemy.Name.ToString().StartsWith("Crescent"))
+                {
+                    continue;
+                }
+
                 if (ImGui.CollapsingHeader($"{enemy.Name} - {enemy.DataId}##{enemy.ObjectIndex}"))
                 {
                     OcelotUI.Indent(() => {

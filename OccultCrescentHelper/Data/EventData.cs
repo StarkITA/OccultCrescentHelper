@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using ECommons.DalamudServices;
-using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
-using OccultCrescentHelper.Data.Paths;
 using OccultCrescentHelper.Enums;
 using Ocelot.Prowler;
 
@@ -394,7 +390,7 @@ public struct EventData
                 type = EventType.CriticalEncounter,
                 Name = "With Extreme Prejudice",
                 demiatma = Demiatma.Realgar,
-                monster = Monster.CommandUm,
+                monster = Monster.CommandUrn,
                 aethernet = Aethernet.TheWanderersHaven,
             }
         },

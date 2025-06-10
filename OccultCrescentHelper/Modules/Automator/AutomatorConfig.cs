@@ -22,6 +22,14 @@ public partial class AutomatorConfig : ModuleConfig
     public bool DoCriticalEncounters { get; set; } = true;
     public bool ShouldDoCriticalEncounters => IsPropertyEnabled(nameof(DoCriticalEncounters));
 
+    // Critical Encounters
+    [Checkbox]
+    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [Label("Delay before heading to Critical Encoutner")]
+    [Tooltip("Add a 10 - 15 second delay before heading to a critical encoutner")]
+    public bool DelayCriticalEncounters { get; set; } = false;
+    public bool ShouldDelayCriticalEncounters => IsPropertyEnabled(nameof(DelayCriticalEncounters));
+
     [Checkbox]
     [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
     [Indent]
