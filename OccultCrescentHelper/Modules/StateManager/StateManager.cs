@@ -1,5 +1,4 @@
-using System;
-using System.Reflection;
+using Action = System.Action;
 using System.Text.RegularExpressions;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
@@ -103,18 +102,19 @@ public class StateManager
             ChangeState(State.Idle);
             return;
         }
-
     }
 
     public void OnChatMessage(XivChatType type, int timestamp, SeString sender, SeString message, bool isHandled)
     {
-        if (state != State.Idle)
+        if (state != State.Idle || type != XivChatType.SystemMessage)
         {
             return;
         }
 
-        var pattern = @"You have joined the critical encounter .*?";
-        if (Regex.IsMatch(message.ToString(), pattern))
+        const string criticalEngagementStartingPattern =
+            "You have joined the critical encounter|Vous participez à la confrontation critique|Du nimmst an der kritischen Begegnung|以下のクリティカルエンカウントに参加しました。";
+
+        if (Regex.IsMatch(message.ToString(), criticalEngagementStartingPattern))
         {
             ChangeState(State.InCriticalEncounter);
         }
