@@ -114,6 +114,7 @@ public class Teleporter
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {
                     chain
+                        .RunIf(() => module.config.PathToDestination)
                         .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
                         .WaitUntilNear(vnav, destination);
                 }
