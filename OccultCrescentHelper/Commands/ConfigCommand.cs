@@ -12,6 +12,7 @@ public class ConfigCommand : OcelotCommand
     public override string description => @"
 Opens Occult Crescent Helper config ui
  - /ochc : Opens the config ui
+--------------------------------
 ".Trim();
 
     public override IReadOnlyList<string> aliases => ["/occultcrescenthelperconfig"];
