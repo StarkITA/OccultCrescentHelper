@@ -141,11 +141,7 @@ public class Automator
                 continue;
             }
 
-            return Activity
-                .ForCriticalEncounter(encounter, data, lifestream, vnav, source)
-                .WithMountId(module.plugin.config.TeleporterConfig.Mount)
-                .WithDelay(module.config.ShouldDelayCriticalEncounters)
-                .WithBmrToggle(module.config.ShouldToggleBossmodReborn);
+            return Activity.ForCriticalEncounter(encounter, data, lifestream, vnav, module, source);
         }
 
         return null;
@@ -169,10 +165,7 @@ public class Automator
                 continue;
             }
 
-            return Activity
-                .ForFate(fate, data, lifestream, vnav)
-                .WithMountId(module.plugin.config.TeleporterConfig.Mount)
-                .WithBmrToggle(module.config.ShouldToggleBossmodReborn);
+            return Activity.ForFate(fate, data, lifestream, vnav, module);
         }
 
         return null;

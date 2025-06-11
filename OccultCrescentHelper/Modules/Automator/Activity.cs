@@ -35,25 +35,22 @@ public class Activity
 
     private VNavmesh vnav;
 
+    private AutomatorModule module;
+
     public Func<bool> isValid = () => true;
 
     public Func<Vector3> getPosition = () => Vector3.Zero;
 
     public ActivityState state = ActivityState.Idle;
 
-    private uint mount = 1;
-
-    private bool delay = false;
-
-    private bool bmrToggle = true;
-
     private Dictionary<ActivityState, Func<StateManagerModule, Func<Chain>?>> handlers;
 
-    private Activity(EventData data, Lifestream lifestream, VNavmesh vnav)
+    private Activity(EventData data, Lifestream lifestream, VNavmesh vnav, AutomatorModule module)
     {
         this.data = data;
         this.lifestream = lifestream;
         this.vnav = vnav;
+        this.module = module;
 
         handlers = new() {
             { ActivityState.Idle, GetIdleChain },
@@ -64,38 +61,20 @@ public class Activity
         };
     }
 
-    public static Activity ForCriticalEncounter(DynamicEvent encounter, EventData data, Lifestream lifestream, VNavmesh vnav, CriticalEncountersModule critical)
+    public static Activity ForCriticalEncounter(DynamicEvent encounter, EventData data, Lifestream lifestream, VNavmesh vnav, AutomatorModule module, CriticalEncountersModule critical)
     {
-        return new(data, lifestream, vnav) {
+        return new(data, lifestream, vnav, module) {
             isValid = () => critical.criticalEncounters[(int)data.id].State != DynamicEventState.Inactive,
             getPosition = () => encounter.MapMarker.Position,
         };
     }
 
-    public static Activity ForFate(IFate fate, EventData data, Lifestream lifestream, VNavmesh vnav)
+    public static Activity ForFate(IFate fate, EventData data, Lifestream lifestream, VNavmesh vnav, AutomatorModule module)
     {
-        return new(data, lifestream, vnav) {
+        return new(data, lifestream, vnav, module) {
             isValid = () => Svc.Fates.Contains(fate),
             getPosition = () => data.start ?? fate.Position,
         };
-    }
-
-    public Activity WithMountId(uint mount)
-    {
-        this.mount = mount;
-        return this;
-    }
-
-    public Activity WithDelay(bool delay)
-    {
-        this.delay = delay;
-        return this;
-    }
-
-    public Activity WithBmrToggle(bool bmrToggle)
-    {
-        this.bmrToggle = bmrToggle;
-        return this;
     }
 
     public unsafe Func<Chain>? GetChain(StateManagerModule states)
@@ -112,7 +91,7 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Idle")
-                .ConditionalThen(_ => bmrToggle, _ => Chat.ExecuteCommand("/bmrai off"))
+                .ConditionalThen(_ => module.config.ShouldToggleBossmodReborn, _ => Chat.ExecuteCommand("/bmrai off"))
                 .Then(_ => vnav.Stop())
                 .Then(_ => state = ActivityState.Pathfinding);
         };
@@ -127,9 +106,9 @@ public class Activity
             bool isFate = data.type == EventType.Fate;
 
             return Chain.Create("Illegal:Pathfinding")
-                .ConditionalWait(_ => delay, Random.Shared.Next(10000, 15001))
+                .ConditionalWait(_ => module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
                 .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
-                .Then(new MountChain(mount))
+                .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
                 .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 10f))
                 .WaitToStartPathfinding(vnav)
                 // Fate
@@ -157,26 +136,26 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Participating")
-                .ConditionalThen(_ => bmrToggle, _ => Chat.ExecuteCommand("/bmrai on"))
-                    .Then(_ => vnav.Stop())
-                    .Then(new TaskManagerTask(() => {
-                        if (EzThrottler.Throttle("Participating.ForceTarget", 100))
-                        {
-                            Svc.Targets.Target ??= Svc.Objects
-                                .Where(o =>
-                                    o != null &&
-                                    o.ObjectKind == ObjectKind.BattleNpc &&
-                                    o.IsHostile() &&
-                                    o.IsTargetable
-                                )
-                                .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
-                                .ToList()
-                                .FirstOrDefault();
-                        }
+                .ConditionalThen(_ => module.config.ShouldToggleBossmodReborn, _ => Chat.ExecuteCommand("/bmrai on"))
+                .Then(_ => vnav.Stop())
+                .Then(new TaskManagerTask(() => {
+                    if (module.config.ShouldForceTarget && EzThrottler.Throttle("Participating.ForceTarget", 100))
+                    {
+                        Svc.Targets.Target ??= Svc.Objects
+                            .Where(o =>
+                                o != null &&
+                                o.ObjectKind == ObjectKind.BattleNpc &&
+                                o.IsHostile() &&
+                                o.IsTargetable
+                            )
+                            .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
+                            .ToList()
+                            .FirstOrDefault();
+                    }
 
-                        return states.GetState() == State.Idle;
-                    }, new() { TimeLimitMS = int.MaxValue }))
-                    .Then(_ => state = ActivityState.Done);
+                    return states.GetState() == State.Idle;
+                }, new() { TimeLimitMS = int.MaxValue }))
+                .Then(_ => state = ActivityState.Done);
         };
     }
 
@@ -217,7 +196,7 @@ public class Activity
                         // Dismount
                         if (Svc.Condition[ConditionFlag.Mounted])
                         {
-                            ActionManager.Instance()->UseAction(ActionType.Mount, 1);
+                            ActionManager.Instance()->UseAction(ActionType.Mount, module.plugin.config.TeleporterConfig.Mount);
                         }
 
                         vnav.Stop();

@@ -21,6 +21,13 @@ public partial class AutomatorConfig : ModuleConfig
     public bool ToggleBossmodReborn { get; set; } = true;
     public bool ShouldToggleBossmodReborn => IsPropertyEnabled(nameof(ToggleBossmodReborn));
 
+    [Checkbox]
+    [DependsOn(nameof(Enabled))]
+    [Label("Force Target")]
+    [Tooltip("Ensure you always maintain a target in fates and critical encounters.")]
+    public bool ForceTarget { get; set; } = true;
+    public bool ShouldForceTarget => IsPropertyEnabled(nameof(ForceTarget));
+
     // Critical Encounters
     [Checkbox]
     [DependsOn(nameof(Enabled))]

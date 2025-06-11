@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using Dalamud.Plugin.Services;
 using Ocelot.Modules;
 
@@ -17,6 +18,8 @@ public class AutomatorModule : Module<Plugin, Config>
 
     private Panel panel = new();
 
+    private List<uint> occultCrescentTerritoryIds = [1252];
+
     public AutomatorModule(Plugin plugin, Config config)
         : base(plugin, config) { }
 
@@ -28,5 +31,16 @@ public class AutomatorModule : Module<Plugin, Config>
     {
         panel.Draw(this);
         return true;
+    }
+
+    public override void OnTerritoryChanged(ushort id)
+    {
+        if (occultCrescentTerritoryIds.Contains(id))
+        {
+            return;
+        }
+
+        config.Enabled = false;
+        plugin.config.Save();
     }
 }

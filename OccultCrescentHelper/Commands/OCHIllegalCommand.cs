@@ -58,6 +58,8 @@ Manage och automator/illegal mode.
                     automator.config.Enabled = !automator.config.Enabled;
                     break;
             }
+
+            plugin.config.Save();
         });
     }
 
