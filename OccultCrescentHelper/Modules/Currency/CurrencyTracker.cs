@@ -12,15 +12,15 @@ public class CurrencyTracker
         Gold = 45044,
     }
 
-    private float startingGold = 0f;
+    private float lastGold = 0f;
 
-    private float currentGold = 0f;
+    private float gainedGold = 0f;
 
     private DateTime goldStartTime = DateTime.UtcNow;
 
-    private float startingSilver = 0f;
+    private float lastSilver = 0f;
 
-    private float currentSilver = 0f;
+    private float gainedSilver = 0f;
 
     private DateTime silverStartTime = DateTime.UtcNow;
 
@@ -31,23 +31,35 @@ public class CurrencyTracker
 
     public void Tick(IFramework _)
     {
-        currentGold = GetGold();
-        currentSilver = GetSilver();
+        float currentGold = GetGold();
+        float currentSilver = GetSilver();
+
+        float goldDelta = currentGold - lastGold;
+        float silverDelta = currentSilver - lastSilver;
+
+        if (goldDelta > 0)
+            gainedGold += goldDelta;
+
+        if (silverDelta > 0)
+            gainedSilver += silverDelta;
+
+        lastGold = currentGold;
+        lastSilver = currentSilver;
     }
 
     public void TerritoryChanged(ushort _) => Reset();
 
     public void ResetSilver()
     {
-        startingSilver = GetSilver();
-        currentSilver = startingSilver;
+        lastSilver = GetSilver();
+        gainedSilver = 0;
         silverStartTime = DateTime.UtcNow;
     }
 
     public void ResetGold()
     {
-        startingGold = GetGold();
-        currentGold = startingGold;
+        lastGold = GetGold();
+        gainedGold = 0;
         goldStartTime = DateTime.UtcNow;
     }
 
@@ -63,7 +75,7 @@ public class CurrencyTracker
         if (elapsed <= 0)
             return 0;
 
-        return (currentGold - startingGold) / elapsed;
+        return gainedGold / elapsed;
     }
 
     public float GetSilverPerHour()
@@ -72,7 +84,7 @@ public class CurrencyTracker
         if (elapsed <= 0)
             return 0;
 
-        return (currentSilver - startingSilver) / elapsed;
+        return gainedSilver / elapsed;
     }
 
     private unsafe float GetGold() => InventoryManager.Instance()->GetInventoryItemCount((uint)Currency.Gold);
