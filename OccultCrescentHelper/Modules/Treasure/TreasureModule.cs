@@ -23,6 +23,8 @@ public class TreasureModule : Module<Plugin, Config>
 
     private readonly TreasureTracker tracker = new();
 
+    private readonly TreasureHunt hunter = new();
+
     public List<Treasure> treasures => tracker.treasures;
 
     private readonly Panel panel = new();
@@ -32,14 +34,23 @@ public class TreasureModule : Module<Plugin, Config>
     public TreasureModule(Plugin plugin, Config config)
         : base(plugin, config) { }
 
-    public override void Tick(IFramework framework) => tracker.Tick(framework, plugin);
+    public override void Tick(IFramework framework)
+    {
+        tracker.Tick(framework, plugin);
+        hunter.Tick(this);
+    }
 
     public override void Draw() => radar.Draw(this);
-
 
     public override bool DrawMainUi()
     {
         panel.Draw(this);
+
+        if (config.ShouldEnableTreasureHunt)
+        {
+            hunter.Draw(this);
+        }
+
         return true;
     }
 }

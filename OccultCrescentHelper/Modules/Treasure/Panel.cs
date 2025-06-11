@@ -1,5 +1,6 @@
 using System.Numerics;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using ImGuiNET;
 using Ocelot;
 using Ocelot.IPC;
@@ -32,7 +33,11 @@ public class Panel
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                    ImGui.TextUnformatted($"{treasure.GetName()} ({pos.X:F2}, {pos.Y:F2}, {pos.Z:F2})");
+                    ImGui.TextUnformatted($"{treasure.GetName()}");
+                    OcelotUI.Indent(() => {
+                        ImGui.TextUnformatted($"({pos.X:F2}, {pos.Y:F2}, {pos.Z:F2})");
+                        ImGui.TextUnformatted($"({Vector3.Distance(Player.Position, pos)})");
+                    });
 
                     ImGui.TableNextColumn();
                     if (ImGui.Button($"Target###{index}"))

@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Ocelot.Chain;
@@ -53,5 +53,9 @@ public class ReturnChain : ChainFactory
         }
 
         return chain;
+    }
+    public override TaskManagerConfiguration? Config()
+    {
+        return new() { TimeLimitMS = 60000 };
     }
 }

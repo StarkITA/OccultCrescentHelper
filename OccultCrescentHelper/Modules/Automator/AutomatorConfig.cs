@@ -11,7 +11,6 @@ public partial class AutomatorConfig : ModuleConfig
 
     [Checkbox]
     [Illegal]
-    [Experimental]
     [RequiredPlugin("Lifestream", "vnavmesh")]
     [Label("Enabled")]
     public bool Enabled { get; set; } = false;
@@ -213,9 +212,10 @@ public partial class AutomatorConfig : ModuleConfig
     [Checkbox]
     [Indent]
     [DependsOn(nameof(Enabled), nameof(DoFates))]
+    [Experimental]
     [Label("Fate: The Winged Terror")]
     [Tooltip("Toggle participation in the 'The Winged Terror' fate.")]
-    public bool DoTheWingedTerror { get; set; } = true;
+    public bool DoTheWingedTerror { get; set; } = false;
     public bool ShouldDoTheWingedTerror => IsPropertyEnabled(nameof(DoTheWingedTerror));
 
     [Checkbox]

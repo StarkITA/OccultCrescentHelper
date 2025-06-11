@@ -23,4 +23,13 @@ public class TreasureConfig : ModuleConfig
     [Tooltip("Render a line from your characters position to nearby silver coffers.")]
     public bool DrawLineToSilverChests { get; set; } = true;
     public bool ShouldDrawLineToSilverChests => IsPropertyEnabled(nameof(DrawLineToSilverChests));
+
+    [Checkbox]
+    [Experimental]
+    [Illegal]
+    [RequiredPlugin("vnavmesh", "Lifestream")]
+    [DependsOn(nameof(Enabled))]
+    [Label("Enable Treasure Hunt button")]
+    public bool EnableTreasureHunt { get; set; } = false;
+    public bool ShouldEnableTreasureHunt => IsPropertyEnabled(nameof(EnableTreasureHunt));
 }

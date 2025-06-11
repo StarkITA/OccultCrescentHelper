@@ -123,11 +123,17 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:WaitingToStartCriticalEncoutner")
-                .Then(new TaskManagerTask(() => {
-                    // @todo check we don't leave the area
-                    return states.GetState() == State.InCriticalEncounter;
-                }, new() { TimeLimitMS = 180000 }))
-                .Then(_ => state = ActivityState.Participating);
+                    .Then(new TaskManagerTask(() => {
+                        if (!isValid())
+                        {
+                            throw new Exception("The critical encoutner appeared to start without you");
+                        }
+
+                        return states.GetState() == State.InCriticalEncounter;
+                    }, new() {
+                        TimeLimitMS = 180000
+                    }))
+                    .Then(_ => state = ActivityState.Participating);
         };
     }
 
@@ -208,6 +214,11 @@ public class Activity
             if (!vnav.IsRunning())
             {
                 throw new VnavmeshStoppedException();
+            }
+
+            if (!isValid())
+            {
+                throw new Exception("Activity is no longer valid.");
             }
 
             return false;
