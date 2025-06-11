@@ -26,10 +26,6 @@ public class StateManager
 
     private Dictionary<State, Action> handlers;
 
-    private Dictionary<State, Action?> enter;
-
-    private Dictionary<State, Action?> exit;
-
     public StateManager()
     {
         handlers = new() {
@@ -37,20 +33,6 @@ public class StateManager
             {State.InCombat, HandleInCombat },
             {State.InFate, HandleInFate },
             {State.InCriticalEncounter, HandleInCriticalEncounter },
-        };
-
-        enter = new() {
-            {State.Idle, OnEnterIdle },
-            {State.InCombat, OnEnterInCombat },
-            {State.InFate, OnEnterInFate },
-            {State.InCriticalEncounter, OnEnterInCriticalEncounter },
-        };
-
-        exit = new() {
-            {State.Idle, OnExitIdle },
-            {State.InCombat, OnExitInCombat },
-            {State.InFate, OnExitInFate },
-            {State.InCriticalEncounter, OnExitInCriticalEncounter },
         };
     }
 
@@ -134,11 +116,32 @@ public class StateManager
         var oldState = state;
         Svc.Log.Info($"[StateManager] State changed from {oldState} to {newState}");
 
-        exit[oldState]?.Invoke();
+        InvokeExit(oldState);
         state = newState;
-        enter[newState]?.Invoke();
+        InvokeEnter(newState);
     }
 
+    private void InvokeEnter(State s)
+    {
+        switch (s)
+        {
+            case State.Idle: OnEnterIdle?.Invoke(); break;
+            case State.InCombat: OnEnterInCombat?.Invoke(); break;
+            case State.InFate: OnEnterInFate?.Invoke(); break;
+            case State.InCriticalEncounter: OnEnterInCriticalEncounter?.Invoke(); break;
+        }
+    }
+
+    private void InvokeExit(State s)
+    {
+        switch (s)
+        {
+            case State.Idle: OnExitIdle?.Invoke(); break;
+            case State.InCombat: OnExitInCombat?.Invoke(); break;
+            case State.InFate: OnExitInFate?.Invoke(); break;
+            case State.InCriticalEncounter: OnExitInCriticalEncounter?.Invoke(); break;
+        }
+    }
 
     private bool IsInCombat() => Svc.Condition[ConditionFlag.InCombat];
 

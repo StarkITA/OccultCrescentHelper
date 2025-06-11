@@ -175,10 +175,12 @@ public class Teleporter
             return;
         }
 
+
         Plugin.Chain.Submit(new ReturnChain(
             aetherytes[Svc.ClientState.TerritoryType],
             module.GetIPCProvider<YesAlready>(),
-            module.GetIPCProvider<VNavmesh>()
+            module.GetIPCProvider<VNavmesh>(),
+            module.config.ApproachAetheryte
         ));
     }
 

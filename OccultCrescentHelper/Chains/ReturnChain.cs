@@ -25,9 +25,9 @@ public class ReturnChain : ChainFactory
         this.vnav = vnav;
     }
 
-    public ReturnChain(Vector3 destination, YesAlready? yes = null, VNavmesh? vnav = null)
+    public ReturnChain(Vector3 destination, YesAlready? yes = null, VNavmesh? vnav = null, bool approachAetherye = true)
     {
-        this.approachAetherye = true;
+        this.approachAetherye = approachAetherye;
         this.destination = destination;
         this.yes = yes;
         this.vnav = vnav;

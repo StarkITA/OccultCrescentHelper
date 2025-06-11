@@ -92,7 +92,7 @@ public class Automator
                 return;
             }
 
-            Plugin.Chain.Submit(new ReturnChain(returnPoint, module.GetIPCProvider<YesAlready>(), vnav));
+            Plugin.Chain.Submit(new ReturnChain(returnPoint, module.GetIPCProvider<YesAlready>(), vnav, approachAetherye: true));
             return;
         }
 
