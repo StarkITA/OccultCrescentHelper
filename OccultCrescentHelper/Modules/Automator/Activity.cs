@@ -5,13 +5,14 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
-using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
@@ -141,16 +142,7 @@ public class Activity
                 .Then(new TaskManagerTask(() => {
                     if (module.config.ShouldForceTarget && EzThrottler.Throttle("Participating.ForceTarget", 100))
                     {
-                        Svc.Targets.Target ??= Svc.Objects
-                            .Where(o =>
-                                o != null &&
-                                o.ObjectKind == ObjectKind.BattleNpc &&
-                                o.IsHostile() &&
-                                o.IsTargetable
-                            )
-                            .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
-                            .ToList()
-                            .FirstOrDefault();
+                        Svc.Targets.Target ??= GetClosestEnemy();
                     }
 
                     return states.GetState() == State.Idle;
@@ -170,15 +162,7 @@ public class Activity
         return new(() => {
             if (EzThrottler.Throttle("FatePathfindingWatcher.EnemyScan", 100))
             {
-                Svc.Targets.Target ??= Svc.Objects
-                    .Where(o =>
-                        o != null &&
-                        o.DataId == (uint)data.monster! &&
-                        o.IsTargetable
-                    )
-                    .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
-                    .ToList()
-                    .FirstOrDefault();
+                Svc.Targets.Target ??= GetClosestEnemy();
             }
 
             if (Svc.Targets.Target != null)
@@ -218,13 +202,62 @@ public class Activity
     private TaskManagerTask GetCriticalEncounterPathfindingWatcher(StateManagerModule states, VNavmesh vnav)
     {
         return new(() => {
+            if (!vnav.IsRunning() && IsInZone())
+            {
+                return true;
+            }
+
             if (!vnav.IsRunning())
             {
                 throw new VnavmeshStoppedException();
             }
 
-            return vnav.IsRunning() || IsInZone();
+            return false;
         }, new() { TimeLimitMS = 180000, ShowError = false });
+    }
+
+    private IGameObject? GetClosestEnemy()
+    {
+        return Svc.Objects
+            .Where(o =>
+                o != null &&
+                o.ObjectKind == ObjectKind.BattleNpc &&
+                IsActivityTarget(o) &&
+                o.IsTargetable
+            )
+            .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
+            .ToList()
+            .FirstOrDefault();
+    }
+
+    private unsafe bool IsActivityTarget(IGameObject? obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var battleChara = (BattleChara*)obj.Address;
+
+            var id = battleChara->EventId.EntryId;
+            var count = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.DynamicEvent>().Count();
+
+            if (data.type == EventType.Fate)
+            {
+                return battleChara->FateId == data.id;
+            }
+
+            var isRelatedToCurrentEvent = battleChara->EventId.EntryId == Player.BattleChara->EventId.EntryId;
+
+            return obj.SubKind == (byte)BattleNpcSubKind.Enemy && isRelatedToCurrentEvent;
+        }
+        catch (Exception ex)
+        {
+            Svc.Log.Error(ex.Message);
+            return false;
+        }
     }
 
     public AethernetData GetAethernetData()
