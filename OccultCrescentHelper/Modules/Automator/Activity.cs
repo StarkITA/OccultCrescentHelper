@@ -90,7 +90,7 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Idle")
-                .ConditionalThen(_ => module.config.ShouldToggleBossmodReborn, _ => Chat.ExecuteCommand("/bmrai off"))
+                .ConditionalThen(_ => module.config.ShouldToggleAiProvider, _ => module.config.AiProvider.Off())
                 .Then(_ => vnav.Stop())
                 .Then(_ => state = ActivityState.Pathfinding);
         };
@@ -135,7 +135,7 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Participating")
-                .ConditionalThen(_ => module.config.ShouldToggleBossmodReborn, _ => Chat.ExecuteCommand("/bmrai on"))
+                .ConditionalThen(_ => module.config.ShouldToggleAiProvider, _ => module.config.AiProvider.On())
                 .Then(_ => vnav.Stop())
                 .Then(new TaskManagerTask(() => {
                     if (module.config.ShouldForceTarget && EzThrottler.Throttle("Participating.ForceTarget", 100))

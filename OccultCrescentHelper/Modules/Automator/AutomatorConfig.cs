@@ -7,6 +7,8 @@ namespace OccultCrescentHelper.Modules.Automator;
 [Title("Illegal Mode")]
 public partial class AutomatorConfig : ModuleConfig
 {
+    public override string ProviderNamespace => "OccultCrescentHelper.Modules.Automator";
+
     [Checkbox]
     [Illegal]
     [Experimental]
@@ -14,12 +16,18 @@ public partial class AutomatorConfig : ModuleConfig
     [Label("Enabled")]
     public bool Enabled { get; set; } = false;
 
+    [Enum(typeof(AiType), nameof(AiTypeProvider))]
+    [DependsOn(nameof(Enabled))]
+    [Label("AI provider")]
+    [Tooltip("The mechanic AI provider you use")]
+    public AiType AiProvider { get; set; } = AiType.VBM;
+
     [Checkbox]
     [DependsOn(nameof(Enabled))]
-    [Label("Toggle BMR")]
-    [Tooltip("Toggle Bossmod Reborn on when starting fate/ce\nToggle Bossmod Reborn off when navigating to fate/ce")]
-    public bool ToggleBossmodReborn { get; set; } = true;
-    public bool ShouldToggleBossmodReborn => IsPropertyEnabled(nameof(ToggleBossmodReborn));
+    [Label("Toggle Ai Provider")]
+    [Tooltip("Toggle Ai Provider on when starting fate/ce\nToggle Ai Provider off when navigating to fate/ce")]
+    public bool ToggleAiProvider { get; set; } = true;
+    public bool ShouldToggleAiProvider => IsPropertyEnabled(nameof(ToggleAiProvider));
 
     [Checkbox]
     [DependsOn(nameof(Enabled))]
