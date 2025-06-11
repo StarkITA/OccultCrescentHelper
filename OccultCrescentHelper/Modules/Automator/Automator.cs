@@ -1,19 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
-using FFXIVClientStructs.FFXIV.Client.LayoutEngine;
-using Lumina.Excel.Sheets;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
 using OccultCrescentHelper.Modules.StateManager;
-using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -50,11 +46,6 @@ public class Automator
             return;
         }
 
-        if (states.GetState() != State.Idle)
-        {
-            return;
-        }
-
         if (activity != null && !activity.isValid())
         {
             Plugin.Chain.Abort();
@@ -69,27 +60,19 @@ public class Automator
 
         if (activity != null)
         {
-            if (activity.state == ActivityState.WaitingToStartCriticalEncoutner && activity.IsInZone())
+            if (activity.state == ActivityState.Done)
+            {
+                activity = null;
+                return;
+            }
+
+            var chain = activity.GetChain(states);
+            if (chain == null)
             {
                 return;
             }
 
-
-            Svc.Log.Info($"Trying to recover activity [{activity.data.Name}]");
-
-            var playerDistance = Vector3.Distance(Player.Position, activity.getPosition());
-
-            var aethernet = activity.GetAethernetData();
-            var aetheryteDistance = Vector3.Distance(aethernet.position, activity.getPosition());
-
-            if (playerDistance <= aetheryteDistance)
-            {
-                Plugin.Chain.Submit(new PathfindAndMoveToChain(vnav, activity.getPosition()));
-                return;
-            }
-
-            activity = null;
-
+            Plugin.Chain.Submit(chain);
             return;
         }
 
@@ -101,6 +84,11 @@ public class Automator
             if (!aetherytes.TryGetValue(Svc.ClientState.TerritoryType, out var returnPoint))
             {
                 module.Warning($"No return point defined for territory: {Svc.ClientState.TerritoryType}");
+                return;
+            }
+
+            if (states.GetState() != State.Idle)
+            {
                 return;
             }
 
@@ -127,13 +115,10 @@ public class Automator
         // Try and get the next activity
         activity ??= module.config.ShouldDoCriticalEncounters ? FindCriticalEncounter(module, lifestream, vnav) : null;
         activity ??= module.config.ShouldDoFates ? FindFate(module, lifestream, vnav) : null;
-        if (activity == null)
+        if (activity != null)
         {
-            return;
+            Svc.Log.Info($"Selected activity: {activity.data.Name}");
         }
-
-        Svc.Log.Info($"Selected activity: {activity.data.Name}");
-        Plugin.Chain.Submit(activity.GetChain(states));
     }
 
     public Activity? FindCriticalEncounter(AutomatorModule module, Lifestream lifestream, VNavmesh vnav)
@@ -157,9 +142,10 @@ public class Automator
             }
 
             return Activity
-                .ForCriticalEncounter(encounter, data, lifestream, vnav)
+                .ForCriticalEncounter(encounter, data, lifestream, vnav, source)
                 .WithMountId(module.plugin.config.TeleporterConfig.Mount)
-                .WithDelay(module.config.ShouldDelayCriticalEncounters);
+                .WithDelay(module.config.ShouldDelayCriticalEncounters)
+                .WithBmrToggle(module.config.ShouldToggleBossmodReborn);
         }
 
         return null;
@@ -183,7 +169,10 @@ public class Automator
                 continue;
             }
 
-            return Activity.ForFate(fate, data, lifestream, vnav).WithMountId(module.plugin.config.TeleporterConfig.Mount);
+            return Activity
+                .ForFate(fate, data, lifestream, vnav)
+                .WithMountId(module.plugin.config.TeleporterConfig.Mount)
+                .WithBmrToggle(module.config.ShouldToggleBossmodReborn);
         }
 
         return null;

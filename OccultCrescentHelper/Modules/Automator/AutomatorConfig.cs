@@ -14,6 +14,13 @@ public partial class AutomatorConfig : ModuleConfig
     [Label("Enabled")]
     public bool Enabled { get; set; } = false;
 
+    [Checkbox]
+    [DependsOn(nameof(Enabled))]
+    [Label("Toggle BMR")]
+    [Tooltip("Toggle Bossmod Reborn on when starting fate/ce\nToggle Bossmod Reborn off when navigating to fate/ce")]
+    public bool ToggleBossmodReborn { get; set; } = true;
+    public bool ShouldToggleBossmodReborn => IsPropertyEnabled(nameof(ToggleBossmodReborn));
+
     // Critical Encounters
     [Checkbox]
     [DependsOn(nameof(Enabled))]

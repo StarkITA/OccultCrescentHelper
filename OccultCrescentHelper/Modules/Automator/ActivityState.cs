@@ -4,15 +4,9 @@ public enum ActivityState
 {
     Idle,
     Pathfinding,
-
-    // Fate specific
-    WaitingForFateTarget,
-
-    // Ce specific
     WaitingToStartCriticalEncoutner,
-
-
     Participating,
+    Done,
 }
 
 public static class ActivityStateExtensions
@@ -22,9 +16,9 @@ public static class ActivityStateExtensions
         return state switch {
             ActivityState.Idle => "Idle",
             ActivityState.Pathfinding => "Pathfinding",
-            ActivityState.WaitingForFateTarget => "Waiting for Target (Fate)",
             ActivityState.WaitingToStartCriticalEncoutner => "Waiting to Start (CE)",
             ActivityState.Participating => "Participating",
+            ActivityState.Done => "Done",
             _ => "Unknown",
         };
     }

@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using ECommons;
-using ECommons.DalamudServices;
 using ImGuiNET;
 using OccultCrescentHelper.Modules.Debug.Panels;
-using OccultCrescentHelper.Windows;
 using Ocelot;
 using Ocelot.Modules;
 
@@ -23,6 +20,7 @@ public class DebugModule : Module<Plugin, Config>
         new CriticalEncountersPanel(),
         new ChainManagerPanel(),
         new EnemyPanel(),
+        new StatusPanel(),
     };
 
     public DebugModule(Plugin plugin, Config config)

@@ -7,7 +7,7 @@ public class Panel
 {
     public void Draw(AutomatorModule module)
     {
-        OcelotUI.Title("Automator:");
+        OcelotUI.Title("Illegal Mode:");
         OcelotUI.Indent(() => {
             OcelotUI.Title("Activity:");
             ImGui.SameLine();

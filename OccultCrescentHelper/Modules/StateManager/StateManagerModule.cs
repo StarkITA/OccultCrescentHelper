@@ -1,7 +1,5 @@
 
 using System;
-using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using Ocelot.Modules;
 
@@ -62,9 +60,6 @@ public class StateManagerModule : Module<Plugin, Config>
         : base(plugin, config) { }
 
     public override void Tick(IFramework framework) => state.Tick(framework);
-
-    public override void OnChatMessage(XivChatType type, int timestamp, SeString sender, SeString message, bool isHandled)
-        => state.OnChatMessage(type, timestamp, sender, message, isHandled);
 
     public override bool DrawMainUi() => panel.Draw(this);
 
