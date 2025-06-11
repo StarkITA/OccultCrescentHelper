@@ -28,8 +28,6 @@ namespace OccultCrescentHelper.Modules.Automator;
 
 public class Activity
 {
-    private const float TARGET_DISTANCE = 20f;
-
     public readonly EventData data;
 
     private Lifestream lifestream;
@@ -175,7 +173,7 @@ public class Activity
 
                 if (states.GetState() == State.InFate)
                 {
-                    if (Vector3.Distance(Player.Position, Svc.Targets.Target.Position) <= 5f)
+                    if (Vector3.Distance(Player.Position, Svc.Targets.Target.Position) <= module.config.EngagementRange)
                     {
                         // Dismount
                         if (Svc.Condition[ConditionFlag.Mounted])

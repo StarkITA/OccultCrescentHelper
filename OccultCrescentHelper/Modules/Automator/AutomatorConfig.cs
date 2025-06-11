@@ -28,6 +28,12 @@ public partial class AutomatorConfig : ModuleConfig
     public bool ForceTarget { get; set; } = true;
     public bool ShouldForceTarget => IsPropertyEnabled(nameof(ForceTarget));
 
+    [FloatRange(5f, 30f)]
+    [DependsOn(nameof(Enabled))]
+    [Label("Engagement Range")]
+    [Tooltip("The range to be at from a fate monster before dismounting and letting your rotation/ai plugin take over")]
+    public float EngagementRange { get; set; } = 5f;
+
     // Critical Encounters
     [Checkbox]
     [DependsOn(nameof(Enabled))]
