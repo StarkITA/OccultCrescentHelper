@@ -22,6 +22,8 @@ public class CurrencyModule : Module<Plugin, Config>
 
     public override void Tick(IFramework framework) => tracker.Tick(framework);
 
+    public override void OnTerritoryChanged(ushort _) => tracker.Reset();
+
     public override bool DrawMainUi()
     {
         panel.Draw(this);
