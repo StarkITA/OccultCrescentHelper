@@ -110,6 +110,17 @@ public class Activity
             return Chain.Create("Illegal:Pathfinding")
                 .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
                 .Then(_ => vnav.Stop())
+                .ConditionalThen(
+                    _ => playerShard.dataId != activityShard.dataId && playerShard.Distance() > 4f,
+                    _ => new TaskManagerTask(() => {
+                        if (!vnav.IsRunning())
+                        {
+                            vnav.PathfindAndMoveTo(playerShard.position, false);
+                        }
+
+                        return playerShard.Distance() < 4f;
+                    })
+                )
                 .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
                 .Then(_ => ChainManager.Get("Mounter").Submit(() => Chain.Create().Then(
                     new MountChain(module.plugin.config.TeleporterConfig.Mount)
