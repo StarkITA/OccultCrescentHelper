@@ -1,6 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
-using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -20,11 +19,9 @@ public class MountChain : RetryChainFactory
     {
         return chain
             .BreakIf(() => Svc.Condition[ConditionFlag.Mounted])
-            .WaitGcd()
-            .WaitUntilNotCasting()
+            .Wait(500)
             .Then(_ => ActionManager.Instance()->UseAction(ActionType.Mount, mountId))
-            .WaitUntilCasting()
-            .WaitUntilNotCasting();
+            .Wait(500);
     }
 
     public override bool IsComplete() => Svc.Condition[ConditionFlag.Mounted];
