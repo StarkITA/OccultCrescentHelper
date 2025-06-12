@@ -3,7 +3,6 @@ using Dalamud.Game.ClientState.Conditions;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using OccultCrescentHelper.Enums;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -36,28 +35,14 @@ public class ReturnChain : ChainFactory
 
     protected override Chain Create(Chain chain)
     {
-        AethernetData closest = AethernetData.GetClosestToPlayer();
-        float distance = closest.Distance();
-        if (distance <= 60f && vnav != null)
-        {
-            if (distance > 4.2f)
-            {
-                return chain
-                    .Then(new PathfindAndMoveToChain(vnav, closest.position, 4f, 3f))
-                    .WaitUntilNear(vnav, closest.position);
-            }
-
-            return chain;
-        }
-
         yes?.PausePlugin(5000);
 
         chain
             .BreakIf(() => Svc.ClientState.LocalPlayer?.IsDead == true)
-                .UseGcdAction(ActionType.GeneralAction, 8)
-                .AddonCallback("SelectYesno", true, 0)
-                .WaitToCast()
-                .WaitToCycleCondition(ConditionFlag.BetweenAreas);
+            .UseGcdAction(ActionType.GeneralAction, 8)
+            .AddonCallback("SelectYesno", true, 0)
+            .WaitToCast()
+            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
 
         if (approachAetherye && vnav != null)
         {

@@ -76,21 +76,7 @@ public class Automator
             return;
         }
 
-        if (!module.config.ShouldDoFates && !module.config.ShouldDoCriticalEncounters)
-        {
-            return;
-        }
-
-        // Try and get the next activity
-        activity ??= module.config.ShouldDoCriticalEncounters ? FindCriticalEncounter(module, lifestream, vnav) : null;
-        activity ??= module.config.ShouldDoFates ? FindFate(module, lifestream, vnav) : null;
-        if (activity != null)
-        {
-            Svc.Log.Info($"Selected activity: {activity.data.Name}");
-            return;
-        }
-
-        Aethernet shard = AethernetData.GetClosestToPlayer().aethernet;
+        Aethernet shard = AethernetData.All().OrderBy((data) => Vector3.Distance(Player.Position, data.position)).First().aethernet;
         var shardData = shard.GetData();
         var distance = Vector3.Distance(shardData.position, Player.Position);
         if (distance >= RETURN_RANGE)
@@ -119,6 +105,19 @@ public class Automator
             });
 
             return;
+        }
+
+        if (!module.config.ShouldDoFates && !module.config.ShouldDoCriticalEncounters)
+        {
+            return;
+        }
+
+        // Try and get the next activity
+        activity ??= module.config.ShouldDoCriticalEncounters ? FindCriticalEncounter(module, lifestream, vnav) : null;
+        activity ??= module.config.ShouldDoFates ? FindFate(module, lifestream, vnav) : null;
+        if (activity != null)
+        {
+            Svc.Log.Info($"Selected activity: {activity.data.Name}");
         }
     }
 

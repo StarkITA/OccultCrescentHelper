@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using ECommons.DalamudServices;
-using ECommons.GameHelpers;
 using Lumina.Excel.Sheets;
 
 namespace OccultCrescentHelper.Enums;
@@ -27,9 +26,7 @@ public enum Aethernet : uint
 public class AethernetData
 {
     public Aethernet aethernet;
-
     public uint dataId;
-
     public Vector3 position;
 
     public static List<AethernetData> All()
@@ -37,23 +34,6 @@ public class AethernetData
         return ((Aethernet[])System.Enum.GetValues(typeof(Aethernet)))
             .Select(a => a.GetData())
             .ToList();
-    }
-
-
-
-    public static AethernetData GetClosestTo(Vector3 to)
-    {
-        return All().OrderBy((data) => Vector3.Distance(to, data.position)).First();
-    }
-
-    public static AethernetData GetClosestToPlayer()
-    {
-        return GetClosestTo(Player.Position);
-    }
-
-    public float Distance()
-    {
-        return Vector3.Distance(Player.Position, position);
     }
 }
 

@@ -6,7 +6,7 @@ using Ocelot.Chain.ChainEx;
 
 namespace OccultCrescentHelper.Chains;
 
-public class MountChain : RetryChainFactory
+public class MountChain : ChainFactory
 {
     private uint mountId;
 
@@ -20,9 +20,6 @@ public class MountChain : RetryChainFactory
         return chain
             .BreakIf(() => Svc.Condition[ConditionFlag.Mounted])
             .Wait(500)
-            .Then(_ => ActionManager.Instance()->UseAction(ActionType.Mount, mountId))
-            .Wait(500);
+            .Then(_ => ActionManager.Instance()->UseAction(ActionType.Mount, mountId));
     }
-
-    public override bool IsComplete() => Svc.Condition[ConditionFlag.Mounted];
 }
