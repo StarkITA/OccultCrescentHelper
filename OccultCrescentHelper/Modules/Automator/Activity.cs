@@ -90,8 +90,11 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Idle")
+                .ConditionalWait(_ => states.GetState() != State.Idle, 1000)
+                .RunIf(() => states.GetState() == State.Idle)
                 .ConditionalThen(_ => module.config.ShouldToggleAiProvider, _ => module.config.AiProvider.Off())
                 .Then(_ => vnav.Stop())
+                .ConditionalThen(_ => ShouldReturn(), _ => new ReturnChain(new Vector3(830.75f, 72.98f, -695.98f), module.GetIPCProvider<YesAlready>(), vnav, approachAetherye: true))
                 .Then(_ => state = ActivityState.Pathfinding);
         };
     }
@@ -106,8 +109,11 @@ public class Activity
 
             return Chain.Create("Illegal:Pathfinding")
                 .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
+                .Then(_ => vnav.Stop())
                 .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
-                .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
+                .Then(_ => ChainManager.Get("Mounter").Submit(() => Chain.Create().Then(
+                    new MountChain(module.plugin.config.TeleporterConfig.Mount)
+                )))
                 .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 10f))
                 .WaitToStartPathfinding(vnav)
                 // Fate
@@ -123,17 +129,17 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:WaitingToStartCriticalEncoutner")
-                    .Then(new TaskManagerTask(() => {
-                        if (!isValid())
-                        {
-                            throw new Exception("The critical encoutner appeared to start without you");
-                        }
+                .Then(new TaskManagerTask(() => {
+                    if (!isValid())
+                    {
+                        throw new Exception("The critical encoutner appeared to start without you");
+                    }
 
-                        return states.GetState() == State.InCriticalEncounter;
-                    }, new() {
-                        TimeLimitMS = 180000
-                    }))
-                    .Then(_ => state = ActivityState.Participating);
+                    return states.GetState() == State.InCriticalEncounter;
+                }, new() {
+                    TimeLimitMS = 180000
+                }))
+                .Then(_ => state = ActivityState.Participating);
         };
     }
 
@@ -275,5 +281,17 @@ public class Activity
     public bool IsInZone()
     {
         return Vector3.Distance(Player.Position, getPosition()) <= 20f;
+    }
+
+    private bool ShouldReturn()
+    {
+        var goal = getPosition();
+
+        AethernetData closest = AethernetData.GetClosestTo(goal);
+
+        var aethernetDistance = Vector3.Distance(goal, closest.position);
+        var playerDistance = Vector3.Distance(goal, Player.Position);
+
+        return aethernetDistance < playerDistance;
     }
 }

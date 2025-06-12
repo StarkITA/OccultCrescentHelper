@@ -37,11 +37,6 @@ public class Teleporter
             .RunIf(() => module.config.ShouldMount)
             .Then(new MountChain(module.config.Mount));
 
-    private ChainFactory GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
-    {
-        return new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, radius);
-    }
-
     public void Button(Aethernet? aethernet, Vector3 destination, string name, string id, EventData ev)
     {
         if (!module.TryGetIPCProvider<VNavmesh>(out var vnav) || vnav == null || !vnav.IsReady())
@@ -72,10 +67,13 @@ public class Teleporter
             Svc.Log.Info($"Pathfinding to {name} at {destination}");
 
             Plugin.Chain.Submit(
-                () => Chain.Create("Mount & Pathfinding")
-                    .Then(GetMountChain)
-                    .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
-                    .WaitUntilNear(vnav, destination)
+                () => {
+
+                    return Chain.Create("Mount & Pathfinding")
+                        .Then(_ => ChainManager.Get("Mounter").Submit(() => Chain.Create().Then(GetMountChain)))
+                        .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
+                        .WaitUntilNear(vnav, destination);
+                }
             );
         }
 
@@ -83,7 +81,6 @@ public class Teleporter
         {
             ImGui.SetTooltip($"Pathfind to {name}");
         }
-
 
         if (!module.TryGetIPCProvider<Lifestream>(out var lifestream) || lifestream == null || !lifestream.IsReady())
         {
@@ -105,11 +102,10 @@ public class Teleporter
 
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
         {
-
             var factory = () => {
                 var chain = Chain.Create("Teleport Sequence")
                     .Then(new TeleportChain(lifestream, aethernet))
-                    .Then(GetMountChain);
+                    .Then(_ => ChainManager.Get("Mounter").Submit(() => Chain.Create().Then(GetMountChain)));
 
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {
