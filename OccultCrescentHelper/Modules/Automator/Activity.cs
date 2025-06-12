@@ -105,7 +105,7 @@ public class Activity
             bool isFate = data.type == EventType.Fate;
 
             return Chain.Create("Illegal:Pathfinding")
-                .ConditionalWait(_ => module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
+                .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
                 .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
                 .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
                 .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 10f))
