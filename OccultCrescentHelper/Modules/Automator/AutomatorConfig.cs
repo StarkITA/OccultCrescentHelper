@@ -35,6 +35,13 @@ public partial class AutomatorConfig : ModuleConfig
     public bool ForceTarget { get; set; } = true;
     public bool ShouldForceTarget => IsPropertyEnabled(nameof(ForceTarget));
 
+    [Checkbox]
+    [DependsOn(nameof(Enabled), nameof(ForceTarget))]
+    [Label("Priorities central most enemy")]
+    [Tooltip("Try and target the enemy in the middle of the group.")]
+    public bool ForceTargetCentralEnemy { get; set; } = true;
+    public bool ShouldForceTargetCentralEnemy => IsPropertyEnabled(nameof(ForceTargetCentralEnemy));
+
     [FloatRange(5f, 30f)]
     [DependsOn(nameof(Enabled))]
     [Label("Engagement Range")]

@@ -86,7 +86,7 @@ public class Activity
     {
         if (!isValid())
         {
-            return () => Chain.Create("Dummy Chain");
+            return null;
         }
 
         return handlers[state](states);
@@ -208,7 +208,7 @@ public class Activity
                 .Then(new TaskManagerTask(() => {
                     if (module.config.ShouldForceTarget && EzThrottler.Throttle("Participating.ForceTarget", 100))
                     {
-                        Svc.Targets.Target ??= GetClosestEnemy();
+                        Svc.Targets.Target ??= module.config.ShouldForceTargetCentralEnemy ? GetCentralMostEnemy() : GetClosestEnemy();
                     }
 
                     return states.GetState() == State.Idle;
@@ -302,7 +302,7 @@ public class Activity
         }, new() { TimeLimitMS = 180000, ShowError = false });
     }
 
-    private IGameObject? GetClosestEnemy()
+    private List<IGameObject> GetEnemies()
     {
         return Svc.Objects
             .Where(o =>
@@ -312,7 +312,36 @@ public class Activity
                 o.IsTargetable
             )
             .OrderBy(o => Vector3.Distance(o.Position, Player.Position))
-            .ToList()
+            .ToList();
+    }
+
+    private int GetEnemyCount()
+    {
+        return GetEnemies().Count();
+    }
+
+    private IGameObject? GetClosestEnemy()
+    {
+        return GetEnemies().FirstOrDefault();
+    }
+
+
+
+    private IGameObject? GetCentralMostEnemy()
+    {
+        var enemies = GetEnemies();
+
+        if (enemies.Count == 0)
+            return null;
+
+        var centroid = new Vector3(
+            enemies.Average(o => o.Position.X),
+            enemies.Average(o => o.Position.Y),
+            enemies.Average(o => o.Position.Z)
+        );
+
+        return enemies
+            .OrderBy(o => Vector3.Distance(o.Position, centroid))
             .FirstOrDefault();
     }
 
