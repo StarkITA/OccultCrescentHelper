@@ -2,7 +2,9 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using OccultCrescentHelper.Data;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -29,23 +31,39 @@ public class ReturnChain : ChainFactory
 
     protected override Chain Create(Chain chain)
     {
-        yes?.PausePlugin(5000);
+        chain.BreakIf(() => Svc.ClientState.LocalPlayer?.IsDead == true);
 
-        chain
-            .BreakIf(() => Svc.ClientState.LocalPlayer?.IsDead == true)
-            .UseGcdAction(ActionType.GeneralAction, 8)
-            .AddonCallback("SelectYesno", true, 0)
-            .WaitToCast()
-            .WaitToCycleCondition(ConditionFlag.BetweenAreas);
+        var zone = Svc.ClientState.TerritoryType;
+        var costToReturn = 60f + Vector3.Distance(ZoneData.startingLocations[zone], destination);
+        var costToWalk = Vector3.Distance(Player.Position, destination);
 
-        if (approachAetherye && vnav != null)
+        if (costToReturn < costToWalk || vnav == null)
+        {
+            yes?.PausePlugin(5000);
+
+            chain
+                .UseGcdAction(ActionType.GeneralAction, 8)
+                .AddonCallback("SelectYesno", true, 0)
+                .WaitToCast()
+                .WaitToCycleCondition(ConditionFlag.BetweenAreas);
+
+            if (approachAetherye && vnav != null)
+            {
+                chain
+                    .Wait(500)
+                    .Then(_ => vnav.MoveToPath([destination], false))
+                    .WaitUntilNear(vnav, destination, 4f)
+                    .Then(_ => vnav.Stop());
+            }
+        }
+        else
         {
             chain
-                .Wait(500)
-                .Then(_ => vnav.MoveToPath([destination], false))
+                .Then(new PathfindAndMoveToChain(vnav, destination))
                 .WaitUntilNear(vnav, destination, 4f)
                 .Then(_ => vnav.Stop());
         }
+
 
         return chain;
     }

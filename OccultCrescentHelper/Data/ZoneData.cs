@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using ECommons;
 using ECommons.DalamudServices;
-using ECommons.GameHelpers;
 
 namespace OccultCrescentHelper.Data;
 
@@ -19,6 +16,10 @@ public static class ZoneData
     // This can and should be filled using layout files or excel data
     public static readonly Dictionary<uint, Vector3> aetherytes = new() {
         { SOUTHHORN, new Vector3(830.75f, 72.98f, -695.98f) }
+    };
+
+    public static readonly Dictionary<uint, Vector3> startingLocations = new() {
+        { SOUTHHORN, new Vector3(850.33f, 72.99f, -704.07f) }
     };
 
     // Zone functions
