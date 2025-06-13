@@ -13,6 +13,8 @@ using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using ImGuiNET;
 using OccultCrescentHelper.Chains;
+using OccultCrescentHelper.Data;
+using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.Debug.Panels;
 using OccultCrescentHelper.Modules.Mount.Chains;
 using Ocelot;
@@ -291,7 +293,7 @@ public class TreasureHunt
                             return !Svc.Condition[ConditionFlag.InCombat];
                         }, new() { TimeLimitMS = int.MaxValue }))
                         .Then(_ => vnav.Stop())
-                        .Then(new ReturnChain(new(830.75f, 72.98f, -695.98f), module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
+                        .Then(new ReturnChain(Aethernet.BaseCamp.GetData().position, module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
                         .WaitForPathfindingCycle(vnav)
                         .Then(new TeleportChain(lifestream, Enums.Aethernet.Eldergrowth))
                         .Then(new MountChain(module._config.MountConfig))
@@ -310,7 +312,7 @@ public class TreasureHunt
                             return !Svc.Condition[ConditionFlag.InCombat];
                         }, new() { TimeLimitMS = int.MaxValue }))
                         .Then(_ => vnav.Stop())
-                        .Then(new ReturnChain(new(830.75f, 72.98f, -695.98f), module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
+                        .Then(new ReturnChain(Aethernet.BaseCamp.GetData().position, module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
                         .WaitForPathfindingCycle(vnav)
                         .Then(new TeleportChain(lifestream, Enums.Aethernet.CrystallizedCaverns))
                         .Then(new MountChain(module._config.MountConfig))

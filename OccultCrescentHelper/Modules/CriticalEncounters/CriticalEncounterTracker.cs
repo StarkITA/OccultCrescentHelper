@@ -10,7 +10,7 @@ namespace OccultCrescentHelper.Modules.CriticalEncounters;
 
 public class CriticalEncounterTracker
 {
-    public List<DynamicEvent> criticalEncounters = [];
+    public Dictionary<uint, DynamicEvent> criticalEncounters = [];
 
     public Dictionary<uint, EventProgress> progress { get; } = [];
 
@@ -18,10 +18,11 @@ public class CriticalEncounterTracker
     {
         var pos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
 
-        criticalEncounters = PublicContentOccultCrescent.GetInstance()->DynamicEventContainer.Events.ToArray().ToList();
+        criticalEncounters = PublicContentOccultCrescent.GetInstance()->DynamicEventContainer.Events
+            .ToArray()
+            .ToDictionary(ev => (uint)ev.DynamicEventId, ev => ev);
 
-        uint index = 0;
-        foreach (var ev in criticalEncounters)
+        foreach (var ev in criticalEncounters.Values)
         {
             if (ev.State == DynamicEventState.Battle)
             {
@@ -30,11 +31,10 @@ public class CriticalEncounterTracker
                     continue;
                 }
 
-
-                if (!this.progress.TryGetValue(index, out var progress))
+                if (!this.progress.TryGetValue(ev.DynamicEventId, out var progress))
                 {
                     progress = new EventProgress();
-                    this.progress[index] = progress;
+                    this.progress[ev.DynamicEventId] = progress;
                 }
 
                 if (progress.samples.Count == 0 || progress.samples[^1].Progress != ev.Progress)
@@ -44,15 +44,13 @@ public class CriticalEncounterTracker
 
                 if (ev.Progress == 100)
                 {
-                    this.progress.Remove(index);
+                    this.progress.Remove(ev.DynamicEventId);
                 }
             }
             else
             {
-                this.progress.Remove(index);
+                this.progress.Remove(ev.DynamicEventId);
             }
-
-            index++;
         }
     }
 

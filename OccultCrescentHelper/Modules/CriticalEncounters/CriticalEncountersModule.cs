@@ -18,7 +18,7 @@ public class CriticalEncountersModule : Module<Plugin, Config>
 
     public readonly CriticalEncounterTracker tracker = new();
 
-    public List<DynamicEvent> criticalEncounters => tracker.criticalEncounters;
+    public Dictionary<uint, DynamicEvent> criticalEncounters => tracker.criticalEncounters;
 
     public Dictionary<uint, EventProgress> progress => tracker.progress;
 

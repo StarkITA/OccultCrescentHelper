@@ -70,13 +70,10 @@ Manage och automator/illegal mode.
             return;
         }
 
-        uint index = 0;
-        foreach (var encounter in source.criticalEncounters)
+        foreach (var encounter in source.criticalEncounters.Values)
         {
-            // Skip tower and non register encounters
-            if (index == 0 || encounter.State != DynamicEventState.Register)
+            if (encounter.EventType >= 4 || encounter.State != DynamicEventState.Register)
             {
-                index++;
                 continue;
             }
 

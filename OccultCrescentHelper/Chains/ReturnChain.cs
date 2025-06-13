@@ -19,12 +19,6 @@ public class ReturnChain : ChainFactory
 
     private VNavmesh? vnav;
 
-    public ReturnChain(YesAlready? yes = null, VNavmesh? vnav = null)
-    {
-        this.yes = yes;
-        this.vnav = vnav;
-    }
-
     public ReturnChain(Vector3 destination, YesAlready? yes = null, VNavmesh? vnav = null, bool approachAetherye = true)
     {
         this.approachAetherye = approachAetherye;
@@ -48,8 +42,9 @@ public class ReturnChain : ChainFactory
         {
             chain
                 .Wait(500)
-                .Then(new PathfindAndMoveToChain(vnav, destination, 4f, 3f))
-                .WaitUntilNear(vnav, destination);
+                .Then(_ => vnav.MoveToPath([destination], false))
+                .WaitUntilNear(vnav, destination, 4f)
+                .Then(_ => vnav.Stop());
         }
 
         return chain;

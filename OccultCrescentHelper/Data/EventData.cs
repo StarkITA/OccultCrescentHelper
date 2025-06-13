@@ -212,23 +212,22 @@ public struct EventData
         },
     };
 
-
     public static readonly Dictionary<uint, EventData> CriticalEncounters = new Dictionary<uint, EventData>
     {
         {
-            0,
+            48,
             new EventData
             {
-                id = 0,
+                id = 48,
                 type = EventType.CriticalEncounter,
                 Name = "The Forked Tower: Blood",
             }
         },
         {
-            1,
+            33,
             new EventData
             {
-                id = 1,
+                id = 33,
                 type = EventType.CriticalEncounter,
                 Name = "Scourge of the Mind",
                 demiatma = Demiatma.Azurite,
@@ -244,10 +243,10 @@ public struct EventData
             }
         },
         {
-            2,
+            34,
             new EventData
             {
-                id = 2,
+                id = 34,
                 type = EventType.CriticalEncounter,
                 Name = "The Black Regiment",
                 demiatma = Demiatma.Orpiment,
@@ -265,10 +264,10 @@ public struct EventData
             }
         },
         {
-            3,
+            35,
             new EventData
             {
-                id = 3,
+                id = 35,
                 type = EventType.CriticalEncounter,
                 Name = "The Unbridled",
                 demiatma = Demiatma.Azurite,
@@ -286,10 +285,10 @@ public struct EventData
             }
         },
         {
-            4,
+            36,
             new EventData
             {
-                id = 4,
+                id = 36,
                 type = EventType.CriticalEncounter,
                 Name = "Crawling Death",
                 demiatma = Demiatma.Azurite,
@@ -305,10 +304,10 @@ public struct EventData
             }
         },
         {
-            5,
+            37,
             new EventData
             {
-                id = 5,
+                id = 37,
                 type = EventType.CriticalEncounter,
                 Name = "Calamity Bound",
                 demiatma = Demiatma.Verdigris,
@@ -318,10 +317,10 @@ public struct EventData
             }
         },
         {
-            6,
+            38,
             new EventData
             {
-                id = 6,
+                id = 38,
                 type = EventType.CriticalEncounter,
                 Name = "Trial by Claw",
                 demiatma = Demiatma.Malachite,
@@ -330,10 +329,10 @@ public struct EventData
             }
         },
         {
-            7,
+            39,
             new EventData
             {
-                id = 7,
+                id = 39,
                 type = EventType.CriticalEncounter,
                 Name = "From Times Bygone",
                 demiatma = Demiatma.Malachite,
@@ -344,10 +343,10 @@ public struct EventData
             }
         },
         {
-            8,
+            40,
             new EventData
             {
-                id = 8,
+                id = 40,
                 type = EventType.CriticalEncounter,
                 Name = "Company of Stone",
                 demiatma = Demiatma.CaputMortuum,
@@ -357,10 +356,10 @@ public struct EventData
             }
         },
         {
-            9,
+            41,
             new EventData
             {
-                id = 9,
+                id = 41,
                 type = EventType.CriticalEncounter,
                 Name = "Shark Attack",
                 demiatma = Demiatma.Realgar,
@@ -370,10 +369,10 @@ public struct EventData
             }
         },
         {
-            10,
+            42,
             new EventData
             {
-                id = 10,
+                id = 42,
                 type = EventType.CriticalEncounter,
                 Name = "On the Hunt",
                 demiatma = Demiatma.CaputMortuum,
@@ -383,10 +382,10 @@ public struct EventData
             }
         },
         {
-            11,
+            43,
             new EventData
             {
-                id = 11,
+                id = 43,
                 type = EventType.CriticalEncounter,
                 Name = "With Extreme Prejudice",
                 demiatma = Demiatma.Realgar,
@@ -395,10 +394,10 @@ public struct EventData
             }
         },
         {
-            12,
+            44,
             new EventData
             {
-                id = 12,
+                id = 44,
                 type = EventType.CriticalEncounter,
                 Name = "Noise Complaint",
                 demiatma = Demiatma.Orpiment,
@@ -407,10 +406,10 @@ public struct EventData
             }
         },
         {
-            13,
+            45,
             new EventData
             {
-                id = 13,
+                id = 45,
                 type = EventType.CriticalEncounter,
                 Name = "Cursed Concern",
                 demiatma = Demiatma.Realgar,
@@ -420,10 +419,10 @@ public struct EventData
             }
         },
         {
-            14,
+            46,
             new EventData
             {
-                id = 14,
+                id = 46,
                 type = EventType.CriticalEncounter,
                 Name = "Eternal Watch",
                 demiatma = Demiatma.CaputMortuum,
@@ -432,10 +431,10 @@ public struct EventData
             }
         },
         {
-            15,
+            47,
             new EventData
             {
-                id = 15,
+                id = 47,
                 type = EventType.CriticalEncounter,
                 Name = "Flame of Dusk",
                 demiatma = Demiatma.Malachite,

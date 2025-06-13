@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
-using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
@@ -12,26 +10,28 @@ using OccultCrescentHelper.Modules.Fates;
 using OccultCrescentHelper.Modules.Mount;
 using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Chain;
-using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Modules.Automator;
 
 public class Automator
 {
-    private const float RETURN_RANGE = 60f;
-
-    private const float AETHERNET_RANGE = 4f;
-
     private bool IsChainActive => ChainManager.Active().Count > 0;
-
-    private readonly Dictionary<uint, Vector3> aetherytes = new() { { 1252, new Vector3(830.75f, 72.98f, -695.98f) } };
 
     public Activity? activity { get; private set; } = null;
 
+    private int idleTime = 0;
 
-    public void Tick(AutomatorModule module)
+    private bool firstTick = true;
+
+    public void Tick(AutomatorModule module, IFramework framework)
     {
+        if (firstTick)
+        {
+            firstTick = false;
+            return;
+        }
+
         if (!module.TryGetIPCProvider<VNavmesh>(out var vnav) || vnav == null)
         {
             return;
@@ -42,10 +42,37 @@ public class Automator
             return;
         }
 
-        if (!module.TryGetModule<StateManagerModule>(out var states) || states == null)
+        var states = module.GetModule<StateManagerModule>();
+        if (activity == null)
         {
-            return;
+            if (states.GetState() == State.InCriticalEncounter)
+            {
+                var critical = module.GetModule<CriticalEncountersModule>();
+                var encounter = critical.criticalEncounters.Values.Where((ev) => ev.State != DynamicEventState.Inactive).Last();
+                var data = EventData.CriticalEncounters[encounter.DynamicEventId];
+                activity = Activity.ForCriticalEncounter(encounter, data, lifestream, vnav, module, critical);
+
+                if (activity != null)
+                {
+                    module.Debug($"Resuming running activity: {activity.data.Name}");
+                }
+
+                return;
+            }
+
+            if (states.GetState() == State.InFate)
+            {
+                activity ??= FindFate(module, lifestream, vnav);
+
+                if (activity != null)
+                {
+                    module.Debug($"Resuming running activity: {activity.data.Name}");
+                }
+
+                return;
+            }
         }
+
 
         module.GetModule<MountModule>().MaintainMount();
 
@@ -79,37 +106,6 @@ public class Automator
             return;
         }
 
-        Aethernet shard = AethernetData.All().OrderBy((data) => Vector3.Distance(Player.Position, data.position)).First().aethernet;
-        var shardData = shard.GetData();
-        var distance = Vector3.Distance(shardData.position, Player.Position);
-        if (distance >= RETURN_RANGE)
-        {
-            if (!aetherytes.TryGetValue(Svc.ClientState.TerritoryType, out var returnPoint))
-            {
-                module.Warning($"No return point defined for territory: {Svc.ClientState.TerritoryType}");
-                return;
-            }
-
-            if (states.GetState() != State.Idle)
-            {
-                return;
-            }
-
-            Plugin.Chain.Submit(new ReturnChain(returnPoint, module.GetIPCProvider<YesAlready>(), vnav, approachAetherye: true));
-            return;
-        }
-
-        if (distance > AETHERNET_RANGE)
-        {
-            Plugin.Chain.Submit(() => {
-                return Chain.Create("Moving to Aetheryte/Shard")
-                    .Then(new PathfindAndMoveToChain(vnav, shard.GetData().position, 4f, 3f))
-                    .WaitUntilNear(vnav, shard.GetData().position);
-            });
-
-            return;
-        }
-
         if (!module.config.ShouldDoFates && !module.config.ShouldDoCriticalEncounters)
         {
             return;
@@ -121,6 +117,21 @@ public class Automator
         if (activity != null)
         {
             Svc.Log.Info($"Selected activity: {activity.data.Name}");
+            return;
+        }
+
+        var closest = AethernetData.GetClosestToPlayer();
+        if (closest.DistanceToPlayer() <= 4.5f)
+        {
+            return;
+        }
+
+        idleTime += framework.UpdateDelta.Milliseconds;
+        if (idleTime > 3000)
+        {
+            idleTime = 0;
+
+            Plugin.Chain.Submit(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], module.GetIPCProvider<YesAlready>(), vnav));
         }
     }
 
@@ -131,16 +142,20 @@ public class Automator
             return null;
         }
 
-        uint index = 0;
-        foreach (var encounter in source.criticalEncounters)
+        foreach (var encounter in source.criticalEncounters.Values)
         {
-            if (
-                !module.config.CriticalEncountersMap.TryGetValue(index, out var enabled) || !enabled
-                || encounter.State != DynamicEventState.Register
-                || !EventData.CriticalEncounters.TryGetValue(index, out var data)
-            )
+            if (!module.config.CriticalEncountersMap.TryGetValue(encounter.DynamicEventId, out var enabled) || !enabled)
             {
-                index++;
+                continue;
+            }
+
+            if (encounter.State != DynamicEventState.Register)
+            {
+                continue;
+            }
+
+            if (!EventData.CriticalEncounters.TryGetValue(encounter.DynamicEventId, out var data))
+            {
                 continue;
             }
 

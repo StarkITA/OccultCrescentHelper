@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 using OccultCrescentHelper.Data;
 using Ocelot.Chain;
@@ -16,19 +15,18 @@ public class PathfindingChain : ChainFactory
 
     private bool useCustomPaths = false;
 
-    public PathfindingChain(VNavmesh vnav, Vector3 destination, EventData data, bool useCustomPaths, float maxRadius = 1f, float minRadius = 0f)
+    private float? maxRadius = null;
+
+    private float? minRadius = null;
+
+    public PathfindingChain(VNavmesh vnav, Vector3 destination, EventData data, bool useCustomPaths, float? maxRadius = null, float? minRadius = null)
     {
         this.vnav = vnav;
+        this.destination = destination;
         this.data = data;
         this.useCustomPaths = useCustomPaths;
-
-        float angle = (float)(Random.Shared.NextDouble() * MathF.Tau);
-        float distance = minRadius + (float)(Random.Shared.NextDouble() * (maxRadius - minRadius));
-
-        float offsetX = MathF.Cos(angle) * distance;
-        float offsetZ = MathF.Sin(angle) * distance;
-
-        this.destination = new Vector3(destination.X + offsetX, destination.Y, destination.Z + offsetZ);
+        this.maxRadius = maxRadius;
+        this.minRadius = minRadius;
     }
 
     protected override Chain Create(Chain chain)
@@ -40,6 +38,6 @@ public class PathfindingChain : ChainFactory
         }
 
         return Chain.Create("Pathfinding")
-            .Then(new PathfindAndMoveToChain(vnav, destination));
+            .Then(PathfindAndMoveToChain.RandomNearby(vnav, destination, maxRadius ?? 1f, minRadius ?? 0f));
     }
 }

@@ -294,21 +294,21 @@ public partial class AutomatorConfig : ModuleConfig
 
     public IReadOnlyDictionary<uint, bool> CriticalEncountersMap => new Dictionary<uint, bool>
     {
-        { 1, ShouldDoScourgeOfTheMind },
-        { 2, ShouldDoTheBlackRegiment },
-        { 3, ShouldDoTheUnbridled },
-        { 4, ShouldDoCrawlingDeath },
-        { 5, ShouldDoCalamityBound },
-        { 6, ShouldDoTrialByClaw },
-        { 7, ShouldDoFromTimesBygone },
-        { 8, ShouldDoCompanyOfStone },
-        { 9, ShouldDoSharkAttack },
-        { 10, ShouldDoOnTheHunt },
-        { 11, ShouldDoWithExtremePrejudice },
-        { 12, ShouldDoNoiseComplaint },
-        { 13, ShouldDoCursedConcern },
-        { 14, ShouldDoEternalWatch },
-        { 15, ShouldDoFlameOfDusk },
+        { 33, ShouldDoScourgeOfTheMind },
+        { 34, ShouldDoTheBlackRegiment },
+        { 35, ShouldDoTheUnbridled },
+        { 36, ShouldDoCrawlingDeath },
+        { 37, ShouldDoCalamityBound },
+        { 38, ShouldDoTrialByClaw },
+        { 39, ShouldDoFromTimesBygone },
+        { 40, ShouldDoCompanyOfStone },
+        { 41, ShouldDoSharkAttack },
+        { 42, ShouldDoOnTheHunt },
+        { 43, ShouldDoWithExtremePrejudice },
+        { 44, ShouldDoNoiseComplaint },
+        { 45, ShouldDoCursedConcern },
+        { 46, ShouldDoEternalWatch },
+        { 47, ShouldDoFlameOfDusk },
     };
 
     public IReadOnlyDictionary<uint, bool> FatesMap => new Dictionary<uint, bool>

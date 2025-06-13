@@ -21,6 +21,7 @@ public class TeleportChain : ChainFactory
     protected override Chain Create(Chain chain)
     {
         return chain
+            .Then(_ => lifestream.Abort())
             .Then(_ => lifestream.AethernetTeleportByPlaceNameId((uint)aethernet))
             .WaitToCycleCondition(ConditionFlag.BetweenAreas);
     }

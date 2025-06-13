@@ -4,7 +4,7 @@ public enum ActivityState
 {
     Idle,
     Pathfinding,
-    WaitingToStartCriticalEncoutner,
+    WaitingToStartCriticalEncounter,
     Participating,
     Done,
 }
@@ -16,7 +16,7 @@ public static class ActivityStateExtensions
         return state switch {
             ActivityState.Idle => "Idle",
             ActivityState.Pathfinding => "Pathfinding",
-            ActivityState.WaitingToStartCriticalEncoutner => "Waiting to Start (CE)",
+            ActivityState.WaitingToStartCriticalEncounter => "Waiting to Start (CE)",
             ActivityState.Participating => "Participating",
             ActivityState.Done => "Done",
             _ => "Unknown",

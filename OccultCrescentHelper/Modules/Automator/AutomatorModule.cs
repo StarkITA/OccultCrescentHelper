@@ -24,7 +24,7 @@ public class AutomatorModule : Module<Plugin, Config>
         : base(plugin, config) { }
 
 
-    public override void Tick(IFramework _) => automator.Tick(this);
+    public override void Tick(IFramework framework) => automator.Tick(this, framework);
 
 
     public override bool DrawMainUi()

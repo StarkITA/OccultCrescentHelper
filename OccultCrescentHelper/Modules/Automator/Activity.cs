@@ -17,6 +17,7 @@ using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.CriticalEncounters;
+using OccultCrescentHelper.Modules.Fates;
 using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -53,16 +54,22 @@ public class Activity
         handlers = new() {
             { ActivityState.Idle, GetIdleChain },
             { ActivityState.Pathfinding, GetPathfindingChain },
-            { ActivityState.WaitingToStartCriticalEncoutner, GetWaitingToStartCriticalEncoutnerChain },
+            { ActivityState.WaitingToStartCriticalEncounter, GetWaitingToStartCriticalEncounterChain },
             { ActivityState.Participating, GetParticipatingChain },
             { ActivityState.Done, GetDoneChain },
         };
+
+        var states = module.GetModule<StateManagerModule>();
+        if (states.GetState() == State.InFate || states.GetState() == State.InCriticalEncounter)
+        {
+            this.state = ActivityState.Participating;
+        }
     }
 
     public static Activity ForCriticalEncounter(DynamicEvent encounter, EventData data, Lifestream lifestream, VNavmesh vnav, AutomatorModule module, CriticalEncountersModule critical)
     {
         return new(data, lifestream, vnav, module) {
-            isValid = () => critical.criticalEncounters[(int)data.id].State != DynamicEventState.Inactive,
+            isValid = () => critical.criticalEncounters[data.id].State != DynamicEventState.Inactive,
             getPosition = () => encounter.MapMarker.Position,
         };
     }
@@ -89,7 +96,7 @@ public class Activity
     {
         return () => {
             return Chain.Create("Illegal:Idle")
-                .ConditionalThen(_ => module.config.ShouldToggleAiProvider, _ => module.config.AiProvider.Off())
+                .ConditionalThen(_ => module.config.ShouldToggleAiProvider && !Svc.Condition[ConditionFlag.InCombat], _ => module.config.AiProvider.Off())
                 .Then(_ => vnav.Stop())
                 .Then(_ => state = ActivityState.Pathfinding);
         };
@@ -98,41 +105,97 @@ public class Activity
     public Func<Chain>? GetPathfindingChain(StateManagerModule states)
     {
         return () => {
+            var yes = module.GetIPCProvider<YesAlready>();
+
             var playerShard = AethernetData.All().OrderBy((data) => Vector3.Distance(Player.Position, data.position)).First();
             var activityShard = GetAethernetData();
 
             bool isFate = data.type == EventType.Fate;
+            var navType = SmartNavigation.Decide(Player.Position, getPosition(), activityShard);
 
-            return Chain.Create("Illegal:Pathfinding")
-                .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
-                .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
-                // .Then(new MountChain(module._config.MountConfig))
-                .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 15f))
-                .WaitToStartPathfinding(vnav)
+            var chain = Chain.Create("Illegal:Pathfinding")
+                .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001));
+
+            switch (navType)
+            {
+                case NavigationType.WalkToEvent:
+                    chain
+                        .Then(new PathfindingChain(vnav, getPosition(), data, false));
+                    break;
+
+                case NavigationType.ReturnThenWalkToEvent:
+                    chain
+                        .Then(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], yes, vnav))
+                        .Then(new PathfindingChain(vnav, getPosition(), data, false));
+                    break;
+
+                case NavigationType.ReturnThenTeleportToEventshard:
+                    chain
+                        .Then(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], yes, vnav))
+                        .Then(new TeleportChain(lifestream, activityShard.aethernet))
+                        .Then(new PathfindingChain(vnav, getPosition(), data, false));
+                    break;
+
+                case NavigationType.WalkToClosestShardAndTeleportToEventShardThenWalkToEvent:
+                    chain
+                        .Then(new PathfindingChain(vnav, playerShard.position, data, false))
+                        .WaitUntilNear(vnav, playerShard.position, 5f)
+                        .Then(new TeleportChain(lifestream, activityShard.aethernet))
+                        .Then(new PathfindingChain(vnav, getPosition(), data, false));
+                    break;
+            }
+
+            chain
                 // Fate
                 .ConditionalThen(_ => isFate, GetFatePathfindingWatcher(states, vnav))
                 .ConditionalThen(_ => isFate, _ => state = ActivityState.Participating)
                 // Critical Encounter
                 .ConditionalThen(_ => !isFate, GetCriticalEncounterPathfindingWatcher(states, vnav))
-                .ConditionalThen(_ => !isFate, _ => state = ActivityState.WaitingToStartCriticalEncoutner);
+                .ConditionalThen(_ => !isFate, _ => state = ActivityState.WaitingToStartCriticalEncounter);
+
+            return chain;
         };
     }
 
-    public Func<Chain>? GetWaitingToStartCriticalEncoutnerChain(StateManagerModule states)
+    public unsafe Func<Chain>? GetWaitingToStartCriticalEncounterChain(StateManagerModule states)
     {
         return () => {
-            return Chain.Create("Illegal:WaitingToStartCriticalEncoutner")
-                    .Then(new TaskManagerTask(() => {
-                        if (!isValid())
+            return Chain.Create("Illegal:WaitingToStartCriticalEncounter")
+                .Then(new TaskManagerTask(() => {
+                    if (!isValid())
+                        throw new Exception("The critical encounter appears to have started without you.");
+
+                    var critical = module.GetModule<CriticalEncountersModule>();
+                    var encounter = critical.criticalEncounters[data.id];
+
+                    if (encounter.State == DynamicEventState.Battle &&
+                        states.GetState() != State.InCriticalEncounter)
+                    {
+                        throw new Exception("The critical encounter appears to have started without you.");
+                    }
+
+                    if (!vnav.IsRunning() && states.GetState() == State.InCombat)
+                    {
+                        if (Svc.Condition[ConditionFlag.Mounted])
                         {
-                            throw new Exception("The critical encoutner appeared to start without you");
+                            ActionManager.Instance()->UseAction(
+                                ActionType.Mount,
+                                module.plugin.config.MountConfig.Mount
+                            );
                         }
 
-                        return states.GetState() == State.InCriticalEncounter;
-                    }, new() {
-                        TimeLimitMS = 180000
-                    }))
-                    .Then(_ => state = ActivityState.Participating);
+                        if (module.config.ShouldToggleAiProvider)
+                        {
+                            module.config.AiProvider.On();
+                        }
+                    }
+
+                    return states.GetState() == State.InCriticalEncounter;
+                },
+                new() {
+                    TimeLimitMS = 180000
+                }))
+                .Then(_ => state = ActivityState.Participating);
         };
     }
 
@@ -161,24 +224,26 @@ public class Activity
 
     private unsafe TaskManagerTask GetFatePathfindingWatcher(StateManagerModule states, VNavmesh vnav)
     {
-        bool runningToTarget = false;
+        Vector3 lastTargetPos = Vector3.Zero;
+
         return new(() => {
             if (EzThrottler.Throttle("FatePathfindingWatcher.EnemyScan", 100))
             {
                 Svc.Targets.Target ??= GetClosestEnemy();
             }
 
-            if (Svc.Targets.Target != null)
+            var target = Svc.Targets.Target;
+            if (target != null)
             {
-                if (!runningToTarget)
+                if (Vector3.Distance(target.Position, lastTargetPos) > 5f)
                 {
-                    vnav.PathfindAndMoveTo(Svc.Targets.Target.Position, false);
-                    runningToTarget = true;
+                    vnav.PathfindAndMoveTo(target.Position, false);
+                    lastTargetPos = target.Position;
                 }
 
                 if (states.GetState() == State.InFate)
                 {
-                    if (Vector3.Distance(Player.Position, Svc.Targets.Target.Position) <= module.config.EngagementRange)
+                    if (Vector3.Distance(Player.Position, target.Position) <= module.config.EngagementRange)
                     {
                         // Dismount
                         if (Svc.Condition[ConditionFlag.Mounted])
@@ -205,14 +270,18 @@ public class Activity
     private TaskManagerTask GetCriticalEncounterPathfindingWatcher(StateManagerModule states, VNavmesh vnav)
     {
         return new(() => {
-            if (!vnav.IsRunning() && IsInZone())
+            if (!isValid())
             {
-                return true;
+                throw new Exception("Activity is no longer valid.");
             }
 
             if (IsInZone())
             {
-                vnav.Stop();
+                if (vnav.IsRunning())
+                {
+                    vnav.Stop();
+                }
+
                 return true;
             }
 
@@ -221,9 +290,12 @@ public class Activity
                 throw new VnavmeshStoppedException();
             }
 
-            if (!isValid())
+            var critical = module.GetModule<CriticalEncountersModule>();
+            var encounter = critical.criticalEncounters[data.id];
+
+            if (encounter.State != DynamicEventState.Register)
             {
-                throw new Exception("Activity is no longer valid.");
+                throw new Exception("This event started without you");
             }
 
             return false;
@@ -279,6 +351,16 @@ public class Activity
 
     public bool IsInZone()
     {
-        return Vector3.Distance(Player.Position, getPosition()) <= 20f;
+        float radius = 0f;
+        if (data.type == EventType.Fate)
+        {
+            radius = module.GetModule<FatesModule>().fates[data.id].Radius;
+        }
+        else
+        {
+            radius = module.GetModule<CriticalEncountersModule>().criticalEncounters[data.id].Unknown4;
+        }
+
+        return Vector3.Distance(Player.Position, getPosition()) <= radius;
     }
 }

@@ -15,7 +15,7 @@ public class Panel
     {
         OcelotUI.Title("Critical Encounters:");
         OcelotUI.Indent(() => {
-            var active = module.criticalEncounters.Where(ev => ev.State != DynamicEventState.Inactive).Count();
+            var active = module.criticalEncounters.Values.Where(ev => ev.State != DynamicEventState.Inactive).Count();
             if (active <= 0)
             {
 
@@ -23,27 +23,22 @@ public class Panel
                 return;
             }
 
-
-            uint index = 0;
-            foreach (var ev in module.criticalEncounters)
+            foreach (var ev in module.criticalEncounters.Values)
             {
                 if (ev.State == DynamicEventState.Inactive)
                 {
-                    index++;
                     continue;
                 }
 
-                if (!EventData.CriticalEncounters.TryGetValue(index, out var data))
+                if (!EventData.CriticalEncounters.TryGetValue(ev.DynamicEventId, out var data))
                 {
-                    index++;
                     continue;
                 }
 
                 ImGui.TextUnformatted(ev.Name.ToString());
-                if (index == 0)
+                if (ev.EventType >= 4)
                 {
                     HandlerTower(ev);
-                    index++;
                     continue;
                 }
 
@@ -68,7 +63,7 @@ public class Panel
                     ImGui.SameLine();
                     ImGui.TextUnformatted($"({ev.Progress}%)");
 
-                    if (module.progress.TryGetValue(index, out var progress))
+                    if (module.progress.TryGetValue(ev.DynamicEventId, out var progress))
                     {
                         var estimate = progress.EstimateTimeToCompletion();
                         if (estimate != null)
@@ -82,7 +77,6 @@ public class Panel
                 if (ev.State != DynamicEventState.Register)
                 {
                     OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-                    index++;
                     continue;
                 }
 
@@ -90,12 +84,10 @@ public class Panel
                 {
                     Vector3 start = ev.MapMarker.Position;
 
-                    teleporter.teleporter.Button(data.aethernet, start, data.Name, $"ce_{index}", data);
+                    teleporter.teleporter.Button(data.aethernet, start, data.Name, $"ce_{ev.DynamicEventId}", data);
                 }
 
                 OcelotUI.Indent(() => EventIconRenderer.Drops(data, module.plugin.config.EventDropConfig));
-
-                index++;
             }
         });
     }
