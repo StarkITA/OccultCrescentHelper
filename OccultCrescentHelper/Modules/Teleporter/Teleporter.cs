@@ -2,18 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons;
-using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
+using OccultCrescentHelper.Modules.Mount.Chains;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -28,18 +25,6 @@ public class Teleporter
     public Teleporter(TeleporterModule module)
     {
         this.module = module;
-    }
-
-    private readonly Dictionary<uint, Vector3> aetherytes = new() { { 1252, new Vector3(830.75f, 72.98f, -695.98f) } };
-
-    private Chain GetMountChain()
-        => Chain.Create()
-            .RunIf(() => module.config.ShouldMount)
-            .Then(new MountChain(module.config.Mount));
-
-    private ChainFactory GetPathfindingChain(VNavmesh vnav, EventData ev, Vector3 destination, float radius = 16f)
-    {
-        return new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, radius);
     }
 
     public void Button(Aethernet? aethernet, Vector3 destination, string name, string id, EventData ev)
@@ -72,10 +57,9 @@ public class Teleporter
             Svc.Log.Info($"Pathfinding to {name} at {destination}");
 
             Plugin.Chain.Submit(
-                () => Chain.Create("Mount & Pathfinding")
-                    .Then(GetMountChain)
+                () => Chain.Create("Pathfinding")
                     .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
-                    .WaitUntilNear(vnav, destination)
+                    .WaitUntilNear(vnav, destination, 205f)
             );
         }
 
@@ -108,15 +92,14 @@ public class Teleporter
 
             var factory = () => {
                 var chain = Chain.Create("Teleport Sequence")
-                    .Then(new TeleportChain(lifestream, aethernet))
-                    .Then(GetMountChain);
+                    .Then(new TeleportChain(lifestream, aethernet));
 
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {
                     chain
                         .RunIf(() => module.config.PathToDestination)
                         .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
-                        .WaitUntilNear(vnav, destination);
+                        .WaitUntilNear(vnav, destination, 20f);
                 }
 
                 return chain;
@@ -164,7 +147,7 @@ public class Teleporter
 
     public void Return()
     {
-        if (Helpers.IsInForkedTower())
+        if (ZoneData.IsInForkedTower())
         {
             return;
         }
@@ -177,7 +160,7 @@ public class Teleporter
 
 
         Plugin.Chain.Submit(new ReturnChain(
-            aetherytes[Svc.ClientState.TerritoryType],
+            ZoneData.aetherytes[Svc.ClientState.TerritoryType],
             module.GetIPCProvider<YesAlready>(),
             module.GetIPCProvider<VNavmesh>(),
             module.config.ApproachAetheryte

@@ -1,5 +1,6 @@
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
+using OccultCrescentHelper.Data;
 
 namespace OccultCrescentHelper.Modules.Carrots;
 
@@ -7,7 +8,7 @@ public class Radar
 {
     public void Draw(CarrotsModule module)
     {
-        if (!Helpers.IsInOccultCrescent())
+        if (!ZoneData.IsInOccultCrescent())
         {
             return;
         }

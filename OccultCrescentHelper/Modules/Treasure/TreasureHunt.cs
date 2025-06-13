@@ -14,6 +14,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using ImGuiNET;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Modules.Debug.Panels;
+using OccultCrescentHelper.Modules.Mount.Chains;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -274,7 +275,7 @@ public class TreasureHunt
                 Plugin.Chain.Submit(
                     () => Chain.Create("Treasure hunt phase 1 setup")
                         .Then(new ReturnChain(new Vector3(804.38f, 70.86f, -691.59f), module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
-                        .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
+                        .Then(new MountChain(module._config.MountConfig))
                 );
                 break;
             case 1:
@@ -293,7 +294,7 @@ public class TreasureHunt
                         .Then(new ReturnChain(new(830.75f, 72.98f, -695.98f), module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
                         .WaitForPathfindingCycle(vnav)
                         .Then(new TeleportChain(lifestream, Enums.Aethernet.Eldergrowth))
-                        .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
+                        .Then(new MountChain(module._config.MountConfig))
                 );
                 break;
             case 2:
@@ -312,7 +313,7 @@ public class TreasureHunt
                         .Then(new ReturnChain(new(830.75f, 72.98f, -695.98f), module.GetIPCProvider<YesAlready>(), module.GetIPCProvider<VNavmesh>()))
                         .WaitForPathfindingCycle(vnav)
                         .Then(new TeleportChain(lifestream, Enums.Aethernet.CrystallizedCaverns))
-                        .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
+                        .Then(new MountChain(module._config.MountConfig))
                 );
                 break;
         }

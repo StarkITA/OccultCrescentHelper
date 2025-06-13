@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface;
 using ImGuiNET;
+using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Modules.Automator;
 using Ocelot.IPC;
 using Ocelot.Windows;
@@ -41,7 +42,7 @@ public class MainWindow : OcelotMainWindow
 
     public override void Draw()
     {
-        if (!Helpers.IsInOccultCrescent())
+        if (!ZoneData.IsInOccultCrescent())
         {
             ImGui.TextUnformatted("Not in Occult Crescent zone.");
             return;

@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
 using System.Numerics;
-using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using ImGuiNET;
 using OccultCrescentHelper.Data;
-using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot;
 

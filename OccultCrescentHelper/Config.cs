@@ -13,6 +13,7 @@ using OccultCrescentHelper.Modules.WindowManager;
 using OccultCrescentHelper.Modules.StateManager;
 using OccultCrescentHelper.Modules.InstanceIdentifier;
 using OccultCrescentHelper.Modules.Automator;
+using OccultCrescentHelper.Modules.Mount;
 
 namespace OccultCrescentHelper;
 
@@ -44,6 +45,8 @@ public class Config : IOcelotConfig
     public InstanceIdentifierConfig InstanceIdentifierConfig { get; set; } = new();
 
     public AutomatorConfig AutomatorConfig { get; set; } = new();
+
+    public MountConfig MountConfig { get; set; } = new();
 
     public void Save() => Svc.PluginInterface.SavePluginConfig(this);
 }

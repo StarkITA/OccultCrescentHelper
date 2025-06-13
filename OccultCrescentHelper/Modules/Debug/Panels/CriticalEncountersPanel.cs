@@ -69,6 +69,13 @@ public class CriticalEncountersPanel : Panel
                 {
                     OcelotUI.VSpace();
                 }
+
+                OcelotUI.Title("Map Marker:");
+                OcelotUI.Indent(() => {
+                    OcelotUI.Title("Map Marker:");
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted(ev.MapMarker.Radius.ToString());
+                });
             }
         });
     }

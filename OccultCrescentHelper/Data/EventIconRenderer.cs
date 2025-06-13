@@ -12,7 +12,6 @@ namespace OccultCrescentHelper.Data;
 
 public struct EventIconRenderer
 {
-
     public static void Drops(EventData data, EventDropConfig config)
     {
         uint rendered = 0;
@@ -46,10 +45,9 @@ public struct EventIconRenderer
         }
     }
 
-
     public static unsafe void Demiatma(EventData data)
     {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.demiatma);
+        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.demiatma!);
 
         var count = InventoryManager.Instance()->GetInventoryItemCount(itemData.RowId);
         var needed = Math.Max(0, 3 - count);
@@ -78,7 +76,7 @@ public struct EventIconRenderer
 
     public static unsafe void Notes(EventData data)
     {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.notes);
+        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.notes!);
 
         var notes = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
 
@@ -94,7 +92,7 @@ public struct EventIconRenderer
 
     private static unsafe void SoulShard(EventData data)
     {
-        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.soulshard);
+        var itemData = Svc.Data.GetExcelSheet<Item>().GetRow((uint)data.soulshard!);
 
         var soulshard = Svc.Texture.GetFromGameIcon(new GameIconLookup(itemData.Icon)).GetWrapOrEmpty();
 

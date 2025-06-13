@@ -10,8 +10,6 @@ public class Panel
     {
         OcelotUI.Title("Exp:");
         OcelotUI.Indent(() => {
-            // Content here
-
             if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Redo, $"Reset##Exp"))
             {
                 module.tracker.Reset();

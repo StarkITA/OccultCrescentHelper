@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using OccultCrescentHelper.Data;
 using Ocelot.Chain;
-using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Chains;

@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Modules.Debug;
 using Ocelot.Windows;
 
@@ -15,7 +16,7 @@ public class DebugWindow : OcelotWindow
 
     public override void Draw()
     {
-        if (!Helpers.IsInOccultCrescent())
+        if (!ZoneData.IsInOccultCrescent())
         {
             ImGui.TextUnformatted("Not in Occult Crescent zone.");
             return;

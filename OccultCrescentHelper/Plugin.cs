@@ -3,6 +3,7 @@ using Dalamud.Plugin;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
+using OccultCrescentHelper.Data;
 using Ocelot;
 using Ocelot.Chain;
 
@@ -46,7 +47,7 @@ public sealed class Plugin : OcelotPlugin
 
 
     public override bool ShouldTick()
-        => Helpers.IsInOccultCrescent()
+        => ZoneData.IsInOccultCrescent()
         && !(
             Svc.Condition[ConditionFlag.BetweenAreas] ||
             Svc.Condition[ConditionFlag.BetweenAreas51] ||

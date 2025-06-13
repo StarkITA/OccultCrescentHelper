@@ -15,13 +15,6 @@ public class TeleporterConfig : ModuleConfig
     [Tooltip("The mount to use after teleporting")]
     public bool ShouldMount { get; set; } = true;
 
-    [ExcelSheet(typeof(Mount), nameof(MountProvider))]
-    [RequiredPlugin("Lifestream")]
-    [DependsOn(nameof(ShouldMount))]
-    [Label("Mount")]
-    [Tooltip("The mount to use after teleporting")]
-    public uint Mount { get; set; } = 1;
-
     [Checkbox]
     [Illegal]
     [RequiredPlugin("vnavmesh")]

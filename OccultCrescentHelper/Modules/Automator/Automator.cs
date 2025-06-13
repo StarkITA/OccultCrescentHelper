@@ -9,6 +9,7 @@ using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
+using OccultCrescentHelper.Modules.Mount;
 using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -45,6 +46,8 @@ public class Automator
         {
             return;
         }
+
+        module.GetModule<MountModule>().MaintainMount();
 
         if (activity != null && !activity.isValid())
         {

@@ -6,7 +6,6 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons.Automation;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
@@ -107,8 +106,8 @@ public class Activity
             return Chain.Create("Illegal:Pathfinding")
                 .ConditionalWait(_ => !isFate && module.config.ShouldDelayCriticalEncounters, Random.Shared.Next(10000, 15001))
                 .ConditionalThen(_ => playerShard.dataId != activityShard.dataId, new TeleportChain(lifestream, activityShard.aethernet))
-                .Then(new MountChain(module.plugin.config.TeleporterConfig.Mount))
-                .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 10f))
+                // .Then(new MountChain(module._config.MountConfig))
+                .Then(new PathfindingChain(vnav, getPosition(), data, false, 20f, 15f))
                 .WaitToStartPathfinding(vnav)
                 // Fate
                 .ConditionalThen(_ => isFate, GetFatePathfindingWatcher(states, vnav))
@@ -184,7 +183,7 @@ public class Activity
                         // Dismount
                         if (Svc.Condition[ConditionFlag.Mounted])
                         {
-                            ActionManager.Instance()->UseAction(ActionType.Mount, module.plugin.config.TeleporterConfig.Mount);
+                            ActionManager.Instance()->UseAction(ActionType.Mount, module.plugin.config.MountConfig.Mount);
                         }
 
                         vnav.Stop();
@@ -208,6 +207,12 @@ public class Activity
         return new(() => {
             if (!vnav.IsRunning() && IsInZone())
             {
+                return true;
+            }
+
+            if (IsInZone())
+            {
+                vnav.Stop();
                 return true;
             }
 

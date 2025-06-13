@@ -1,6 +1,7 @@
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
+using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 
 namespace OccultCrescentHelper.Modules.Treasure;
@@ -9,7 +10,7 @@ public class Radar
 {
     public void Draw(TreasureModule module)
     {
-        if (!Helpers.IsInOccultCrescent() || Svc.Condition[ConditionFlag.InCombat])
+        if (!ZoneData.IsInOccultCrescent() || Svc.Condition[ConditionFlag.InCombat])
         {
             return;
         }
