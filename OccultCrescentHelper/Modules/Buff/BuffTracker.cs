@@ -1,7 +1,9 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
+using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using FFXIVClientStructs.FFXIV.Common.Math;
@@ -31,14 +33,16 @@ public class BuffTracker
     public int NearbyCrystalCount()
     {
         var playerPos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
+        var crystalDataId = 2007457;
 
         return Svc.Objects
                   .Where(o => o.ObjectKind == ObjectKind.EventObj)
-                  .Where(o => o.DataId == 2007457)
+                  .Where(o => o.DataId == crystalDataId)
                   .Count(o => Vector3.Distance(o.Position, playerPos) <= 4.5f);
     }
-    
 
+
+    
     private Chain BardChain()
     {
         return Chain.Create("Buffs:Bard")
@@ -46,7 +50,7 @@ public class BuffTracker
                     .WaitUntilStatus((uint)PlayerStatus.PhantomBard)
                     .WaitGcd()
                     .UseAction(ActionType.GeneralAction, 32)
-                    .WaitUntilStatus((uint)PlayerStatus.RomeosBallad)
+                    .CustomWaitUntilStatus((uint)PlayerStatus.RomeosBallad)
                     .WaitGcd();
     }
 
@@ -57,7 +61,7 @@ public class BuffTracker
                     .WaitUntilStatus((uint)PlayerStatus.PhantomMonk)
                     .WaitGcd()
                     .UseAction(ActionType.GeneralAction, 33)
-                    .WaitUntilStatus((uint)PlayerStatus.Fleetfooted)
+                    .CustomWaitUntilStatus((uint)PlayerStatus.Fleetfooted)
                     .WaitGcd();
     }
 
@@ -68,7 +72,7 @@ public class BuffTracker
                     .WaitUntilStatus((uint)PlayerStatus.PhantomKnight)
                     .WaitGcd()
                     .UseAction(ActionType.GeneralAction, 32)
-                    .WaitUntilStatus((uint)PlayerStatus.EnduringFortitude)
+                    .CustomWaitUntilStatus((uint)PlayerStatus.EnduringFortitude)
                     .WaitGcd();
     }
 
@@ -81,8 +85,12 @@ public class BuffTracker
 
     public void SwitchJobAndBuff()
     {
+        var foundStatus =
+            Svc.ClientState.LocalPlayer?.StatusList.First(status1 => (uint)PlayerStatus.EnduringFortitude == status1.StatusId);
+        Svc.Log.Info($"[BUFF]Remaining time: {foundStatus.RemainingTime}");
+
         var startingJobId = StartingJobId();
-        Svc.Log.Info($"Switching FROM {startingJobId}");
+        Svc.Log.Info($"[BUFF]Switching FROM {startingJobId}");
         var manager = ChainManager.Get("OCH##BuffManager");
         if (manager.IsRunning)
         {
