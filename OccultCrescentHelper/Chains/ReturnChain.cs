@@ -11,7 +11,7 @@ using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Chains;
 
-public class ReturnChain : ChainFactory
+public class ReturnChain : RetryChainFactory
 {
     private bool approachAetherye = false;
 
@@ -20,6 +20,8 @@ public class ReturnChain : ChainFactory
     private YesAlready? yes;
 
     private VNavmesh? vnav;
+
+    private bool complete = false;
 
     public ReturnChain(Vector3 destination, YesAlready? yes = null, VNavmesh? vnav = null, bool approachAetherye = true)
     {
@@ -65,8 +67,13 @@ public class ReturnChain : ChainFactory
         }
 
 
-        return chain;
+        return chain.Then(_ => complete = true);
     }
+
+    public override bool IsComplete() => complete;
+
+    public override int GetMaxAttempts() => 5;
+
     public override TaskManagerConfiguration? Config()
     {
         return new() { TimeLimitMS = 60000 };
