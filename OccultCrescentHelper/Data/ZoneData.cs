@@ -42,14 +42,11 @@ public static class ZoneData
             return false;
         }
 
-
-        List<uint> statuses = [
-            (uint)Status.DutiesAsAssigned,
-            (uint)Status.ResurrectionDenied,
-            (uint)Status.ResurrectionRestricted
-        ];
-
-        return player.StatusList.Any(s => statuses.Contains(s.StatusId));
+        return player.StatusList.HasAny(
+            PlayerStatus.DutiesAsAssigned,
+            PlayerStatus.ResurrectionDenied,
+            PlayerStatus.ResurrectionRestricted
+        );
     }
 
     public static bool IsInForkedTower()

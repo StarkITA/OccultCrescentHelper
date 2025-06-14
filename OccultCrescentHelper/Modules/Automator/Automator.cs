@@ -74,7 +74,10 @@ public class Automator
         }
 
 
-        module.GetModule<MountModule>().MaintainMount();
+        if (module.GetModule<StateManagerModule>().GetState() == State.Idle)
+        {
+            module.GetModule<MountModule>().MaintainMount();
+        }
 
         if (activity != null && !activity.isValid())
         {
