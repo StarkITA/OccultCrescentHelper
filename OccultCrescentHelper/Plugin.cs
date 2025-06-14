@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Conditions;
+﻿using System;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Plugin;
 using ECommons;
 using ECommons.DalamudServices;
@@ -29,6 +30,11 @@ public sealed class Plugin : OcelotPlugin
         I18N.SetDirectory(plugin.AssemblyLocation.Directory?.FullName!);
         I18N.LoadFromFile("en", "Translations/en.json");
         I18N.LoadFromFile("uwu", "Translations/uwu.json");
+
+        if (DateTime.Today.Month == 4 && DateTime.Today.Day == 1 && new Random().NextDouble() < 0.05)
+        {
+            I18N.SetLanguage("uwu");
+        }
 
         InitializeClientStructs();
         OcelotInitialize();
