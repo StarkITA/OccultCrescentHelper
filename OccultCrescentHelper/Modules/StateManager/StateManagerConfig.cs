@@ -3,11 +3,11 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.StateManager;
 
-[Title("State Manager Config")]
+[Title("modules.state_manager.title")]
 public class StateManagerConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Show State")]
-    [Tooltip("Show the current state in the main ui.")]
+    [Label("modules.state_manager.show_debug.label")]
+    [Tooltip("modules.state_manager.show_debug.tooltip")]
     public bool ShowDebug { get; set; } = false;
 }

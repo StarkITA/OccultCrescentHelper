@@ -3,10 +3,10 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Exp;
 
-[Title("Exp Config")]
+[Title("modules.exp.title")]
 public class ExpConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 }

@@ -10,11 +10,11 @@ public class Panel
 {
     public void Draw(FatesModule module)
     {
-        OcelotUI.Title("Fates:");
+        OcelotUI.Title($"{module.T("panel.title")}:");
         OcelotUI.Indent(() => {
             if (module.tracker.fates.Count <= 0)
             {
-                ImGui.TextUnformatted("No active fates.");
+                ImGui.TextUnformatted(module.T("panel.none"));
                 return;
             }
 
@@ -39,7 +39,7 @@ public class Panel
                     if (estimate != null)
                     {
                         ImGui.SameLine();
-                        ImGui.TextUnformatted($"(Est. {estimate.Value:mm\\:ss})");
+                        ImGui.TextUnformatted($"({module.T("panel.estimated")} {estimate.Value:mm\\:ss})");
                     }
                 }
 

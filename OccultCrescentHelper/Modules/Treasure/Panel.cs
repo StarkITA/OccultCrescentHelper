@@ -1,9 +1,7 @@
 using System.Numerics;
-using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ImGuiNET;
 using Ocelot;
-using Ocelot.IPC;
 
 namespace OccultCrescentHelper.Modules.Treasure;
 
@@ -11,11 +9,11 @@ public class Panel
 {
     public void Draw(TreasureModule module)
     {
-        OcelotUI.Title("Treasure:");
+        OcelotUI.Title($"{module.T("panel.title")}:");
         OcelotUI.Indent(() => {
             if (module.treasures.Count <= 0)
             {
-                ImGui.TextUnformatted("No nearby Treasure.");
+                ImGui.TextUnformatted(module.T("panel.none"));
                 return;
             }
 

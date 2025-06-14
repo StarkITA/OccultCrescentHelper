@@ -36,12 +36,12 @@ public class MountChain : RetryChainFactory
         }
 
         return Svc.Condition[ConditionFlag.Mounted]
-                || Svc.Condition[ConditionFlag.BetweenAreas]
-                || Svc.Condition[ConditionFlag.BetweenAreas51]
-                || Svc.Condition[ConditionFlag.InCombat]
-                || player.StatusList.Has(PlayerStatus.HoofingIt)
-                || player.IsCasting
-                || player.IsDead;
+            || Svc.Condition[ConditionFlag.BetweenAreas]
+            || Svc.Condition[ConditionFlag.BetweenAreas51]
+            || Svc.Condition[ConditionFlag.InCombat]
+            || player.StatusList.Has(PlayerStatus.HoofingIt)
+            || player.IsCasting
+            || player.IsDead;
     }
 
     public override bool IsComplete() => Svc.Condition[ConditionFlag.Mounted];

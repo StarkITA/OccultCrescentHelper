@@ -49,7 +49,7 @@ public static class StatusListExtensions
         return false;
     }
 
-    public static bool HasAllStatus(this StatusList current, params PlayerStatus[] statuses)
+    public static bool HasAll(this StatusList current, params PlayerStatus[] statuses)
     {
         foreach (var status in statuses)
         {

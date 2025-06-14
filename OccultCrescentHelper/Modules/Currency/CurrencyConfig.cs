@@ -3,10 +3,10 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Currency;
 
-[Title("Currency Config")]
+[Title("modules.currency.title")]
 public class CurrencyConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 }

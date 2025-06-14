@@ -219,7 +219,7 @@ public class TreasureHunt
             return;
         }
 
-        OcelotUI.Title("Treasure Hunter:");
+        OcelotUI.Title($"{module.T("panel.hunt.title")}:");
         OcelotUI.Indent(() => {
             if (ImGui.Button(running ? "Stop" : "Start"))
             {
@@ -236,14 +236,11 @@ public class TreasureHunt
 
             if (running)
             {
-                OcelotUI.Title("Distance to next node:");
-                ImGui.SameLine();
-                ImGui.TextUnformatted(distance.ToString());
+                OcelotUI.LabelledValue(module.T("panel.hunt.distance"), distance.ToString());
 
                 var instances = ChainManager.Active();
-                OcelotUI.Title("# of instances:");
-                ImGui.SameLine();
-                ImGui.TextUnformatted(instances.Count.ToString());
+
+                OcelotUI.LabelledValue(module.T("panel.hunt.count"), instances.Count.ToString());
 
                 foreach (var pair in instances)
                 {
@@ -255,17 +252,9 @@ public class TreasureHunt
                     OcelotUI.Title($"{pair.Key}:");
                     OcelotUI.Indent(() => {
                         var current = pair.Value.CurrentChain!;
-                        OcelotUI.Title("Current Chain:");
-                        ImGui.SameLine();
-                        ImGui.TextUnformatted(current.name);
-
-                        OcelotUI.Title("Progress:");
-                        ImGui.SameLine();
-                        ImGui.TextUnformatted($"{current.progress * 100}%");
-
-                        OcelotUI.Title("Queued Chains:");
-                        ImGui.SameLine();
-                        ImGui.TextUnformatted(pair.Value.QueueCount.ToString());
+                        OcelotUI.LabelledValue(module.T("panel.hunt.instance.current"), distance.ToString());
+                        OcelotUI.LabelledValue(module.T("panel.hunt.instance.progress"), $"{current.progress * 100}%");
+                        OcelotUI.LabelledValue(module.T("panel.hunt.instance.queue"), pair.Value.QueueCount.ToString());
                     });
                 }
             }

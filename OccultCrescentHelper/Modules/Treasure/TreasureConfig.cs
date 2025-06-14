@@ -3,24 +3,24 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Treasure;
 
-[Title("Treasure Config")]
+[Title("modules.treasure.title")]
 public class TreasureConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 
     [Checkbox]
     [DependsOn(nameof(Enabled))]
-    [Label("Draw lines to bronze coffers")]
-    [Tooltip("Render a line from your characters position to nearby bronze coffers.")]
+    [Label("modules.treasure.draw.bronze.label")]
+    [Tooltip("modules.treasure.draw.bronze.tooltip")]
     public bool DrawLineToBronzeChests { get; set; } = true;
     public bool ShouldDrawLineToBronzeChests => IsPropertyEnabled(nameof(DrawLineToBronzeChests));
 
     [Checkbox]
     [DependsOn(nameof(Enabled))]
-    [Label("Draw lines to silver coffers")]
-    [Tooltip("Render a line from your characters position to nearby silver coffers.")]
+    [Label("modules.treasure.draw.silver.label")]
+    [Tooltip("modules.treasure.draw.silver.tooltip")]
     public bool DrawLineToSilverChests { get; set; } = true;
     public bool ShouldDrawLineToSilverChests => IsPropertyEnabled(nameof(DrawLineToSilverChests));
 
@@ -29,20 +29,20 @@ public class TreasureConfig : ModuleConfig
     [Illegal]
     [RequiredPlugin("vnavmesh", "Lifestream")]
     [DependsOn(nameof(Enabled))]
-    [Label("Enable Treasure Hunt button")]
+    [Label("modules.treasure.hunt.show_button.label")]
     public bool EnableTreasureHunt { get; set; } = false;
     public bool ShouldEnableTreasureHunt => IsPropertyEnabled(nameof(EnableTreasureHunt));
 
     [FloatRange(10f, 100f)]
     [DependsOn(nameof(Enabled), nameof(EnableTreasureHunt))]
-    [Label("Chest detection range")]
-    [Tooltip("The distance from a node you have to be to assume it isn't there.\nThese can be variable depending on when the server sends you the gameobject instance.\nA lower value will be more reliable but will make the hunt take longer.")]
+    [Label("modules.treasure.hunt.detection.label")]
+    [Tooltip("modules.treasure.hunt.detection.tooltip")]
     public float ChestDetectionRange { get; set; } = 75f;
 
     [IntRange(1, 28)]
     [Experimental]
     [DependsOn(nameof(Enabled), nameof(EnableTreasureHunt))]
-    [Label("Max area level")]
-    [Tooltip("The max level of mob you are willing to hunt for treasure near")]
+    [Label("modules.treasure.hunt.max_level.label")]
+    [Tooltip("modules.treasure.hunt.max_level.tooltip")]
     public int MaxLevel { get; set; } = 28;
 }

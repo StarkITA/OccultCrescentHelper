@@ -13,13 +13,12 @@ public class Panel
 {
     public void Draw(CriticalEncountersModule module)
     {
-        OcelotUI.Title("Critical Encounters:");
+        OcelotUI.Title($"{module.T("panel.title")}:");
         OcelotUI.Indent(() => {
             var active = module.criticalEncounters.Values.Where(ev => ev.State != DynamicEventState.Inactive).Count();
             if (active <= 0)
             {
-
-                ImGui.TextUnformatted("No active critical encounters.");
+                ImGui.TextUnformatted(module.T("panel.none"));
                 return;
             }
 
@@ -49,13 +48,13 @@ public class Panel
                     string formattedTime = $"{timeUntilStart.Minutes:D2}:{timeUntilStart.Seconds:D2}";
 
                     ImGui.SameLine();
-                    ImGui.TextUnformatted($"(Preparing: {formattedTime})");
+                    ImGui.TextUnformatted($"({module.T("panel.register")}: {formattedTime})");
                 }
 
                 if (ev.State == DynamicEventState.Warmup)
                 {
                     ImGui.SameLine();
-                    ImGui.TextUnformatted($"(Starting)");
+                    ImGui.TextUnformatted($"({module.T("panel.warmup")})");
                 }
 
                 if (ev.State == DynamicEventState.Battle)
@@ -69,7 +68,7 @@ public class Panel
                         if (estimate != null)
                         {
                             ImGui.SameLine();
-                            ImGui.TextUnformatted($"(Est. {estimate.Value:mm\\:ss})");
+                            ImGui.TextUnformatted($"({module.T("panel.estimated")} {estimate.Value:mm\\:ss})");
                         }
                     }
                 }
@@ -94,7 +93,6 @@ public class Panel
 
 
     private void HandlerTower(DynamicEvent ev)
-
     {
 
     }

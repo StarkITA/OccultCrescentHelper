@@ -25,6 +25,11 @@ public sealed class Plugin : OcelotPlugin
         : base(plugin, Module.DalamudReflector)
     {
         config = plugin.GetPluginConfig() as Config ?? new Config();
+
+        I18N.SetDirectory(plugin.AssemblyLocation.Directory?.FullName!);
+        I18N.LoadFromFile("en", "Translations/en.json");
+        I18N.LoadFromFile("uwu", "Translations/uwu.json");
+
         InitializeClientStructs();
         OcelotInitialize();
 

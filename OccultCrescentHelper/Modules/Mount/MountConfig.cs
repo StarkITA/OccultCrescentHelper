@@ -4,24 +4,24 @@ using ExcelMount = Lumina.Excel.Sheets.Mount;
 
 namespace OccultCrescentHelper.Modules.Mount;
 
-[Title("Mount Config")]
+[Title("modules.mount.title")]
 public class MountConfig : ModuleConfig
 {
     public override string ProviderNamespace => "OccultCrescentHelper.Modules.Mount";
 
     [ExcelSheet(typeof(ExcelMount), nameof(MountProvider))]
-    [Label("Mount")]
-    [Tooltip("The mount to use.")]
+    [Label("modules.mount.mount.label")]
+    [Tooltip("modules.mount.mount.tooltip")]
     public uint Mount { get; set; } = 1;
 
     [Checkbox]
     [Experimental]
-    [Label("Stay mounted while out of combat")]
-    [Tooltip("Overrides")]
+    [Label("modules.mount.maintain.label")]
+    [Tooltip("modules.mount.maintain.tooltip")]
     public bool MaintainMount { get; set; } = false;
 
     [Checkbox]
-    [Label("Use Mount Roulette")]
-    [Tooltip("Overrides configured mount and uses roulette instead")]
+    [Label("modules.mount.roulette.label")]
+    [Tooltip("modules.mount.roulette.tooltip")]
     public bool MountRoulette { get; set; } = false;
 }

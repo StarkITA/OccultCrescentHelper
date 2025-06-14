@@ -3,17 +3,17 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Carrots;
 
-[Title("Carrots Config")]
+[Title("modules.carrots.title")]
 public class CarrotsConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 
     [Checkbox]
     [DependsOn(nameof(Enabled))]
-    [Label("Draw line to Carrots")]
-    [Tooltip("Render a line from your characters position to nearby carrots.")]
+    [Label("modules.carrots.draw.label")]
+    [Tooltip("modules.carrots.draw.tooltip")]
     public bool DrawLineToCarrots { get; set; } = true;
     public bool ShouldDrawLineToCarrots => IsPropertyEnabled(nameof(DrawLineToCarrots));
 }

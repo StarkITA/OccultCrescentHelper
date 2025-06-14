@@ -8,7 +8,7 @@ public class Panel
 {
     public void Draw(CurrencyModule module)
     {
-        OcelotUI.Title("Currency:");
+        OcelotUI.Title($"{module.T("panel.title")}:");
         OcelotUI.Indent(() => {
             // Content here
             if (ImGui.BeginTable("CurrencyData##OCH", 3, ImGuiTableFlags.SizingFixedFit))
@@ -23,7 +23,7 @@ public class Panel
                 }
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted("Silver per hour");
+                ImGui.TextUnformatted(module.T("panel.silver.label"));
 
                 ImGui.TableNextColumn();
                 ImGui.TextUnformatted(module.tracker.GetSilverPerHour().ToString("F2"));
@@ -38,7 +38,7 @@ public class Panel
                 }
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted("Gold per hour");
+                ImGui.TextUnformatted(module.T("panel.gold.label"));
 
                 ImGui.TableNextColumn();
                 ImGui.TextUnformatted(module.tracker.GetGoldPerHour().ToString("F2"));

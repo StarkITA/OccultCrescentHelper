@@ -4,7 +4,8 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Automator;
 
-[Title("Illegal Mode")]
+[Title("modules.automator.title")]
+[Text("modules.automator.warning")]
 public partial class AutomatorConfig : ModuleConfig
 {
     public override string ProviderNamespace => "OccultCrescentHelper.Modules.Automator";
@@ -12,293 +13,286 @@ public partial class AutomatorConfig : ModuleConfig
     [Checkbox]
     [Illegal]
     [RequiredPlugin("Lifestream", "vnavmesh")]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
+    [Tooltip("modules.automator.enabled.tooltip")]
     public bool Enabled { get; set; } = false;
 
     [Enum(typeof(AiType), nameof(AiTypeProvider))]
-    [DependsOn(nameof(Enabled))]
-    [Label("AI provider")]
-    [Tooltip("The mechanic AI provider you use")]
+    [Label("modules.automator.ai_provider.label")]
+    [Tooltip("modules.automator.ai_provider.tooltip")]
     public AiType AiProvider { get; set; } = AiType.VBM;
 
     [Checkbox]
-    [DependsOn(nameof(Enabled))]
-    [Label("Toggle Ai Provider")]
-    [Tooltip("Toggle Ai Provider on when starting fate/ce\nToggle Ai Provider off when navigating to fate/ce")]
+    [Label("modules.automator.toggle_ai_provider.label")]
+    [Tooltip("modules.automator.toggle_ai_provider.tooltip")]
     public bool ToggleAiProvider { get; set; } = true;
     public bool ShouldToggleAiProvider => IsPropertyEnabled(nameof(ToggleAiProvider));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled))]
-    [Label("Force Target")]
-    [Tooltip("Ensure you always maintain a target in fates and critical encounters.")]
+    [Label("modules.automator.force_target.label")]
+    [Tooltip("modules.automator.force_target.tooltip")]
     public bool ForceTarget { get; set; } = true;
     public bool ShouldForceTarget => IsPropertyEnabled(nameof(ForceTarget));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(ForceTarget))]
-    [Label("Priorities central most enemy")]
-    [Tooltip("Try and target the enemy in the middle of the group.")]
+    [DependsOn(nameof(ForceTarget))]
+    [Label("modules.automator.force_target_central_enemy.label")]
+    [Tooltip("modules.automator.force_target_central_enemy.tooltip")]
     public bool ForceTargetCentralEnemy { get; set; } = true;
     public bool ShouldForceTargetCentralEnemy => IsPropertyEnabled(nameof(ForceTargetCentralEnemy));
 
     [FloatRange(5f, 30f)]
-    [DependsOn(nameof(Enabled))]
-    [Label("Engagement Range")]
-    [Tooltip("The range to be at from a fate monster before dismounting and letting your rotation/ai plugin take over")]
+    [Label("modules.automator.engagement_range.label")]
+    [Tooltip("modules.automator.engagement_range.tooltip")]
     public float EngagementRange { get; set; } = 5f;
 
     // Critical Encounters
     [Checkbox]
-    [DependsOn(nameof(Enabled))]
-    [Label("Do Critical Encounters")]
-    [Tooltip("Should consider critical encounters when choosing an activity")]
+    [Label("modules.automator.do_critical_encounters.label")]
+    [Tooltip("modules.automator.do_critical_encounters.tooltip")]
     public bool DoCriticalEncounters { get; set; } = true;
     public bool ShouldDoCriticalEncounters => IsPropertyEnabled(nameof(DoCriticalEncounters));
 
-    // Critical Encounters
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
-    [Label("Delay before heading to Critical Encoutner")]
-    [Tooltip("Add a 10 - 15 second delay before heading to a critical encoutner")]
+    [DependsOn(nameof(DoCriticalEncounters))]
+    [Label("modules.automator.delay_critical_encounters.label")]
+    [Tooltip("modules.automator.delay_critical_encounters.tooltip")]
     public bool DelayCriticalEncounters { get; set; } = false;
     public bool ShouldDelayCriticalEncounters => IsPropertyEnabled(nameof(DelayCriticalEncounters));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Scourge of the Mind")]
-    [Tooltip("Toggle participation in the 'Scourge of the Mind' critical encounter.")]
+    [Label("modules.automator.ce_scourge_of_the_mind.label")]
+    [Tooltip("modules.automator.ce_scourge_of_the_mind.tooltip")]
     public bool DoScourgeOfTheMind { get; set; } = true;
     public bool ShouldDoScourgeOfTheMind => IsPropertyEnabled(nameof(DoScourgeOfTheMind));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: The Black Regiment")]
-    [Tooltip("Toggle participation in the 'The Black Regiment' critical encounter.")]
+    [Label("modules.automator.ce_the_black_regiment.label")]
+    [Tooltip("modules.automator.ce_the_black_regiment.tooltip")]
     public bool DoTheBlackRegiment { get; set; } = true;
     public bool ShouldDoTheBlackRegiment => IsPropertyEnabled(nameof(DoTheBlackRegiment));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: The Unbridled")]
-    [Tooltip("Toggle participation in the 'The Unbridled' critical encounter.")]
+    [Label("modules.automator.ce_the_unbridled.label")]
+    [Tooltip("modules.automator.ce_the_unbridled.tooltip")]
     public bool DoTheUnbridled { get; set; } = true;
     public bool ShouldDoTheUnbridled => IsPropertyEnabled(nameof(DoTheUnbridled));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Crawling Death")]
-    [Tooltip("Toggle participation in the 'Crawling Death' critical encounter.")]
+    [Label("modules.automator.ce_crawling_death.label")]
+    [Tooltip("modules.automator.ce_crawling_death.tooltip")]
     public bool DoCrawlingDeath { get; set; } = true;
     public bool ShouldDoCrawlingDeath => IsPropertyEnabled(nameof(DoCrawlingDeath));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Calamity Bound")]
-    [Tooltip("Toggle participation in the 'Calamity Bound' critical encounter.")]
+    [Label("modules.automator.ce_calamity_bound.label")]
+    [Tooltip("modules.automator.ce_calamity_bound.tooltip")]
     public bool DoCalamityBound { get; set; } = true;
     public bool ShouldDoCalamityBound => IsPropertyEnabled(nameof(DoCalamityBound));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Trial by Claw")]
-    [Tooltip("Toggle participation in the 'Trial by Claw' critical encounter.")]
+    [Label("modules.automator.ce_trial_by_claw.label")]
+    [Tooltip("modules.automator.ce_trial_by_claw.tooltip")]
     public bool DoTrialByClaw { get; set; } = true;
     public bool ShouldDoTrialByClaw => IsPropertyEnabled(nameof(DoTrialByClaw));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: From Times Bygone")]
-    [Tooltip("Toggle participation in the 'From Times Bygone' critical encounter.")]
+    [Label("modules.automator.ce_from_times_bygone.label")]
+    [Tooltip("modules.automator.ce_from_times_bygone.tooltip")]
     public bool DoFromTimesBygone { get; set; } = true;
     public bool ShouldDoFromTimesBygone => IsPropertyEnabled(nameof(DoFromTimesBygone));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Company of Stone")]
-    [Tooltip("Toggle participation in the 'Company of Stone' critical encounter.")]
+    [Label("modules.automator.ce_company_of_stone.label")]
+    [Tooltip("modules.automator.ce_company_of_stone.tooltip")]
     public bool DoCompanyOfStone { get; set; } = true;
     public bool ShouldDoCompanyOfStone => IsPropertyEnabled(nameof(DoCompanyOfStone));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Shark Attack")]
-    [Tooltip("Toggle participation in the 'Shark Attack' critical encounter.")]
+    [Label("modules.automator.ce_shark_attack.label")]
+    [Tooltip("modules.automator.ce_shark_attack.tooltip")]
     public bool DoSharkAttack { get; set; } = true;
     public bool ShouldDoSharkAttack => IsPropertyEnabled(nameof(DoSharkAttack));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
-    [Label("CE: On the Hunt")]
-    [Tooltip("Toggle participation in the 'On the Hunt' critical encounter.")]
+    [DependsOn(nameof(DoCriticalEncounters))]
+    [Label("modules.automator.ce_on_the_hunt.label")]
+    [Tooltip("modules.automator.ce_on_the_hunt.tooltip")]
     public bool DoOnTheHunt { get; set; } = true;
     public bool ShouldDoOnTheHunt => IsPropertyEnabled(nameof(DoOnTheHunt));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: With Extreme Prejudice")]
-    [Tooltip("Toggle participation in the 'With Extreme Prejudice' critical encounter.")]
+    [Label("modules.automator.ce_with_extreme_prejudice.label")]
+    [Tooltip("modules.automator.ce_with_extreme_prejudice.tooltip")]
     public bool DoWithExtremePrejudice { get; set; } = true;
     public bool ShouldDoWithExtremePrejudice => IsPropertyEnabled(nameof(DoWithExtremePrejudice));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Noise Complaint")]
-    [Tooltip("Toggle participation in the 'Noise Complaint' critical encounter.")]
+    [Label("modules.automator.ce_noise_complaint.label")]
+    [Tooltip("modules.automator.ce_noise_complaint.tooltip")]
     public bool DoNoiseComplaint { get; set; } = true;
     public bool ShouldDoNoiseComplaint => IsPropertyEnabled(nameof(DoNoiseComplaint));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Cursed Concern")]
-    [Tooltip("Toggle participation in the 'Cursed Concern' critical encounter.")]
+    [Label("modules.automator.ce_cursed_concern.label")]
+    [Tooltip("modules.automator.ce_cursed_concern.tooltip")]
     public bool DoCursedConcern { get; set; } = true;
     public bool ShouldDoCursedConcern => IsPropertyEnabled(nameof(DoCursedConcern));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Eternal Watch")]
-    [Tooltip("Toggle participation in the 'Eternal Watch' critical encounter.")]
+    [Label("modules.automator.ce_eternal_watch.label")]
+    [Tooltip("modules.automator.ce_eternal_watch.tooltip")]
     public bool DoEternalWatch { get; set; } = true;
     public bool ShouldDoEternalWatch => IsPropertyEnabled(nameof(DoEternalWatch));
 
     [Checkbox]
-    [DependsOn(nameof(Enabled), nameof(DoCriticalEncounters))]
+    [DependsOn(nameof(DoCriticalEncounters))]
     [Indent]
-    [Label("CE: Flame of Dusk")]
-    [Tooltip("Toggle participation in the 'Flame of Dusk' critical encounter.")]
+    [Label("modules.automator.ce_flame_of_dusk.label")]
+    [Tooltip("modules.automator.ce_flame_of_dusk.tooltip")]
     public bool DoFlameOfDusk { get; set; } = true;
     public bool ShouldDoFlameOfDusk => IsPropertyEnabled(nameof(DoFlameOfDusk));
 
     // Fates
     [Checkbox]
-    [DependsOn(nameof(Enabled))]
-    [Label("Do Fates")]
-    [Tooltip("Should consider fates when choosing an activity")]
+    [Label("modules.automator.do_fates.label")]
+    [Tooltip("modules.automator.do_fates.tooltip")]
     public bool DoFates { get; set; } = true;
     public bool ShouldDoFates => IsPropertyEnabled(nameof(DoFates));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Rough Waters")]
-    [Tooltip("Toggle participation in the 'Rough Waters' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_rough_waters.label")]
+    [Tooltip("modules.automator.fate_rough_waters.tooltip")]
     public bool DoRoughWaters { get; set; } = true;
     public bool ShouldDoRoughWaters => IsPropertyEnabled(nameof(DoRoughWaters));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: The Golden Guardian")]
-    [Tooltip("Toggle participation in the 'The Golden Guardian' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_the_golden_guardian.label")]
+    [Tooltip("modules.automator.fate_the_golden_guardian.tooltip")]
     public bool DoTheGoldenGuardian { get; set; } = true;
     public bool ShouldDoTheGoldenGuardian => IsPropertyEnabled(nameof(DoTheGoldenGuardian));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: King of the Crescent")]
-    [Tooltip("Toggle participation in the 'King of the Crescent' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_king_of_the_crescent.label")]
+    [Tooltip("modules.automator.fate_king_of_the_crescent.tooltip")]
     public bool DoKingOfTheCrescent { get; set; } = true;
     public bool ShouldDoKingOfTheCrescent => IsPropertyEnabled(nameof(DoKingOfTheCrescent));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
+    [DependsOn(nameof(DoFates))]
     [Experimental]
-    [Label("Fate: The Winged Terror")]
-    [Tooltip("Toggle participation in the 'The Winged Terror' fate.")]
+    [Label("modules.automator.fate_the_winged_terror.label")]
+    [Tooltip("modules.automator.fate_the_winged_terror.tooltip")]
     public bool DoTheWingedTerror { get; set; } = false;
     public bool ShouldDoTheWingedTerror => IsPropertyEnabled(nameof(DoTheWingedTerror));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: An Unending Duty")]
-    [Tooltip("Toggle participation in the 'An Unending Duty' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_an_unending_duty.label")]
+    [Tooltip("modules.automator.fate_an_unending_duty.tooltip")]
     public bool DoAnUnendingDuty { get; set; } = true;
     public bool ShouldDoAnUnendingDuty => IsPropertyEnabled(nameof(DoAnUnendingDuty));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Brain Drain")]
-    [Tooltip("Toggle participation in the 'Brain Drain' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_brain_drain.label")]
+    [Tooltip("modules.automator.fate_brain_drain.tooltip")]
     public bool DoBrainDrain { get; set; } = true;
     public bool ShouldDoBrainDrain => IsPropertyEnabled(nameof(DoBrainDrain));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: A Delicate Balance")]
-    [Tooltip("Toggle participation in the 'A Delicate Balance' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_a_delicate_balance.label")]
+    [Tooltip("modules.automator.fate_a_delicate_balance.tooltip")]
     public bool DoADelicateBalance { get; set; } = true;
     public bool ShouldDoADelicateBalance => IsPropertyEnabled(nameof(DoADelicateBalance));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Sworn to Soil")]
-    [Tooltip("Toggle participation in the 'Sworn to Soil' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_sworn_to_soil.label")]
+    [Tooltip("modules.automator.fate_sworn_to_soil.tooltip")]
     public bool DoSwornToSoil { get; set; } = true;
     public bool ShouldDoSwornToSoil => IsPropertyEnabled(nameof(DoSwornToSoil));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: A Prying Eye")]
-    [Tooltip("Toggle participation in the 'A Prying Eye' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_a_prying_eye.label")]
+    [Tooltip("modules.automator.fate_a_prying_eye.tooltip")]
     public bool DoAPryingEye { get; set; } = true;
     public bool ShouldDoAPryingEye => IsPropertyEnabled(nameof(DoAPryingEye));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Fatal Allure")]
-    [Tooltip("Toggle participation in the 'Fatal Allure' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_fatal_allure.label")]
+    [Tooltip("modules.automator.fate_fatal_allure.tooltip")]
     public bool DoFatalAllure { get; set; } = true;
     public bool ShouldDoFatalAllure => IsPropertyEnabled(nameof(DoFatalAllure));
 
     [Checkbox]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Serving Darkness")]
-    [Tooltip("Toggle participation in the 'Serving Darkness' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_serving_darkness.label")]
+    [Tooltip("modules.automator.fate_serving_darkness.tooltip")]
     public bool DoServingDarkness { get; set; } = true;
     public bool ShouldDoServingDarkness => IsPropertyEnabled(nameof(DoServingDarkness));
 
     [Checkbox]
     [Experimental]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Persistent Pots")]
-    [Tooltip("Toggle participation in the 'Persistent Pots' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_persistent_pots.label")]
+    [Tooltip("modules.automator.fate_persistent_pots.tooltip")]
     public bool DoPersistentPots { get; set; } = false;
     public bool ShouldDoPersistentPots => IsPropertyEnabled(nameof(DoPersistentPots));
 
     [Checkbox]
     [Experimental]
     [Indent]
-    [DependsOn(nameof(Enabled), nameof(DoFates))]
-    [Label("Fate: Pleading Pots")]
-    [Tooltip("Toggle participation in the 'Pleading Pots' fate.")]
+    [DependsOn(nameof(DoFates))]
+    [Label("modules.automator.fate_pleading_pots.label")]
+    [Tooltip("modules.automator.fate_pleading_pots.tooltip")]
     public bool DoPleadingPots { get; set; } = false;
     public bool ShouldDoPleadingPots => IsPropertyEnabled(nameof(DoPleadingPots));
-
     public IReadOnlyDictionary<uint, bool> CriticalEncountersMap => new Dictionary<uint, bool>
     {
         { 33, ShouldDoScourgeOfTheMind },

@@ -7,8 +7,6 @@ public class Panel
 {
     public void Draw(InstanceIdentifierModule module)
     {
-        OcelotUI.Title("Instance Id:");
-        ImGui.SameLine();
-        ImGui.TextUnformatted(module.instance);
+        OcelotUI.LabelledValue(module.T("panel.id.label"), module.instance);
     }
 }

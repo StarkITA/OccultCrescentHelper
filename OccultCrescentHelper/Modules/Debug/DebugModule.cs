@@ -21,6 +21,7 @@ public class DebugModule : Module<Plugin, Config>
         new ChainManagerPanel(),
         new EnemyPanel(),
         new StatusPanel(),
+        new TargetPanel(),
     };
 
     public DebugModule(Plugin plugin, Config config)

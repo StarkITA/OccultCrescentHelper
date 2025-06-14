@@ -3,11 +3,11 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.InstanceIdentifier;
 
-[Title("Instance Identifier Config")]
+[Title("modules.instance_identifier.title")]
 public class InstanceIdentifierConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Show")]
-    [Tooltip("This is caught when the zone initialises, and will be unknown if the plugin is enabled/reloaded while in the zone")]
+    [Label("modules.instance_identifier.show.label")]
+    [Tooltip("modules.instance_identifier.show.tooltip")]
     public bool Show { get; set; } = true;
 }

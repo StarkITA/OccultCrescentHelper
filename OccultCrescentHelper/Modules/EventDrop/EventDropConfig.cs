@@ -4,21 +4,21 @@ using Ocelot.Config.Attributes;
 namespace OccultCrescentHelper.Modules.EventDrop;
 
 [Serializable]
-[Title("Event Drop Config")]
+[Title("modules.event_drop.title")]
 public class EventDropConfig : Ocelot.Modules.ModuleConfig
 {
     [Checkbox]
-    [Label("Show Demiatma drops")]
-    [Tooltip("Show Demiatma drops in the active fate/ce list.")]
+    [Label("modules.event_drop.demiatma.label")]
+    [Tooltip("modules.event_drop.demiatma.tooltip")]
     public bool ShowDemiatmaDrops { get; set; } = true;
 
     [Checkbox]
-    [Label("Show Notes drops")]
-    [Tooltip("Show Notes drops in the active fate/ce list.")]
+    [Label("modules.event_drop.notes.label")]
+    [Tooltip("modules.event_drop.notes.tooltip")]
     public bool ShowNoteDrops { get; set; } = true;
 
     [Checkbox]
-    [Label("Show Soul Shard drops")]
-    [Tooltip("Show Soul Shard drops in the active ce list.")]
+    [Label("modules.event_drop.soulshards.label")]
+    [Tooltip("modules.event_drop.soulshards.tooltip")]
     public bool ShowSoulShardDrops { get; set; } = true;
 }

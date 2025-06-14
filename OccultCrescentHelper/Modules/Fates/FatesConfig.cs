@@ -3,10 +3,10 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Fates;
 
-[Title("Fates Config")]
+[Title("modules.fates.title")]
 public class FatesConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 }

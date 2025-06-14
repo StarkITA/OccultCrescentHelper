@@ -12,8 +12,8 @@ public class Panel
             return false;
         }
 
-        OcelotUI.Title("State Manager:");
-        OcelotUI.Indent(() => ImGui.TextUnformatted($"State: {module.GetStateText()}"));
+        OcelotUI.Title($"{module.T("panel.title")}:");
+        OcelotUI.Indent(() => ImGui.TextUnformatted($"{module.T("panel.state.label")}: {module.GetStateText()}"));
 
         return true;
     }

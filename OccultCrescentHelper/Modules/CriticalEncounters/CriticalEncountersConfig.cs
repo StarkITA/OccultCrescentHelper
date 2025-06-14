@@ -3,10 +3,10 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.CriticalEncounters;
 
-[Title("Critical Encounters Config")]
+[Title("modules.critical_encounters.title")]
 public class CriticalEncountersConfig : ModuleConfig
 {
     [Checkbox]
-    [Label("Enabled")]
+    [Label("generic.label.enabled")]
     public bool Enabled { get; set; } = true;
 }

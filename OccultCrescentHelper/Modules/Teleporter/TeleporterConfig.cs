@@ -4,45 +4,45 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Teleporter;
 
-[Title("Teleporter Config")]
+[Title("modules.teleporter.title")]
 public class TeleporterConfig : ModuleConfig
 {
     public override string ProviderNamespace => "OccultCrescentHelper.Modules.Teleporter";
 
     [Checkbox]
     [RequiredPlugin("Lifestream")]
-    [Label("Mount after teleporting")]
-    [Tooltip("The mount to use after teleporting")]
+    [Label("modules.teleporter.should_mount.label")]
+    [Tooltip("modules.teleporter.should_mount.tooltip")]
     public bool ShouldMount { get; set; } = true;
 
     [Checkbox]
     [Illegal]
     [RequiredPlugin("vnavmesh")]
-    [Label("Path to event after teleporting")]
-    [Tooltip("Use vnavmesh to head to the next event after teleporting via the och panel")]
+    [Label("modules.teleporter.path_to_destination.label")]
+    [Tooltip("modules.teleporter.path_to_destination.tooltip")]
     public bool PathToDestination { get; set; } = false;
 
     [Checkbox]
     [RequiredPlugin("vnavmesh")]
     [DependsOn(nameof(PathToDestination))]
-    [Label("Use custom paths")]
-    [Tooltip("Use custom paths for certain events to stop vnavmesh from taking you to wild places")]
+    [Label("modules.teleporter.use_custom_paths.label")]
+    [Tooltip("modules.teleporter.use_custom_paths.tooltip")]
     public bool UseCustomPaths { get; set; } = true;
     public bool ShouldUseCustomPaths => IsPropertyEnabled(nameof(UseCustomPaths));
 
     [Checkbox]
-    [Label("Return to base after fate")]
-    [Tooltip("Use Occult Return upon finishing an fate to return to base camp")]
+    [Label("modules.teleporter.return_after_fate.label")]
+    [Tooltip("modules.teleporter.return_after_fate.tooltip")]
     public bool ReturnAfterFate { get; set; } = false;
 
     [Checkbox]
-    [Label("Return to base after critical encounter")]
-    [Tooltip("Use Occult Return upon finishing an critical encounter to return to base camp")]
+    [Label("modules.teleporter.return_after_critical.label")]
+    [Tooltip("modules.teleporter.return_after_critical.tooltip")]
     public bool ReturnAfterCritcalEncounter { get; set; } = false;
 
     [Checkbox]
     [RequiredPlugin("vnavmesh")]
-    [Label("Approach aetheryte after returning")]
-    [Tooltip("Walk to the aetheryte after returning to base camp\n * This only works when returning via the plugin after a fate or critical encounter")]
+    [Label("modules.teleporter.approach_aetheryte.label")]
+    [Tooltip("modules.teleporter.approach_aetheryte.tooltip")]
     public bool ApproachAetheryte { get; set; } = false;
 }
