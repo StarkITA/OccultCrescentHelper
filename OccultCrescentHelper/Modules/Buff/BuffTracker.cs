@@ -288,32 +288,32 @@ public class BuffTracker
 
     public bool IsBard()
     {
-        return HasBuff((uint)Job.Bard);
+        return HasBuff((uint)JobStatus.Bard);
     }
 
     public bool IsMonk()
     {
-        return HasBuff((uint)Job.Monk);
+        return HasBuff((uint)JobStatus.Monk);
     }
 
     public bool IsPaladin()
     {
-        return HasBuff((uint)Job.Paladin);
+        return HasBuff((uint)JobStatus.Paladin);
     }
 
     public bool HasBardBuff()
     {
-        return HasBuff((uint)CrescentBuff.Bard);
+        return HasBuff((uint)JobBuffStatus.Bard);
     }
 
     public bool HasMonkBuff()
     {
-        return HasBuff((uint)CrescentBuff.Monk);
+        return HasBuff((uint)JobBuffStatus.Monk);
     }
 
     public bool HadPaladinBuff()
     {
-        return HasBuff((uint)CrescentBuff.Paladin);
+        return HasBuff((uint)JobBuffStatus.Paladin);
     }
 
     private bool HasBuff(uint buffId)

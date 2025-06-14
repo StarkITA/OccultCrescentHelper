@@ -1,6 +1,6 @@
 namespace OccultCrescentHelper.Enums;
 
-public enum CrescentBuff
+public enum JobBuffStatus
 {
     Paladin = 4233,
     Bard = 4244,
