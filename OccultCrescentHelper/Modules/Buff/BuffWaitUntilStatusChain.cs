@@ -17,7 +17,7 @@ public static class BuffWaitUntilStatusChain
             {
                 try
                 {
-                    Svc.Log.Info($"[BUFF]Waiting for status {statusId} with time remaining {timeRemaining}");
+                    Svc.Log.Debug($"[BUFF] Waiting for status {statusId} with time remaining {timeRemaining}");
                     var foundStatus = Svc.ClientState.LocalPlayer?.StatusList.First(s => s.StatusId == statusId);
                     return foundStatus != null && foundStatus.RemainingTime > timeRemaining;
                 }

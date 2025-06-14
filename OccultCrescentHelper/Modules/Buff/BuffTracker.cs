@@ -16,15 +16,7 @@ public class BuffTracker
 {
     
     private byte startingJobId = 0;
-    public BuffTracker()
-    {
-        Reset();
-    }
-
-    public void Tick(IFramework _) { }
-
-    public void Reset() { }
-
+    
     public bool IsNearCrystal()
     {
         return NearbyCrystalCount() > 0;
@@ -46,7 +38,7 @@ public class BuffTracker
     private Chain BardChain()
     {
         return Chain.Create("Buffs:Bard")
-                    .Debug($"Starting Bard chain")
+                    .Debug($"[BUFF] Starting Bard chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Bard))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomBard)
                     .WaitGcd()
@@ -58,7 +50,7 @@ public class BuffTracker
     private Chain MonkChain()
     {
         return Chain.Create("Buffs:Monk")
-                    .Debug($"Starting Monk chain")
+                    .Debug($"[BUFF] Starting Monk chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Monk))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomMonk)
                     .WaitGcd()
@@ -70,7 +62,7 @@ public class BuffTracker
     private Chain KnightChain()
     {
         return Chain.Create("Buffs:Knight")
-                    .Debug($"Starting Knight chain")
+                    .Debug($"[BUFF] Starting Knight chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Knight))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomKnight)
                     .WaitGcd()
@@ -89,7 +81,7 @@ public class BuffTracker
     public void SwitchJobAndBuff()
     {
         startingJobId = StartingJobId();
-        Svc.Log.Debug($"[BUFF]Switching from Job Id{startingJobId}");
+        Svc.Log.Debug($"[BUFF] Switching from Job Id{startingJobId}");
         
         var manager = ChainManager.Get("OCH##BuffManager");
         if (manager.IsRunning)

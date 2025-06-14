@@ -4,7 +4,7 @@ using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.Buff;
 
-[OcelotModule(5, 3)]
+[OcelotModule(5, 2)]
 public class BuffModule : Module<Plugin, Config>
 {
     public override BuffConfig config {
@@ -19,10 +19,6 @@ public class BuffModule : Module<Plugin, Config>
 
     public BuffModule(Plugin plugin, Config config)
         : base(plugin, config) { }
-
-    public override void Tick(IFramework framework) => tracker.Tick(framework);
-
-    public override void OnTerritoryChanged(ushort _) => tracker.Reset();
 
     public override bool DrawMainUi()
     {
