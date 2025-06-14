@@ -21,6 +21,11 @@ public class Panel
                 {
                     module.tracker.SwitchJobAndBuff();
                 }
+
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetTooltip("Refresh all buffs and switch back to your job.");
+                }
             
                 ImGui.EndTable();
             }
