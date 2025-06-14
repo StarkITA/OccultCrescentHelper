@@ -1,9 +1,7 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
-using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
-using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
 using FFXIVClientStructs.FFXIV.Common.Math;
@@ -16,6 +14,8 @@ namespace OccultCrescentHelper.Modules.Buff;
 
 public class BuffTracker
 {
+    
+    private byte startingJobId = 0;
     public BuffTracker()
     {
         Reset();
@@ -46,6 +46,7 @@ public class BuffTracker
     private Chain BardChain()
     {
         return Chain.Create("Buffs:Bard")
+                    .Debug($"Starting Bard chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Bard))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomBard)
                     .WaitGcd()
@@ -57,6 +58,7 @@ public class BuffTracker
     private Chain MonkChain()
     {
         return Chain.Create("Buffs:Monk")
+                    .Debug($"Starting Monk chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Monk))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomMonk)
                     .WaitGcd()
@@ -68,6 +70,7 @@ public class BuffTracker
     private Chain KnightChain()
     {
         return Chain.Create("Buffs:Knight")
+                    .Debug($"Starting Knight chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Knight))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomKnight)
                     .WaitGcd()
@@ -76,7 +79,7 @@ public class BuffTracker
                     .WaitGcd();
     }
 
-    private Chain BackToStartingJob(byte startingJobId)
+    private Chain BackToStartingJob()
     {
         return Chain.Create("Buffs:StartingJob")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob(startingJobId))
@@ -85,12 +88,9 @@ public class BuffTracker
 
     public void SwitchJobAndBuff()
     {
-        var foundStatus =
-            Svc.ClientState.LocalPlayer?.StatusList.First(status1 => (uint)PlayerStatus.EnduringFortitude == status1.StatusId);
-        Svc.Log.Info($"[BUFF]Remaining time: {foundStatus.RemainingTime}");
-
-        var startingJobId = StartingJobId();
-        Svc.Log.Info($"[BUFF]Switching FROM {startingJobId}");
+        startingJobId = StartingJobId();
+        Svc.Log.Debug($"[BUFF]Switching from Job Id{startingJobId}");
+        
         var manager = ChainManager.Get("OCH##BuffManager");
         if (manager.IsRunning)
         {
@@ -100,7 +100,7 @@ public class BuffTracker
 
         Chain Factory()
         {
-            return BardChain().Then(MonkChain).Then(KnightChain);
+            return BardChain().Then(MonkChain).Then(KnightChain).Then(BackToStartingJob);
         }
 
         manager.Submit(Factory);
