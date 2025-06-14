@@ -33,12 +33,7 @@ public class BuffTracker
     }
 
     public void Reset() { }
-
-    public void debug()
-    {
-        ResetBardBuff();
-    }
-
+    
     public bool IsNearCrystal()
     {
         return NearbyCrystalCount() > 0;
@@ -223,66 +218,6 @@ public class BuffTracker
                 });
                 task.WaitSafely();
             }
-        }
-    }
-
-    public bool ResetBardBuff()
-    {
-        unsafe
-        {
-            // Switch phantom job to bard
-            // Then do the job buff action
-            // Check that the buff is running with more than 29 minutes left
-            // Loop if that's not the case
-
-            // Switch job to Bard
-            var jobListAddon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("MKDSupportJobList");
-            if (jobListAddon->IsVisible)
-            {
-                Svc.Framework.RunOnFrameworkThread(() => {
-                    if (GenericHelpers.IsAddonReady(jobListAddon))
-                        Callback.Fire(jobListAddon, true, 0, 6);
-                    else
-                        Svc.Log.Debug("Support REAL LIST job not ready");
-                });
-            }
-
-            // Open support Job
-            var supportJobAddon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("MKDSupportJob");
-            var baseSupportGui = (AtkUnitBase*)Svc.GameGui.GetAddonByName("MKDInfo");
-            Svc.Log.Debug("isSupportJobVisible?", supportJobAddon->IsVisible.ToString());
-            if (!supportJobAddon->IsVisible)
-            {
-                Svc.Framework.RunOnFrameworkThread(() => {
-                    if (GenericHelpers.IsAddonReady(supportJobAddon))
-                        Callback.Fire(baseSupportGui, true, 1, 0);
-                    else
-                        Svc.Log.Debug("Support job not ready");
-                });
-            }
-            else
-            {
-                Svc.Log.Debug("Support job already visible");
-            }
-
-            // Open support job list
-            var supportJobListAddon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("MKDSupportJob");
-            Svc.Log.Debug("isSupportJobListVisible?", supportJobListAddon->IsVisible.ToString());
-            if (supportJobListAddon->IsVisible)
-            {
-                Svc.Framework.RunOnFrameworkThread(() => {
-                    if (GenericHelpers.IsAddonReady(supportJobListAddon))
-                        Callback.Fire(supportJobListAddon, true, 0, 0, 0);
-                    else
-                        Svc.Log.Debug("Support job list not ready");
-                });
-            }
-            else
-            {
-                Svc.Log.Debug("Support job list already visible");
-            }
-
-            return false;
         }
     }
 
