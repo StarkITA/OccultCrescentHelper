@@ -11,7 +11,7 @@ public class Panel
     {
         OcelotUI.Title("Buff:");
         OcelotUI.Indent(() => {
-            if (ImGui.BeginTable("BuffData##OCH", 4, ImGuiTableFlags.SizingFixedFit))
+            if (ImGui.BeginTable("BuffData##OCH", 2, ImGuiTableFlags.SizingFixedFit))
             {
                 ImGui.TableNextRow();
 
