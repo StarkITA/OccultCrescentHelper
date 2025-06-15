@@ -10,7 +10,7 @@ namespace OccultCrescentHelper.Modules.Buff;
 public static class BuffWaitUntilStatusChain
 {
     private static TaskManagerTask WaitUntilStatusWithTimeRemaining(
-        uint statusId, int timeRemaining = 1780, int timeout = 5000, int interval = 50)
+        uint statusId, int timeRemaining = 1790, int timeout = 5000, int interval = 50)
     {
         return new(() => {
             if (EzThrottler.Throttle($"ChainStatus.WaitUntilStatus({statusId})", interval))
@@ -31,7 +31,7 @@ public static class BuffWaitUntilStatusChain
     }
 
     public static Chain CustomWaitUntilStatus(
-        this Chain chain, uint statusId, int timeRemaining = 1780, int timeout = 5000, int interval = 50)
+        this Chain chain, uint statusId, int timeRemaining = 1790, int timeout = 5000, int interval = 50)
     {
         return chain.Then(WaitUntilStatusWithTimeRemaining(statusId, timeRemaining, timeout, interval));
     }

@@ -1,6 +1,6 @@
+using System;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Plugin.Services;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.InstanceContent;
@@ -14,9 +14,8 @@ namespace OccultCrescentHelper.Modules.Buff;
 
 public class BuffTracker
 {
-    
     private byte startingJobId = 0;
-    
+
     public bool IsNearCrystal()
     {
         return NearbyCrystalCount() > 0;
@@ -34,10 +33,10 @@ public class BuffTracker
     }
 
 
-    
     private Chain BardChain()
     {
         return Chain.Create("Buffs:Bard")
+                    .RunIf(() => !HastatusWithRemainingTimeGreaterThan(PlayerStatus.RomeosBallad))
                     .Debug($"[BUFF] Starting Bard chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Bard))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomBard)
@@ -50,6 +49,7 @@ public class BuffTracker
     private Chain MonkChain()
     {
         return Chain.Create("Buffs:Monk")
+                    .RunIf(() => !HastatusWithRemainingTimeGreaterThan(PlayerStatus.Fleetfooted))
                     .Debug($"[BUFF] Starting Monk chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Monk))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomMonk)
@@ -62,6 +62,7 @@ public class BuffTracker
     private Chain KnightChain()
     {
         return Chain.Create("Buffs:Knight")
+                    .RunIf(() => !HastatusWithRemainingTimeGreaterThan(PlayerStatus.EnduringFortitude))
                     .Debug($"[BUFF] Starting Knight chain")
                     .Then(_ => PublicContentOccultCrescent.ChangeSupportJob((byte)JobId.Knight))
                     .WaitUntilStatus((uint)PlayerStatus.PhantomKnight)
@@ -82,7 +83,7 @@ public class BuffTracker
     {
         startingJobId = StartingJobId();
         Svc.Log.Debug($"[BUFF] Switching from Job Id{startingJobId}");
-        
+
         var manager = ChainManager.Get("OCH##BuffManager");
         if (manager.IsRunning)
         {
@@ -101,5 +102,19 @@ public class BuffTracker
     private unsafe byte StartingJobId()
     {
         return PublicContentOccultCrescent.GetState()->CurrentSupportJob;
+    }
+    
+    // Check if the status is already here AND with at least 29:50 remaining time by default.
+    private bool HastatusWithRemainingTimeGreaterThan(PlayerStatus playerStatus, int remainingTime = 1790)
+    {
+        try
+        {
+            return Svc.ClientState.LocalPlayer?.StatusList.First(s => s.StatusId == (uint)playerStatus)
+                      .RemainingTime > remainingTime;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }
