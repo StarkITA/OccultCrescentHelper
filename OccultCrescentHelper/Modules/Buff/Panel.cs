@@ -9,25 +9,19 @@ public class Panel
 {
     public void Draw(BuffModule module)
     {
-        OcelotUI.Title("Buff:");
+        OcelotUI.Title($"{module.T("panel.title")}:");
         OcelotUI.Indent(() => {
-            if (ImGui.BeginTable("BuffData##OCH", 2, ImGuiTableFlags.SizingFixedFit))
+            var isNearKnowledgeCrystal = ZoneHelper.IsNearKnowledgeCrystal();
+            var isQueued = module.buffs.IsQueued();
+
+            if (ImGuiEx.IconButton(FontAwesomeIcon.Redo, "Button##ApplyBuffs", enabled: isNearKnowledgeCrystal && !isQueued))
             {
-                ImGui.TableNextRow();
+                module.buffs.QueueBuffs();
+            }
 
-                ImGui.TableNextColumn();
-                if (ImGuiEx.IconButton(FontAwesomeIcon.Redo, "SwitchAndBuff",
-                                       enabled: module.tracker.IsNearCrystal()))
-                {
-                    module.tracker.SwitchJobAndBuff();
-                }
-
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip("Refresh all buffs and switch back to your job.");
-                }
-            
-                ImGui.EndTable();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(module.T("panel.button.tooltip"));
             }
         });
     }

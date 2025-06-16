@@ -1,5 +1,3 @@
-using System.Formats.Tar;
-using System.Linq;
 using Dalamud.Game.ClientState.Conditions;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;

@@ -45,4 +45,10 @@ public class TeleporterConfig : ModuleConfig
     [Label("modules.teleporter.approach_aetheryte.label")]
     [Tooltip("modules.teleporter.approach_aetheryte.tooltip")]
     public bool ApproachAetheryte { get; set; } = false;
+
+    [Checkbox]
+    [RequiredPlugin("vnavmesh")]
+    [Label("modules.teleporter.refresh_buffs.label")]
+    [Tooltip("modules.teleporter.refresh_buffs.tooltip")]
+    public bool RefreshBuffs { get; set; } = false;
 }

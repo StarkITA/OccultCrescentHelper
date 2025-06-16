@@ -28,7 +28,7 @@ public class Config : IOcelotConfig
     public CarrotsConfig CarrotsConfig { get; set; } = new();
 
     public CurrencyConfig CurrencyConfig { get; set; } = new();
-    
+
     public BuffConfig BuffConfig { get; set; } = new();
 
     public EventDropConfig EventDropConfig { get; set; } = new();

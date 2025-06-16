@@ -7,7 +7,6 @@ using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
-using OccultCrescentHelper.Modules.Mount;
 using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Chain;
 using Ocelot.IPC;
@@ -73,12 +72,6 @@ public class Automator
             }
         }
 
-
-        if (module.GetModule<StateManagerModule>().GetState() == State.Idle)
-        {
-            module.GetModule<MountModule>().MaintainMount();
-        }
-
         if (activity != null && !activity.isValid())
         {
             Plugin.Chain.Abort();
@@ -134,7 +127,7 @@ public class Automator
         {
             idleTime = 0;
 
-            Plugin.Chain.Submit(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], module.GetIPCProvider<YesAlready>(), vnav));
+            Plugin.Chain.Submit(ChainHelper.ReturnChain());
         }
     }
 

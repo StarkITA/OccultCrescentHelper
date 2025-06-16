@@ -10,7 +10,6 @@ using ImGuiNET;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
-using OccultCrescentHelper.Modules.Mount.Chains;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -84,8 +83,8 @@ public class Teleporter
             return;
         }
 
-        var isNearShards = GetNearbyAethernetShards().Count() > 0;
-        var isNearCurrentShard = IsNear(aethernet);
+        var isNearShards = ZoneHelper.GetNearbyAethernetShards().Count() > 0;
+        var isNearCurrentShard = ZoneHelper.IsNearAethernetShard(aethernet);
 
         if (ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.LocationArrow, $"{name}##{id}", enabled: isNearShards && !isNearCurrentShard))
         {
@@ -158,29 +157,27 @@ public class Teleporter
             return;
         }
 
-
-        Plugin.Chain.Submit(new ReturnChain(
-            ZoneData.aetherytes[Svc.ClientState.TerritoryType],
-            module.GetIPCProvider<YesAlready>(),
-            module.GetIPCProvider<VNavmesh>(),
-            module.config.ApproachAetheryte
-        ));
+        Plugin.Chain.Submit(ChainHelper.ReturnChain());
     }
 
+    [Obsolete("Use ZoneHelper.GetClosestAethernetShard")]
     private Aethernet GetClosestAethernet(Vector3 position)
         => AethernetData.All().OrderBy((data) => Vector3.Distance(position, data.position)).First()!.aethernet;
 
+    [Obsolete("Use ZoneHelper.GetNearbyAethernetShards")]
     public IList<IGameObject> GetNearbyAethernetShards()
     {
         var playerPos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
 
         return Svc.Objects
+            .Where(o => o != null)
             .Where(o => o.ObjectKind == ObjectKind.EventObj)
             .Where(o => AethernetData.All().Select((datum) => datum.dataId).Contains(o.DataId))
             .Where(o => Vector3.Distance(o.Position, playerPos) <= 4.5f)
             .ToList();
     }
 
+    [Obsolete("use ZoneHelper.IsNearAethernetShard")]
     private bool IsNear(Aethernet aethernet) => GetNearbyAethernetShards().Where(o => o.DataId == aethernet.GetData().dataId).Count() > 0;
 
     public bool IsReady() => module.TryGetIPCProvider<Lifestream>(out var _);
