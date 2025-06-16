@@ -122,12 +122,14 @@ public class Activity
             {
                 case NavigationType.WalkToEvent:
                     chain
+                        .ConditionalThen(_ => module._config.TeleporterConfig.ShouldMount, ChainHelper.MountChain())
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
 
                 case NavigationType.ReturnThenWalkToEvent:
                     chain
                         .Then(ChainHelper.ReturnChain())
+                        .ConditionalThen(_ => module._config.TeleporterConfig.ShouldMount, ChainHelper.MountChain())
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
 
@@ -140,6 +142,7 @@ public class Activity
 
                 case NavigationType.WalkToClosestShardAndTeleportToEventShardThenWalkToEvent:
                     chain
+                        .ConditionalThen(_ => module._config.TeleporterConfig.ShouldMount, ChainHelper.MountChain())
                         .Then(new PathfindingChain(vnav, playerShard.position, data, false))
                         .WaitUntilNear(vnav, playerShard.position, 5f)
                         .Then(ChainHelper.TeleportChain(activityShard.aethernet))

@@ -58,6 +58,7 @@ public class Teleporter
 
             Plugin.Chain.Submit(
                 () => Chain.Create("Pathfinding")
+                    .ConditionalThen(_ => module.config.ShouldMount, ChainHelper.MountChain())
                     .Then(new PathfindingChain(vnav, destination, ev, module.config.ShouldUseCustomPaths, 20f))
                     .WaitUntilNear(vnav, destination, 205f)
             );
