@@ -21,7 +21,11 @@ public class AutomatorModule : Module<Plugin, Config>
     private List<uint> occultCrescentTerritoryIds = [1252];
 
     public AutomatorModule(Plugin plugin, Config config)
-        : base(plugin, config) { }
+        : base(plugin, config)
+    {
+        config.AutomatorConfig.Enabled = false;
+        config.Save();
+    }
 
 
     public override void Tick(IFramework framework) => automator.Tick(this, framework);

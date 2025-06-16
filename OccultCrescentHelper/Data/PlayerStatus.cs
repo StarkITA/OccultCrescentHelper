@@ -14,6 +14,7 @@ public enum PlayerStatus : uint
     RomeosBallad = 4244,
     ResurrectionRestricted = 4262,
     ResurrectionDenied = 4263,
+    PhantomFreelancer = 4242,
     PhantomKnight = 4358,
     PhantomBerserker = 4359,
     PhantomMonk = 4360,

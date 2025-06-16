@@ -4,7 +4,7 @@ Repo: https://raw.githubusercontent.com/OhKannaDuh/plugins/refs/heads/master/man
 
 ## Features
 
--   Instance Id
+-   Instance ID
 -   Treasure radar
     -   Lists nearby treasure and draws a line to them
 -   Carrot radar
@@ -17,16 +17,19 @@ Repo: https://raw.githubusercontent.com/OhKannaDuh/plugins/refs/heads/master/man
     -   Displays estimated completion time
     -   Button to teleport, mount and pathfind to fate/ce
     -   Automatic return after fate/CE
-
-## Plans
-
 -   Auto buffs (Bard/Knight/Monk)
 -   Auto chest run
+    -   This has been included in the release build but is still experimental
+
+## Plans
 -   Auto find active carrot
 -   Instance hopper 
     -   `/och instance 54` (Or something like this), Then it keeps leaving and joining until you get into that instance
+    -   Only if I find a more reliable Instance ID
 
 ## Known issues
 
-- Can fail to return if YesAlready (or similar) catches the SelectYesno window before OCH does (Race condition)
-- Some have reported that pathfinding doesn't work for them, however, I am unable to replicate this or debug a reason with them, more information required
+-   Treasure hunter gets stuck on the last chest
+-   Treasure hunter doesn't communicate to an average player what chest # it is on, and how many spots it is checking
+-   Instance ID, lmao
+-   Users who can't read

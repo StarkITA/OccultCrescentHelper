@@ -4,6 +4,7 @@ using Dalamud.Plugin;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.Reflection;
+using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using Ocelot;
 using Ocelot.Chain;
@@ -40,8 +41,10 @@ public sealed class Plugin : OcelotPlugin
         OcelotInitialize();
 
         ChainManager.Initialize();
+        ChainHelper.Initialize(this);
 
         DotNetEnv.Env.Load(Svc.PluginInterface.AssemblyLocation.Directory + "/.env");
+
     }
 
     private void InitializeClientStructs()

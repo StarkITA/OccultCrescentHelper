@@ -18,6 +18,7 @@ using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
+using OccultCrescentHelper.Modules.Mount;
 using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -125,13 +126,13 @@ public class Activity
 
                 case NavigationType.ReturnThenWalkToEvent:
                     chain
-                        .Then(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], yes, vnav))
+                        .Then(ChainHelper.ReturnChain())
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
 
                 case NavigationType.ReturnThenTeleportToEventshard:
                     chain
-                        .Then(new ReturnChain(ZoneData.aetherytes[Svc.ClientState.TerritoryType], yes, vnav))
+                        .Then(ChainHelper.ReturnChain())
                         .Then(new TeleportChain(lifestream, activityShard.aethernet))
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
@@ -232,6 +233,8 @@ public class Activity
                 Svc.Targets.Target ??= GetClosestEnemy();
             }
 
+            module.GetModule<MountModule>().MaintainMount();
+
             var target = Svc.Targets.Target;
             if (target != null)
             {
@@ -274,6 +277,8 @@ public class Activity
             {
                 throw new Exception("Activity is no longer valid.");
             }
+
+            module.GetModule<MountModule>().MaintainMount();
 
             if (IsInZone())
             {

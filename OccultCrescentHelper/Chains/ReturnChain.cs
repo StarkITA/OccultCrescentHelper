@@ -1,10 +1,14 @@
+using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using OccultCrescentHelper.Data;
+using OccultCrescentHelper.Modules.Buff;
+using OccultCrescentHelper.Modules.Buff.Chains;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -21,17 +25,20 @@ public class ReturnChain : RetryChainFactory
 
     private VNavmesh? vnav;
 
+    private BuffModule buffs;
+
     private bool complete = false;
 
-    public ReturnChain(Vector3 destination, YesAlready? yes = null, VNavmesh? vnav = null, bool approachAetherye = true)
+    public ReturnChain(Vector3 destination, BuffModule buffs, YesAlready? yes = null, VNavmesh? vnav = null, bool approachAetherye = true)
     {
-        this.approachAetherye = approachAetherye;
         this.destination = destination;
         this.yes = yes;
         this.vnav = vnav;
+        this.approachAetherye = approachAetherye;
+        this.buffs = buffs;
     }
 
-    protected override Chain Create(Chain chain)
+    protected unsafe override Chain Create(Chain chain)
     {
         chain.BreakIf(() => Svc.ClientState.LocalPlayer?.IsDead == true);
 
@@ -49,8 +56,12 @@ public class ReturnChain : RetryChainFactory
                 .WaitToCast()
                 .WaitToCycleCondition(ConditionFlag.BetweenAreas);
 
+            chain = ApplyBuffs(chain);
+
             if (approachAetherye && vnav != null)
             {
+                chain = ApplyBuffs(chain);
+
                 chain
                     .Wait(500)
                     .Then(_ => vnav.MoveToPath([destination], false))
@@ -58,8 +69,10 @@ public class ReturnChain : RetryChainFactory
                     .Then(_ => vnav.Stop());
             }
         }
-        else
+        else if (vnav != null)
         {
+
+
             chain
                 .Then(new PathfindAndMoveToChain(vnav, destination))
                 .WaitUntilNear(vnav, destination, 4f)
@@ -68,6 +81,34 @@ public class ReturnChain : RetryChainFactory
 
 
         return chain.Then(_ => complete = true);
+    }
+
+    private unsafe Chain ApplyBuffs(Chain chain)
+    {
+        if (buffs.ShouldRefreshBuffs() && vnav != null)
+        {
+            chain.Then(() => {
+                IGameObject? closestKnowledgeCrystal = ZoneHelper.GetNearbyKnowledgeCrystal(60f).FirstOrDefault();
+                Vector3 position = closestKnowledgeCrystal?.Position ?? Vector3.Zero;
+
+                return Chain.Create("Go to Crystal and Buff")
+                    .BreakIf(() => !buffs.buffs.ShouldRefresh(buffs))
+                    .Wait(500)
+                    .Then(_ => {
+                        if (Svc.Condition[ConditionFlag.Mounted])
+                        {
+                            ActionManager.Instance()->UseAction(ActionType.Mount, buffs.plugin.config.MountConfig.Mount);
+                        }
+                    })
+                    .BreakIf(() => closestKnowledgeCrystal == null)
+                    .Then(_ => vnav.MoveToPath([position], false))
+                    .WaitUntilNear(vnav, position, 4f)
+                    .Then(_ => vnav.Stop())
+                    .Then(new AllBuffsChain(buffs));
+            });
+        }
+
+        return chain;
     }
 
     public override bool IsComplete() => complete;
