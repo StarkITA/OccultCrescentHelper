@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ImGuiNET;
@@ -93,7 +94,9 @@ public class Teleporter
 
             var factory = () => {
                 var chain = Chain.Create("Teleport Sequence")
-                    .Then(ChainHelper.TeleportChain(aethernet));
+                    .Then(ChainHelper.TeleportChain(aethernet))
+                        .Debug("Waiting for lifestream to not be 'busy'")
+                        .Then(new TaskManagerTask(() => !lifestream.IsBusy(), new() { TimeLimitMS = 30000 }));
 
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {

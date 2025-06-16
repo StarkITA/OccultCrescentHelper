@@ -137,6 +137,8 @@ public class Activity
                     chain
                         .Then(ChainHelper.ReturnChain())
                         .Then(ChainHelper.TeleportChain(activityShard.aethernet))
+                        .Debug("Waiting for lifestream to not be 'busy'")
+                        .Then(new TaskManagerTask(() => !lifestream.IsBusy(), new() { TimeLimitMS = 30000 }))
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
 
@@ -144,8 +146,10 @@ public class Activity
                     chain
                         .ConditionalThen(_ => module._config.TeleporterConfig.ShouldMount, ChainHelper.MountChain())
                         .Then(new PathfindingChain(vnav, playerShard.position, data, false))
-                        .WaitUntilNear(vnav, playerShard.position, 5f)
+                        .WaitUntilNear(vnav, playerShard.position, 4f)
                         .Then(ChainHelper.TeleportChain(activityShard.aethernet))
+                        .Debug("Waiting for lifestream to not be 'busy'")
+                        .Then(new TaskManagerTask(() => !lifestream.IsBusy(), new() { TimeLimitMS = 30000 }))
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
             }
