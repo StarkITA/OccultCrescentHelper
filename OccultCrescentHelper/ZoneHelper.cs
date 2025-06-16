@@ -13,7 +13,7 @@ public static class ZoneHelper
     public static Aethernet GetClosestAethernetShard(Vector3 position)
         => AethernetData.All().OrderBy((data) => Vector3.Distance(position, data.position)).First()!.aethernet;
 
-    public static IList<IGameObject> GetNearbyAethernetShards(float range = 4.5f)
+    public static IList<IGameObject> GetNearbyAethernetShards(float range = 4.3f)
     {
         var playerPos = Svc.ClientState.LocalPlayer?.Position ?? Vector3.Zero;
 
@@ -25,7 +25,7 @@ public static class ZoneHelper
             .ToList();
     }
 
-    public static bool IsNearAethernetShard(Aethernet aethernet, float range = 4.5f)
+    public static bool IsNearAethernetShard(Aethernet aethernet, float range = 4.3f)
     {
         return GetNearbyAethernetShards(range).Where(o => o.DataId == aethernet.GetData().dataId).Count() > 0;
     }

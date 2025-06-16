@@ -1,4 +1,6 @@
 using Dalamud.Game.ClientState.Conditions;
+using ECommons.Automation.LegacyTaskManager;
+using ECommons.Automation.NeoTaskManager;
 using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot.Chain;
@@ -26,8 +28,11 @@ public class TeleportChain : ChainFactory
     {
         return chain
             .Then(_ => lifestream.Abort())
+            .Then(_ => module.GetIPCProvider<VNavmesh>()?.Stop())
             .Then(_ => lifestream.AethernetTeleportByPlaceNameId((uint)aethernet))
             .WaitToCycleCondition(ConditionFlag.BetweenAreas)
+            .Debug("Waiting for lifestream to not be 'busy'")
+            .Then(new TaskManagerTask(() => !lifestream.IsBusy(), new() { TimeLimitMS = 30000 }))
             .ConditionalThen(_ => module.config.ShouldMount, ChainHelper.MountChain());
     }
 }
