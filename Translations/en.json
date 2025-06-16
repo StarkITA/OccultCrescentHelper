@@ -12,6 +12,9 @@
             "enabled": "Enabled",
             "start": "Start",
             "stop": "Stop"
+        },
+        "tooltip": {
+            "illegal_mode_compatible": "This option is compatible with Illegal Mode, It will use it while it runs."
         }
     },
     "modules": {
@@ -210,7 +213,6 @@
         },
         "automator": {
             "title": "Illegal Mode",
-            "warning": "Illegal Mode is a bot, its actions are not dictated by your config outside of this section.",
             "enabled": {
                 "tooltip": "Illegal Mode is a bot, its actions are not dictated by your config outside of this section."
             },
@@ -388,7 +390,6 @@
         "buff": {
             "config": {
                 "title": "Buffs Config",
-                "text": " - Illegal mode makes use of this config",
                 "romeos_ballad": {
                     "label": "Apply Romeo's Ballad",
                     "tooltip": "Apply the Phantom Bard Buff, Romeo's Ballad"

@@ -1,44 +1,17 @@
-﻿using Dalamud.Interface;
+using Dalamud.Interface;
 using ImGuiNET;
 using OccultCrescentHelper.Data;
-using OccultCrescentHelper.Modules.Automator;
 using Ocelot.IPC;
 using Ocelot.Windows;
 
-namespace OccultCrescentHelper.Windows;
+namespace OccultCrescentHelper.Modules.Automator;
 
-[OcelotMainWindow]
-public class MainWindow : OcelotMainWindow
+[OcelotWindow]
+public class AutomatorWindow : OcelotWindow
 {
-    public MainWindow(Plugin plugin, Config config)
-        : base(plugin, config) { }
-
-    public override void PostInitialize()
+    public AutomatorWindow(Plugin plugin, Config config)
+        : base(plugin, config, "OCH Automator Lens")
     {
-        base.PostInitialize();
-
-        TitleBarButtons.Add(new() {
-            Click = (m) => {
-                if (m != ImGuiMouseButton.Left)
-                {
-                    return;
-                }
-
-                if (plugin.modules.TryGetModule<AutomatorModule>(out var automator) && automator != null)
-                {
-                    automator.config.Enabled = false;
-                }
-
-                plugin.ipc.GetProvider<VNavmesh>()?.Stop();
-                Plugin.Chain.Abort();
-
-
-            },
-            Icon = FontAwesomeIcon.Stop,
-            IconOffset = new(2, 2),
-            ShowTooltip = () => ImGui.SetTooltip("Emergency Stop"),
-        });
-
         TitleBarButtons.Add(new() {
             Click = (m) => {
                 if (m != ImGuiMouseButton.Left)
@@ -72,6 +45,13 @@ public class MainWindow : OcelotMainWindow
             return;
         }
 
-        plugin.modules?.DrawMainUi();
+        var automator = plugin.modules.GetModule<AutomatorModule>();
+        if (automator == null || !automator.enabled)
+        {
+            ImGui.TextUnformatted("Automator is not enabled.");
+            return;
+        }
+
+        automator.panel.Draw(automator);
     }
 }

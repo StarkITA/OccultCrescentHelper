@@ -87,6 +87,11 @@ public class BuffManager
 
     public bool ShouldRefresh(BuffModule module)
     {
+        if (module.enabled == false)
+        {
+            return false;
+        }
+
         return lowestTimer <= (module.config.ReapplyThreshold * 60);
     }
 }

@@ -5,7 +5,6 @@ using Ocelot.Modules;
 namespace OccultCrescentHelper.Modules.Automator;
 
 [Title("modules.automator.title")]
-[Text("modules.automator.warning")]
 public partial class AutomatorConfig : ModuleConfig
 {
     public override string ProviderNamespace => "OccultCrescentHelper.Modules.Automator";

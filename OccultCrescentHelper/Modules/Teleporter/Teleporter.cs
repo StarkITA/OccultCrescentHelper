@@ -10,6 +10,7 @@ using ImGuiNET;
 using OccultCrescentHelper.Chains;
 using OccultCrescentHelper.Data;
 using OccultCrescentHelper.Enums;
+using OccultCrescentHelper.Modules.Automator;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -91,7 +92,7 @@ public class Teleporter
 
             var factory = () => {
                 var chain = Chain.Create("Teleport Sequence")
-                    .Then(new TeleportChain(lifestream, aethernet));
+                    .Then(ChainHelper.TeleportChain(aethernet));
 
                 if (module.TryGetIPCProvider<VNavmesh>(out var vnav) && vnav != null && vnav.IsReady())
                 {
@@ -126,6 +127,11 @@ public class Teleporter
 
     public void OnFateEnd()
     {
+        if (module.GetModule<AutomatorModule>().enabled)
+        {
+            return;
+        }
+
         if (!module.config.ReturnAfterFate)
         {
             return;
@@ -136,6 +142,11 @@ public class Teleporter
 
     public void OnCriticalEncounterEnd()
     {
+        if (module.GetModule<AutomatorModule>().enabled)
+        {
+            return;
+        }
+
         if (!module.config.ReturnAfterCritcalEncounter)
         {
             return;

@@ -37,7 +37,7 @@
         <ProjectReference Include="../../Ocelot/Ecommons/Ecommons/Ecommons.csproj" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <PackageReference Include="FFXIVOcelot" Version="0.24.1" />
+        <PackageReference Include="FFXIVOcelot" Version="0.25.0" />
         <PackageReference Include="ECommons" Version="2.2.0.2" />
     </ItemGroup>
     <ItemGroup>

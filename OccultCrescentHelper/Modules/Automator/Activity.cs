@@ -20,6 +20,7 @@ using OccultCrescentHelper.Modules.CriticalEncounters;
 using OccultCrescentHelper.Modules.Fates;
 using OccultCrescentHelper.Modules.Mount;
 using OccultCrescentHelper.Modules.StateManager;
+using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.IPC;
@@ -133,7 +134,7 @@ public class Activity
                 case NavigationType.ReturnThenTeleportToEventshard:
                     chain
                         .Then(ChainHelper.ReturnChain())
-                        .Then(new TeleportChain(lifestream, activityShard.aethernet))
+                        .Then(ChainHelper.TeleportChain(activityShard.aethernet))
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
 
@@ -141,7 +142,7 @@ public class Activity
                     chain
                         .Then(new PathfindingChain(vnav, playerShard.position, data, false))
                         .WaitUntilNear(vnav, playerShard.position, 5f)
-                        .Then(new TeleportChain(lifestream, activityShard.aethernet))
+                        .Then(ChainHelper.TeleportChain(activityShard.aethernet))
                         .Then(new PathfindingChain(vnav, getPosition(), data, false));
                     break;
             }
@@ -233,7 +234,7 @@ public class Activity
                 Svc.Targets.Target ??= GetClosestEnemy();
             }
 
-            module.GetModule<MountModule>().MaintainMount();
+            // module.GetModule<MountModule>().MaintainMount();
 
             var target = Svc.Targets.Target;
             if (target != null)
@@ -278,7 +279,7 @@ public class Activity
                 throw new Exception("Activity is no longer valid.");
             }
 
-            module.GetModule<MountModule>().MaintainMount();
+            // module.GetModule<MountModule>().MaintainMount();
 
             if (IsInZone())
             {

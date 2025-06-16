@@ -16,7 +16,7 @@ public class AutomatorModule : Module<Plugin, Config>
 
     public readonly Automator automator = new();
 
-    private Panel panel = new();
+    public readonly Panel panel = new();
 
     private List<uint> occultCrescentTerritoryIds = [1252];
 

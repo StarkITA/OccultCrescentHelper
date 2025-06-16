@@ -18,6 +18,7 @@ public class OCHIllegalCommand : OcelotCommand
 
     public override string description => @"
 Manage och automator/illegal mode.
+ - /ochillegal (Toggles the automator lens window)
  - /ochillegal on (Enables illegal mode (Automation))
  - /ochillegal off (Disables illegal mode (Automation))
  - /ochillegal toggle (Toggles illegal mode (Automation))
@@ -37,7 +38,8 @@ Manage och automator/illegal mode.
     {
         if (arguments.Trim() == "")
         {
-            arguments = "toggle";
+            plugin.windows.GetWindow<AutomatorWindow>()?.Toggle();
+            return;
         }
 
         Svc.Framework.RunOnTick(() => {

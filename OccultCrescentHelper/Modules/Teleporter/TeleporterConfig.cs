@@ -11,6 +11,7 @@ public class TeleporterConfig : ModuleConfig
 
     [Checkbox]
     [RequiredPlugin("Lifestream")]
+    [IllegalModeCompatible]
     [Label("modules.teleporter.should_mount.label")]
     [Tooltip("modules.teleporter.should_mount.tooltip")]
     public bool ShouldMount { get; set; } = true;

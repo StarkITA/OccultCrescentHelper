@@ -1,7 +1,11 @@
 using System;
 using ECommons.DalamudServices;
 using OccultCrescentHelper.Data;
+using OccultCrescentHelper.Enums;
 using OccultCrescentHelper.Modules.Buff;
+using OccultCrescentHelper.Modules.Mount;
+using OccultCrescentHelper.Modules.Mount.Chains;
+using OccultCrescentHelper.Modules.Teleporter;
 using Ocelot.IPC;
 using Ocelot.Modules;
 
@@ -46,5 +50,18 @@ public class ChainHelper
             approachAetherye: approachAetherye
         );
     }
-}
 
+    public static TeleportChain TeleportChain(Aethernet aethernet)
+    {
+        return new TeleportChain(
+            aethernet,
+            ipc.GetProvider<Lifestream>(),
+            modules.GetModule<TeleporterModule>()
+        );
+    }
+
+    public static MountChain MountChain()
+    {
+        return new MountChain(modules.GetModule<MountModule>().config);
+    }
+}
