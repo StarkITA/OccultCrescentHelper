@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-using ECommons.DalamudServices;
+using OccultCrescentHelper.Modules.StateManager;
 using Ocelot.Modules;
 
 namespace OccultCrescentHelper.Modules.WindowManager;
@@ -18,6 +18,10 @@ public class WindowManagerModule : Module<Plugin, Config>
 
     private List<uint> occultCrescentTerritoryIds = [1252];
 
+    private bool mainClosed = false;
+
+    private bool configClosed = false;
+
 
     public override void PostInitialize()
     {
@@ -31,6 +35,11 @@ public class WindowManagerModule : Module<Plugin, Config>
         {
             plugin.windows.OpenConfigUI();
         }
+
+        GetModule<StateManagerModule>().OnEnterInCombat += EnterCombat;
+        GetModule<StateManagerModule>().OnEnterInCriticalEncounter += EnterCombat;
+        GetModule<StateManagerModule>().OnEnterInFate += EnterCombat;
+        GetModule<StateManagerModule>().OnEnterIdle += ExitCombat;
     }
 
     public override void OnTerritoryChanged(ushort id)
@@ -61,6 +70,35 @@ public class WindowManagerModule : Module<Plugin, Config>
                 plugin.windows.CloseConfigUI();
             }
 
+        }
+    }
+
+    private void EnterCombat()
+    {
+        if (config.HideMainInCombat && plugin.windows.IsMainUIOpen())
+        {
+            plugin.windows.CloseMainUI();
+            mainClosed = true;
+        }
+        if (config.HideConfigInCombat && plugin.windows.IsConfigUIOpen())
+        {
+            plugin.windows.CloseConfigUI();
+            configClosed = true;
+        }
+    }
+
+    private void ExitCombat()
+    {
+        if (config.HideMainInCombat && mainClosed)
+        {
+            plugin.windows.OpenMainUI();
+            mainClosed = false;
+        }
+
+        if (config.HideConfigInCombat && configClosed)
+        {
+            plugin.windows.OpenConfigUI();
+            configClosed = false;
         }
     }
 }

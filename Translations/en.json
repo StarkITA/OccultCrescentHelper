@@ -162,6 +162,10 @@
                 "label": "Close main UI on exit",
                 "tooltip": "Closes the main UI when you leave an Occult Crescent zone."
             },
+            "main_in_combat" : {
+                "label": "Open main UI in combat",
+                "tooltip": "Opens the main UI when you enter combat."
+            },
             "config_on_load": {
                 "label": "Open config UI on load",
                 "tooltip": "Opens the config UI when the plugin is loaded."
@@ -173,6 +177,10 @@
             "config_on_exit": {
                 "label": "Close config UI on exit",
                 "tooltip": "Closes the config UI when you leave an Occult Crescent zone."
+            },
+            "config_in_combat": {
+                "label": "Open config UI in combat",
+                "tooltip": "Opens the config UI when you enter combat."
             }
         },
         "state_manager": {

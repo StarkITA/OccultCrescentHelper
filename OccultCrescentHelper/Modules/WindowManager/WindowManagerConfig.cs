@@ -22,6 +22,11 @@ public class WindowManagerConfig : ModuleConfig
     public bool CloseMainOnExit { get; set; } = true;
 
     [Checkbox]
+    [Label("modules.window_manager.main_in_combat.label")]
+    [Tooltip("modules.window_manager.main_in_combat.tooltip")]
+    public bool HideMainInCombat { get; set; } = false;
+
+    [Checkbox]
     [Label("modules.window_manager.config_on_load.label")]
     [Tooltip("modules.window_manager.config_on_load.tooltip")]
     public bool OpenConfigOnStartUp { get; set; } = false;
@@ -35,4 +40,9 @@ public class WindowManagerConfig : ModuleConfig
     [Label("modules.window_manager.config_on_exit.label")]
     [Tooltip("modules.window_manager.config_on_exit.tooltip")]
     public bool CloseConfigOnExit { get; set; } = true;
+
+    [Checkbox]
+    [Label("modules.window_manager.config_in_combat.label")]
+    [Tooltip("modules.window_manager.config_in_combat.tooltip")]
+    public bool HideConfigInCombat { get; set; } = false;
 }
