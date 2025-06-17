@@ -10,7 +10,7 @@
     "generic": {
         "label": {
             "enabled": "Abilitato",
-            "start": "Start",
+            "start": "Avvia",
             "stop": "Stop"
         },
         "tooltip": {
@@ -59,68 +59,68 @@
             }
         },
         "carrots": {
-            "title": "Carrots Config",
+            "title": "Configurazione Carote",
             "draw": {
-                "label": "Draw line to Carrots",
-                "tooltip": "Render a line from your character's position to nearby carrots."
+                "label": "Disegna una linea alle Carote",
+                "tooltip": "Disegna una linea dalla posizione del tuo personaggio alle Carote vicine."
             },
             "panel": {
-                "title": "Carrots",
-                "none": "No nearby carrots.",
-                "label": "Carrot"
+                "title": "Carote",
+                "none": "Nessuna carota nei dintorni.",
+                "label": "Carota"
             }
         },
         "currency": {
-            "title": "Currency Config",
+            "title": "Configurazione Valute",
             "panel": {
-                "title": "Currency",
+                "title": "Valute",
                 "silver": {
-                    "label": "Silver per hour"
+                    "label": "Silver (Argento) per ora"
                 },
                 "gold": {
-                    "label": "Gold per hour"
+                    "label": "Gold (Oro) per ora"
                 }
             }
         },
         "event_drop": {
-            "title": "Event Drop Config",
+            "title": "Configurazione drop FATE/CE",
             "demiatma": {
-                "label": "Show Demiatma drops",
-                "tooltip": "Show Demiatma drops in the active FATE/CE list."
+                "label": "Mostra drop delle Demiatma",
+                "tooltip": "Mostra i drop delle Demiatma nella lista dei FATE/CE attivi."
             },
             "notes": {
-                "label": "Show Notes drops",
-                "tooltip": "Show Notes drops in the active FATE/CE list."
+                "label": "Mostra drop delle Note",
+                "tooltip": "Mostra i drop delle Note nella lista dei FATE/CE attivi."
             },
             "soulshards": {
-                "label": "Show Soul Shard drops",
-                "tooltip": "Show Soul Shard drops in the active CE list."
+                "label": "Mostra drop delle Soul Shards",
+                "tooltip": "Mostra i drop delle Soul Shards nella lista dei CE attivi."
             }
         },
         "fates": {
-            "title": "Fates Config",
+            "title": "Configurazione FATEs",
             "panel": {
-                "title": "Fates",
-                "none": "No active fates.",
-                "estimated": "Est."
+                "title": "FATEs",
+                "none": "Nessun FATE attivo.",
+                "estimated": "ca."
             }
         },
         "critical_encounters": {
-            "title": "Critical Encounters Config",
+            "title": "Configurazione Critical Encounters",
             "panel": {
                 "title": "Critical Encounters",
-                "none": "No active critical encounters.",
-                "register": "Preparing",
-                "warmup": "Starting",
-                "estimated": "Est."
+                "none": "Nessun Critical Encounter attivo.",
+                "register": "In preparazione",
+                "warmup": "In avvio",
+                "estimated": "ca."
             }
         },
         "exp": {
-            "title": "Exp Config",
+            "title": "Configurazione Esperienza",
             "panel": {
-                "title": "Exp",
+                "title": "Esperienza",
                 "exp": {
-                    "label": "Exp per hour"
+                    "label": "Esperienza per ora"
                 }
             }
         },
